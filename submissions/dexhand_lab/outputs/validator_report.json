@@ -8,7 +8,7 @@
     "tactile_classifier_accuracy": 1.0,
     "blind_tactile_success_rate": 1.0,
     "adaptive_regrasp_success_rate": 1.0,
-    "average_probes_per_object": 5.40625,
+    "average_probes_per_object": 5.33333,
     "object_snap_events": 0
   },
   "core_evidence": {

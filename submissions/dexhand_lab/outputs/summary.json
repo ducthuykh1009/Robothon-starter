@@ -1,7 +1,7 @@
 {
   "project": "DexHand Lab",
-  "uuid": "ae3845b8-7246-4fc9-8655-31d46dbeba99",
-  "registration_uuid": "ae3845b8-7246-4fc9-8655-31d46dbeba99",
+  "uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+  "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
   "success": true,
   "phase": "dexterous_hand_visibility_and_verified_grasp_demo",
   "event_rule_alignment": {
@@ -1541,7 +1541,7 @@
   "frames": 1186,
   "video_render_mode": "preserved_generated_demo",
   "narration_path": "submissions/dexhand_lab/outputs/narration.srt",
-  "mode": "blind_tactile_stress_eval",
+  "mode": "blind_tactile_active_perception",
   "blind_tactile_mode_available": true,
   "unknown_object_arena_available": true,
   "arena": "assembly",
@@ -1553,8 +1553,8 @@
   "object_order_randomized": false,
   "tactile_classifier_accuracy": 1.0,
   "global_classifier_accuracy_32_seed": 1.0,
-  "classification_confidence_mean": 0.94531,
-  "average_probes_per_object": 5.40625,
+  "classification_confidence_mean": 0.87189,
+  "average_probes_per_object": 5.33333,
   "tactile_classifier_latency_steps": 5,
   "blind_tactile_success_rate": 1.0,
   "unknown_arena_success_rate": 1.0,
@@ -1630,11 +1630,10 @@
   "tactile_classifier_report_path": "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
   "tactile_confusion_matrix_path": "submissions/dexhand_lab/dataset/tactile_confusion_matrix.json",
   "unknown_arena_report_path": "submissions/dexhand_lab/dataset/unknown_arena_report.json",
-  "honest_note": "Blind tactile stress eval is deterministic and perturbation-based; it compares known-label, blind tactile, and scripted baselines without claiming learned RL.",
+  "honest_note": "Blind tactile mode hides object labels from controller decision logic and uses deterministic contact-feature classification. Ground truth labels are used only for evaluation.",
   "blind_tactile_keyframes_path": "submissions/dexhand_lab/media/blind_tactile_keyframes.png",
   "tactile_classifier_panel_path": "submissions/dexhand_lab/media/tactile_classifier_panel.png",
   "blind_tactile_summary_path": "submissions/dexhand_lab/outputs/blind_tactile_summary.json",
-  "adaptive_regrasp_trace_path": "submissions/dexhand_lab/dataset/adaptive_regrasp_trace.csv",
   "task_name": "TACTILE_PRECISION_ASSEMBLY",
   "precision_assembly_arena_available": true,
   "assembly_success": true,
@@ -1709,10 +1708,5 @@
     "average_rotation_error_deg": 2.26519,
     "object_snap_events": 0
   },
-  "known_label_baseline_success_rate": 0.84375,
-  "scripted_baseline_success_rate": 0.40625,
-  "feedback_vs_scripted_improvement": 59.375,
-  "blind_tactile_stress_eval_path": "submissions/dexhand_lab/dataset/blind_tactile_stress_eval.json",
-  "blind_tactile_baseline_comparison_path": "submissions/dexhand_lab/dataset/blind_tactile_baseline_comparison.json",
   "validation_passed": true
 }

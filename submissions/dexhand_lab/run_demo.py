@@ -45,7 +45,20 @@ PROJECT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PROJECT_DIR.parents[1]
 DEFAULT_SCENE = PROJECT_DIR / "scene.xml"
 DEFAULT_OUTPUT_DIR = PROJECT_DIR / "outputs"
-REGISTRATION_UUID = "ae3845b8-7246-4fc9-8655-31d46dbeba99"
+
+
+def load_registration_uuid() -> str:
+    registration_path = PROJECT_DIR / "registration.json"
+    fallback_uuid = "2555924c-74a4-4788-be61-1f1e65bf3f44"
+    try:
+        registration = json.loads(registration_path.read_text(encoding="utf-8"))
+        uuid = str(registration.get("uuid", "")).strip()
+        return uuid or fallback_uuid
+    except Exception:
+        return fallback_uuid
+
+
+REGISTRATION_UUID = load_registration_uuid()
 
 SLIDE_AND_WRIST_JOINTS = (
     "hand_x",

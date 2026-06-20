@@ -53,8 +53,11 @@
   ],
   "active_tactile_perception_policy": {
     "policy_type": "deterministic tactile classifier + adaptive heuristic controller",
+    "available_via_cli": "--blind-tactile",
+    "unknown_arena_cli": "--arena unknown --blind-tactile",
     "input_signals": [
       "fingertip contacts",
+      "MuJoCo touch sensor values",
       "contact normal proxies",
       "normal force/shear proxies",
       "finger joint state",
@@ -71,9 +74,7 @@
     ],
     "not_learned_rl": true,
     "no_camera_vision": true,
-    "simulation_native_validation": true,
-    "blind_tactile_mode_available": true,
-    "classifier_accuracy": 1.0
+    "simulation_native_validation": true
   },
   "tactile_pose_estimation_policy": {
     "policy_type": "deterministic tactile/contact pose estimator + compliant assembly controller",

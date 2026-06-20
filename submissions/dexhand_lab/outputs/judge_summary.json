@@ -1,6 +1,6 @@
 {
   "project": "DexHand Lab",
-  "registration_uuid": "ae3845b8-7246-4fc9-8655-31d46dbeba99",
+  "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
   "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
   "score_target_evidence": {
     "task_gates": "20/20",

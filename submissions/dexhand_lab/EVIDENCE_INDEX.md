@@ -4,7 +4,7 @@ This is the shortest path through the submission evidence for judges and automat
 
 ## Registration
 
-- UUID: ae3845b8-7246-4fc9-8655-31d46dbeba99
+- UUID: 2555924c-74a4-4788-be61-1f1e65bf3f44
 - Final submission folder: `submissions/dexhand_lab/`
 
 ## Inspect First
