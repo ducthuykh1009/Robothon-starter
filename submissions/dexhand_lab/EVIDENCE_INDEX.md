@@ -12,23 +12,24 @@ This is the shortest path through the submission evidence for judges and automat
 1. `media/demo.mp4` - generated 75-120 second dexterous hand demo.
 2. `media/keyframes.png` - labeled visual evidence grid.
 3. `outputs/event_rules_report.json` - explicit mapping to event deliverables and scoring rubric.
-4. `outputs/judge_summary.json` - compact quantitative evidence.
-5. `outputs/summary.json` - full run metrics.
-6. `outputs/contact_timeline.json` - per-finger contact timeline.
-7. `dataset/task_suite_report.json` - 20-gate verification suite.
-8. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.
-9. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.
-10. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.
-11. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.
-12. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.
-13. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.
-14. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.
-15. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.
-16. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.
-17. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.
-18. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.
-19. `media/assembly_keyframes.png` - visual proof of assembly sequence.
-20. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.
+4. `outputs/submission_readiness_report.json` - UUID consistency, required command, required output, and PR-target readiness audit.
+5. `outputs/judge_summary.json` - compact quantitative evidence.
+6. `outputs/summary.json` - full run metrics.
+7. `outputs/contact_timeline.json` - per-finger contact timeline.
+8. `dataset/task_suite_report.json` - 20-gate verification suite.
+9. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.
+10. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.
+11. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.
+12. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.
+13. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.
+14. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.
+15. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.
+16. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.
+17. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.
+18. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.
+19. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.
+20. `media/assembly_keyframes.png` - visual proof of assembly sequence.
+21. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.
 
 ## Current Metrics
 
@@ -51,6 +52,7 @@ This is the shortest path through the submission evidence for judges and automat
 - Insertion depth ratio: 0.92
 - Jam detection/recovery evidence: true
 - Event rules alignment: true
+- Submission readiness audit: submissions/dexhand_lab/outputs/submission_readiness_report.json
 
 ## New 95+ Differentiator: Blind Tactile Active Perception
 

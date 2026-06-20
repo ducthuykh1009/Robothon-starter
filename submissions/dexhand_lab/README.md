@@ -10,7 +10,7 @@ DexHand Lab focuses on dexterous hand manipulation rather than a full robot arm.
 
 This submission is designed around the Robothon requirements: MuJoCo is the primary physics engine, the MJCF scene includes the robot hand, joints, collision geoms, touch sensors, actuators, task objects, and cameras, and the demo video is produced by running the submitted code. The generated `outputs/demo.mp4` is about 118.6 seconds in the current validation run, inside the 1-3 minute demo window.
 
-The generated `outputs/event_rules_report.json` maps the submission to the event deliverables and scoring rubric: Runability, Depth of MuJoCo Use, Task Design, Control, Dexterous Manipulation, Engineering Quality, Presentation, and Innovation.
+The generated `outputs/event_rules_report.json` maps the submission to the event deliverables and scoring rubric: Runability, Depth of MuJoCo Use, Task Design, Control, Dexterous Manipulation, Engineering Quality, Presentation, and Innovation. `outputs/submission_readiness_report.json` adds a submission-facing audit for UUID consistency, PR target, required commands, required outputs, and the same rubric evidence.
 
 ## Human-Like Skeletal Hand Model
 
@@ -100,7 +100,7 @@ The button task uses the index fingertip only. Non-index button contacts and pal
 
 ## Judge Evidence Pack
 
-The project includes `JUDGE_BRIEF.md`, `rubric_scorecard.json`, `submission_manifest.json`, `media/keyframes.png`, `media/demo.mp4`, `outputs/narration.srt`, tactile reports, task-gate reports, stress reports, and hardware replay audit files.
+The project includes `JUDGE_BRIEF.md`, `rubric_scorecard.json`, `submission_manifest.json`, `outputs/submission_readiness_report.json`, `media/keyframes.png`, `media/demo.mp4`, `outputs/narration.srt`, tactile reports, task-gate reports, stress reports, and hardware replay audit files.
 
 ## Hardware Replay Audit
 
@@ -138,7 +138,7 @@ python submissions/dexhand_lab/validate_submission.py
 
 ## Outputs
 
-Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `outputs/event_rules_report.json`, `outputs/judge_summary.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
+Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `outputs/event_rules_report.json`, `outputs/submission_readiness_report.json`, `outputs/judge_summary.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
 
 ## Limitations
 

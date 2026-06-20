@@ -50,5 +50,13 @@
     "duration_s": 118.6,
     "runability_status": "pass",
     "rules_alignment_pass": true
+  },
+  "submission_readiness_evidence": {
+    "status": "pass",
+    "submission_readiness_report_path": "submissions/dexhand_lab/outputs/submission_readiness_report.json",
+    "uuid_consistency_pass": true,
+    "submission_readiness_pass": true,
+    "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+    "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/160"
   }
 }

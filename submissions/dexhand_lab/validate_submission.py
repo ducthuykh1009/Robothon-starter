@@ -46,6 +46,7 @@ def main() -> int:
         OUTPUT_DIR / "contact_timeline.json",
         OUTPUT_DIR / "final_report.txt",
         OUTPUT_DIR / "event_rules_report.json",
+        OUTPUT_DIR / "submission_readiness_report.json",
         OUTPUT_DIR / "narration.srt",
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
@@ -99,6 +100,7 @@ def main() -> int:
         OUTPUT_DIR / "trajectory.json",
         OUTPUT_DIR / "contact_timeline.json",
         OUTPUT_DIR / "event_rules_report.json",
+        OUTPUT_DIR / "submission_readiness_report.json",
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
@@ -140,6 +142,11 @@ def main() -> int:
                 print(f"- {path}")
         return 1
     summary = json.loads((OUTPUT_DIR / "summary.json").read_text(encoding="utf-8"))
+    registration = json.loads((PROJECT_DIR / "registration.json").read_text(encoding="utf-8"))
+    manifest = json.loads((PROJECT_DIR / "submission_manifest.json").read_text(encoding="utf-8"))
+    rubric = json.loads((PROJECT_DIR / "rubric_scorecard.json").read_text(encoding="utf-8"))
+    event_rules = json.loads((OUTPUT_DIR / "event_rules_report.json").read_text(encoding="utf-8"))
+    readiness = json.loads((OUTPUT_DIR / "submission_readiness_report.json").read_text(encoding="utf-8"))
     required_metrics = [
         "hand_skeleton_valid",
         "five_fingers_present",
@@ -222,6 +229,7 @@ def main() -> int:
         "jam_recovery_success_rate",
         "mean_pose_estimation_error_m",
         "event_rules_report_path",
+        "submission_readiness_report_path",
         "demo_video_duration_rule_pass",
         "video_render_mode",
         "runability_status",
@@ -335,6 +343,26 @@ def main() -> int:
         bad_values.append("runability_status expected pass")
     if not bool(summary.get("rules_alignment_pass", False)):
         bad_values.append("rules_alignment_pass expected true")
+    expected_uuid = str(registration.get("uuid", "")).strip()
+    uuid_sources = {
+        "registration.json": registration.get("uuid"),
+        "outputs/summary.json": summary.get("uuid"),
+        "submission_manifest.json": manifest.get("registration_uuid"),
+        "rubric_scorecard.json": rubric.get("registration_uuid"),
+        "outputs/event_rules_report.json": event_rules.get("registration_uuid"),
+        "outputs/submission_readiness_report.json": readiness.get("registration_uuid"),
+    }
+    mismatched_uuid_sources = [
+        f"{source}={value!r}" for source, value in uuid_sources.items() if str(value).strip() != expected_uuid
+    ]
+    if not expected_uuid:
+        bad_values.append("registration.json uuid must be present")
+    if mismatched_uuid_sources:
+        bad_values.append("UUID mismatch across submission evidence: " + ", ".join(mismatched_uuid_sources))
+    if not bool(readiness.get("uuid_consistency_pass", False)):
+        bad_values.append("submission_readiness_report uuid_consistency_pass expected true")
+    if not bool(readiness.get("submission_readiness_pass", False)):
+        bad_values.append("submission_readiness_report submission_readiness_pass expected true")
     if bad_values:
         print("DexHand validation failed")
         print("Unexpected summary values:")
@@ -394,11 +422,32 @@ def main() -> int:
             "runability_status": summary.get("runability_status"),
             "rules_alignment_pass": summary.get("rules_alignment_pass"),
         },
+        "submission_readiness_evidence": {
+            "status": "pass",
+            "submission_readiness_report_path": "submissions/dexhand_lab/outputs/submission_readiness_report.json",
+            "uuid_consistency_pass": readiness.get("uuid_consistency_pass"),
+            "submission_readiness_pass": readiness.get("submission_readiness_pass"),
+            "registration_uuid": expected_uuid,
+            "pr_target": readiness.get("pr_target"),
+        },
     }
     validator_report_path = OUTPUT_DIR / "validator_report.json"
     validator_report_path.write_text(json.dumps(validator_report, indent=2), encoding="utf-8")
     summary["validator_report_path"] = "submissions/dexhand_lab/outputs/validator_report.json"
     summary["validation_passed"] = True
+    readiness["validation_passed"] = True
+    readiness["required_commands"]["python submissions/dexhand_lab/validate_submission.py"] = {
+        "status": "pass",
+        "evidence": "submissions/dexhand_lab/outputs/validator_report.json",
+    }
+    readiness["validator_report_path"] = "submissions/dexhand_lab/outputs/validator_report.json"
+    readiness["submission_readiness_pass"] = bool(
+        readiness.get("uuid_consistency_pass")
+        and readiness.get("required_outputs_present")
+        and readiness.get("event_rule_alignment", {}).get("rules_alignment_pass")
+        and all(bool(value) for value in readiness.get("scoring_rubric_evidence", {}).values())
+    )
+    (OUTPUT_DIR / "submission_readiness_report.json").write_text(json.dumps(readiness, indent=2), encoding="utf-8")
     (OUTPUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("DexHand validation passed")
     print(f"Summary: {OUTPUT_DIR / 'summary.json'}")

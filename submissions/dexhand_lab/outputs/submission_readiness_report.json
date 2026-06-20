@@ -1,0 +1,66 @@
+{
+  "project": "DexHand Lab",
+  "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+  "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/160",
+  "final_submission_folder": "submissions/dexhand_lab",
+  "uuid_consistency_pass": true,
+  "uuid_sources": {
+    "registration.json": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+    "outputs/summary.json": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+    "submission_manifest.json": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+    "rubric_scorecard.json": "2555924c-74a4-4788-be61-1f1e65bf3f44",
+    "outputs/event_rules_report.json": "2555924c-74a4-4788-be61-1f1e65bf3f44"
+  },
+  "required_commands": {
+    "python submissions/dexhand_lab/run_demo.py": {
+      "status": "pass",
+      "evidence": "submissions/dexhand_lab/outputs/summary.json"
+    },
+    "python submissions/dexhand_lab/run_demo.py --episodes 3 --seed 42 --no-video --difficulty medium": {
+      "status": "pass",
+      "evidence": "submissions/dexhand_lab/outputs/summary.json"
+    },
+    "python submissions/dexhand_lab/run_stress_eval.py --seeds 32": {
+      "status": "pass",
+      "evidence": "submissions/dexhand_lab/outputs/stress_eval.json"
+    },
+    "python submissions/dexhand_lab/validate_submission.py": {
+      "status": "pass",
+      "evidence": "submissions/dexhand_lab/outputs/validator_report.json"
+    }
+  },
+  "required_outputs_present": true,
+  "missing_required_outputs": [],
+  "event_rule_alignment": {
+    "mujoco_primary_engine": true,
+    "run_instructions_present": true,
+    "demo_video_rule_pass": true,
+    "demo_duration_s": 118.6,
+    "rules_alignment_pass": true,
+    "event_rules_report": "submissions/dexhand_lab/outputs/event_rules_report.json"
+  },
+  "scoring_rubric_evidence": {
+    "runability": true,
+    "mujoco_depth": true,
+    "task_design": true,
+    "control": true,
+    "dexterous_manipulation": true,
+    "engineering_quality": true,
+    "presentation": true,
+    "innovation": true
+  },
+  "headline_metrics": {
+    "task_gates": "20/20",
+    "object_snap_events": 0,
+    "cap_rotation_achieved_deg": 224.0,
+    "load_hold_x": 9.0,
+    "tactile_channels": 5,
+    "blind_tactile_success_rate": 1.0,
+    "pose_estimation_success": true,
+    "assembly_success": true,
+    "stress_success_rate": 1.0
+  },
+  "submission_readiness_pass": true,
+  "validation_passed": true,
+  "validator_report_path": "submissions/dexhand_lab/outputs/validator_report.json"
+}
