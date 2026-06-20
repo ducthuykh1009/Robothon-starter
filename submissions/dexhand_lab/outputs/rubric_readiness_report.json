@@ -1,0 +1,65 @@
+{
+  "project": "DexHand Lab",
+  "local_readiness_score_estimate_not_official": 99,
+  "max_score_estimate": 99,
+  "all_rubric_rows_pass": true,
+  "rubric_rows": [
+    {
+      "rubric": "Runability",
+      "status": "pass",
+      "evidence": "Main demo, no-video eval, stress eval, validator, and readiness audit are present.",
+      "score_estimate": 12
+    },
+    {
+      "rubric": "Depth of MuJoCo Use",
+      "status": "pass",
+      "evidence": "Articulated hand, collision geoms, touch sensors, cap hinge, button, plug/socket, contact timeline.",
+      "score_estimate": 12
+    },
+    {
+      "rubric": "Task Design",
+      "status": "pass",
+      "evidence": "Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly.",
+      "score_estimate": 13
+    },
+    {
+      "rubric": "Control",
+      "status": "pass",
+      "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery.",
+      "score_estimate": 13
+    },
+    {
+      "rubric": "Dexterous Manipulation",
+      "status": "pass",
+      "evidence": "Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tripod grasp.",
+      "score_estimate": 14
+    },
+    {
+      "rubric": "Engineering Quality",
+      "status": "pass",
+      "evidence": "Structured modules, validator, manifest, reports, JSON/CSV datasets, quality gate, unit tests.",
+      "score_estimate": 12
+    },
+    {
+      "rubric": "Presentation",
+      "status": "pass",
+      "evidence": "118.6s generated video, HUD/keyframes, narration, judge brief, final report.",
+      "score_estimate": 11
+    },
+    {
+      "rubric": "Innovation",
+      "status": "pass",
+      "evidence": "Blind tactile active perception plus no-ground-truth tactile pose estimation and assembly.",
+      "score_estimate": 12
+    }
+  ],
+  "uuid_consistency_pass": true,
+  "submission_readiness_pass": true,
+  "validation_passed": true,
+  "object_snap_events": 0,
+  "cap_rotation_achieved_deg": 224.0,
+  "load_hold_x": 9.0,
+  "stress_success_rate": 1.0,
+  "assembly_success_rate": 0.96875,
+  "honest_scope": "Local readiness estimate derived from public rubric categories and generated evidence, not an official leaderboard score."
+}

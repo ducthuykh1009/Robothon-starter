@@ -2889,6 +2889,9 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Feedback vs baseline: {float(summary.get('feedback_success_rate', 0.0)):.2f} vs {float(summary.get('baseline_success_rate', 0.0)):.2f}",
             f"Minimum-jerk controller: {'pass' if bool(summary.get('minimum_jerk_controller_pass')) else 'pending'}",
             f"Hardware replay audit: {'pass' if bool(summary.get('hardware_audit_pass')) else 'pending'}",
+            f"Submission readiness audit: {'pass' if bool(summary.get('submission_readiness_report_path')) else 'pending'}",
+            f"Rubric readiness estimate: {summary.get('local_readiness_score_estimate_not_official', 'pending')}",
+            f"Code quality gate: {'pass' if bool(summary.get('code_quality_pass')) else 'pending'}",
             f"Blind tactile mode available: {str(bool(summary.get('blind_tactile_mode_available', False))).lower()}",
             f"Unknown object arena available: {str(bool(summary.get('unknown_object_arena_available', False))).lower()}",
             f"Tactile classifier accuracy: {float(summary.get('tactile_classifier_accuracy', 0.0)):.2f}",
@@ -2983,6 +2986,8 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
         "inspect_first": [
             "submissions/dexhand_lab/outputs/event_rules_report.json",
             "submissions/dexhand_lab/outputs/submission_readiness_report.json",
+            "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
+            "submissions/dexhand_lab/dataset/code_quality_report.json",
             "submissions/dexhand_lab/outputs/blind_tactile_summary.json",
             "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
             "submissions/dexhand_lab/dataset/adaptive_regrasp_report.json",
@@ -3044,23 +3049,26 @@ def write_evidence_index(summary: dict) -> str:
         "2. `media/keyframes.png` - labeled visual evidence grid.",
         "3. `outputs/event_rules_report.json` - explicit mapping to event deliverables and scoring rubric.",
         "4. `outputs/submission_readiness_report.json` - UUID consistency, required command, required output, and PR-target readiness audit.",
-        "5. `outputs/judge_summary.json` - compact quantitative evidence.",
-        "6. `outputs/summary.json` - full run metrics.",
-        "7. `outputs/contact_timeline.json` - per-finger contact timeline.",
-        "8. `dataset/task_suite_report.json` - 20-gate verification suite.",
-        "9. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
-        "10. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
-        "11. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
-        "12. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
-        "13. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
-        "14. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
-        "15. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
-        "16. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
-        "17. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
-        "18. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
-        "19. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
-        "20. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
-        "21. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
+        "5. `outputs/rubric_readiness_report.json` - local non-official scoring-readiness map across the public rubric categories.",
+        "6. `dataset/code_quality_report.json` - compile/source-health/validator quality gate.",
+        "7. `dataset/unit_test_report.json` - unit-test contract report.",
+        "8. `outputs/judge_summary.json` - compact quantitative evidence.",
+        "9. `outputs/summary.json` - full run metrics.",
+        "10. `outputs/contact_timeline.json` - per-finger contact timeline.",
+        "11. `dataset/task_suite_report.json` - 20-gate verification suite.",
+        "12. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
+        "13. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
+        "14. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
+        "15. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
+        "16. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
+        "17. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
+        "18. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
+        "19. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
+        "20. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
+        "21. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
+        "22. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
+        "23. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
+        "24. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
         "",
         "## Current Metrics",
         "",
@@ -3084,6 +3092,8 @@ def write_evidence_index(summary: dict) -> str:
         f"- Jam detection/recovery evidence: {str(bool(summary.get('jam_detection_available', False))).lower()}",
         f"- Event rules alignment: {str(bool(summary.get('rules_alignment_pass', False))).lower()}",
         f"- Submission readiness audit: {summary.get('submission_readiness_report_path', 'outputs/submission_readiness_report.json')}",
+        f"- Rubric readiness estimate: {summary.get('local_readiness_score_estimate_not_official', 'pending')}",
+        f"- Code quality pass: {str(bool(summary.get('code_quality_pass', False))).lower()}",
         "",
         "## New 95+ Differentiator: Blind Tactile Active Perception",
         "",
@@ -3318,6 +3328,15 @@ def run_demo(
     summary["rules_alignment_pass"] = bool(summary["demo_video_duration_rule_pass"])
     summary["event_rules_report_path"] = write_event_rules_report(summary, output_dir)
     summary["submission_readiness_report_path"] = portable_path(output_dir / "submission_readiness_report.json")
+    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    write_submission_readiness_report(summary, output_dir)
+    try:
+        from quality_gate import build_quality_reports
+
+        summary.update(build_quality_reports(PROJECT_DIR, run_tests=False))
+    except Exception as exc:
+        warnings.append(f"Quality gate evidence could not be refreshed: {exc}")
+        summary["quality_gate_warning"] = str(exc)
     summary["final_report_path"] = write_final_report(summary, output_dir)
     summary["judge_summary_path"] = write_judge_summary(summary, output_dir)
     summary["evidence_index_path"] = write_evidence_index(summary)

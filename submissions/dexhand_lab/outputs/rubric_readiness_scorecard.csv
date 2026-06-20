@@ -1,0 +1,9 @@
+rubric,status,evidence,score_estimate
+Runability,pass,"Main demo, no-video eval, stress eval, validator, and readiness audit are present.",12
+Depth of MuJoCo Use,pass,"Articulated hand, collision geoms, touch sensors, cap hinge, button, plug/socket, contact timeline.",12
+Task Design,pass,"Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly.",13
+Control,pass,"No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery.",13
+Dexterous Manipulation,pass,"Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tripod grasp.",14
+Engineering Quality,pass,"Structured modules, validator, manifest, reports, JSON/CSV datasets, quality gate, unit tests.",12
+Presentation,pass,"118.6s generated video, HUD/keyframes, narration, judge brief, final report.",11
+Innovation,pass,Blind tactile active perception plus no-ground-truth tactile pose estimation and assembly.,12

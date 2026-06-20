@@ -24,8 +24,10 @@
     "adaptive_regrasp_policy.py",
     "tactile_pose_estimator.py",
     "precision_assembly_controller.py",
+    "quality_gate.py",
     "hardware_adaptation_audit.py",
-    "validate_submission.py"
+    "validate_submission.py",
+    "tests/test_submission_contract.py"
   ],
   "documentation": [
     "README.md",
@@ -47,6 +49,8 @@
     "outputs/judge_summary.json",
     "outputs/event_rules_report.json",
     "outputs/submission_readiness_report.json",
+    "outputs/rubric_readiness_report.json",
+    "outputs/rubric_readiness_scorecard.csv",
     "outputs/blind_tactile_summary.json",
     "outputs/assembly_summary.json",
     "outputs/summary.json",
@@ -80,6 +84,8 @@
     "dataset/minimum_jerk_report.json",
     "dataset/minimum_jerk_trace.csv",
     "dataset/stress_eval.json",
+    "dataset/code_quality_report.json",
+    "dataset/unit_test_report.json",
     "dataset/hardware_adaptation_report.json",
     "dataset/hardware_command_stream.csv",
     "dataset/sim2real_safety_case.json",
@@ -100,6 +106,8 @@
     "rules_alignment_pass = true",
     "submission_readiness_pass = true",
     "uuid_consistency_pass = true",
+    "rubric_readiness_pass = true",
+    "code_quality_pass = true",
     "blind_tactile_mode_available = true",
     "tactile_classifier_accuracy >= 0.90",
     "adaptive_regrasp_success_rate >= 0.80",

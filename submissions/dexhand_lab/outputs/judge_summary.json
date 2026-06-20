@@ -62,6 +62,8 @@
   "inspect_first": [
     "submissions/dexhand_lab/outputs/event_rules_report.json",
     "submissions/dexhand_lab/outputs/submission_readiness_report.json",
+    "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
+    "submissions/dexhand_lab/dataset/code_quality_report.json",
     "submissions/dexhand_lab/outputs/blind_tactile_summary.json",
     "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
     "submissions/dexhand_lab/dataset/adaptive_regrasp_report.json",

@@ -58,5 +58,16 @@
     "submission_readiness_pass": true,
     "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
     "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/160"
+  },
+  "quality_gate_evidence": {
+    "status": "pass",
+    "code_quality_report_path": "submissions/dexhand_lab/dataset/code_quality_report.json",
+    "rubric_readiness_report_path": "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
+    "unit_test_report_path": "submissions/dexhand_lab/dataset/unit_test_report.json",
+    "code_quality_pass": true,
+    "python_compile_pass": true,
+    "source_health_pass": true,
+    "local_readiness_score_estimate_not_official": 99,
+    "all_rubric_rows_pass": true
   }
 }

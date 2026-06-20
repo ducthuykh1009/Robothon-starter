@@ -34,6 +34,8 @@ def main() -> int:
         PROJECT_DIR / "adaptive_regrasp_policy.py",
         PROJECT_DIR / "tactile_pose_estimator.py",
         PROJECT_DIR / "precision_assembly_controller.py",
+        PROJECT_DIR / "quality_gate.py",
+        PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
         PROJECT_DIR / "human_grasp_library.py",
         PROJECT_DIR / "object_classifier.py",
@@ -47,6 +49,8 @@ def main() -> int:
         OUTPUT_DIR / "final_report.txt",
         OUTPUT_DIR / "event_rules_report.json",
         OUTPUT_DIR / "submission_readiness_report.json",
+        OUTPUT_DIR / "rubric_readiness_report.json",
+        OUTPUT_DIR / "rubric_readiness_scorecard.csv",
         OUTPUT_DIR / "narration.srt",
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
@@ -87,6 +91,8 @@ def main() -> int:
         DATASET_DIR / "hardware_adaptation_report.json",
         DATASET_DIR / "hardware_command_stream.csv",
         DATASET_DIR / "sim2real_safety_case.json",
+        DATASET_DIR / "code_quality_report.json",
+        DATASET_DIR / "unit_test_report.json",
         PROJECT_DIR / "hardware_transfer.json",
         PROJECT_DIR / "HARDWARE_ADAPTATION.md",
         OUTPUT_DIR / "episodes" / "episode_000" / "trajectory.json",
@@ -101,6 +107,7 @@ def main() -> int:
         OUTPUT_DIR / "contact_timeline.json",
         OUTPUT_DIR / "event_rules_report.json",
         OUTPUT_DIR / "submission_readiness_report.json",
+        OUTPUT_DIR / "rubric_readiness_report.json",
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
@@ -124,6 +131,8 @@ def main() -> int:
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
         DATASET_DIR / "sim2real_safety_case.json",
+        DATASET_DIR / "code_quality_report.json",
+        DATASET_DIR / "unit_test_report.json",
         PROJECT_DIR / "hardware_transfer.json",
         OUTPUT_DIR / "episodes" / "episode_000" / "trajectory.json",
         OUTPUT_DIR / "episodes" / "episode_000" / "metadata.json",
@@ -147,6 +156,8 @@ def main() -> int:
     rubric = json.loads((PROJECT_DIR / "rubric_scorecard.json").read_text(encoding="utf-8"))
     event_rules = json.loads((OUTPUT_DIR / "event_rules_report.json").read_text(encoding="utf-8"))
     readiness = json.loads((OUTPUT_DIR / "submission_readiness_report.json").read_text(encoding="utf-8"))
+    quality_report = json.loads((DATASET_DIR / "code_quality_report.json").read_text(encoding="utf-8"))
+    rubric_readiness = json.loads((OUTPUT_DIR / "rubric_readiness_report.json").read_text(encoding="utf-8"))
     required_metrics = [
         "hand_skeleton_valid",
         "five_fingers_present",
@@ -230,6 +241,13 @@ def main() -> int:
         "mean_pose_estimation_error_m",
         "event_rules_report_path",
         "submission_readiness_report_path",
+        "rubric_readiness_report_path",
+        "rubric_readiness_scorecard_path",
+        "code_quality_report_path",
+        "unit_test_report_path",
+        "local_readiness_score_estimate_not_official",
+        "rubric_readiness_pass",
+        "code_quality_pass",
         "demo_video_duration_rule_pass",
         "video_render_mode",
         "runability_status",
@@ -363,6 +381,12 @@ def main() -> int:
         bad_values.append("submission_readiness_report uuid_consistency_pass expected true")
     if not bool(readiness.get("submission_readiness_pass", False)):
         bad_values.append("submission_readiness_report submission_readiness_pass expected true")
+    if not bool(quality_report.get("code_quality_pass", False)):
+        bad_values.append("code_quality_report code_quality_pass expected true")
+    if not bool(rubric_readiness.get("all_rubric_rows_pass", False)):
+        bad_values.append("rubric_readiness_report all_rubric_rows_pass expected true")
+    if float(rubric_readiness.get("local_readiness_score_estimate_not_official", 0.0)) < 90.0:
+        bad_values.append("local_readiness_score_estimate_not_official expected >= 90")
     if bad_values:
         print("DexHand validation failed")
         print("Unexpected summary values:")
@@ -429,6 +453,17 @@ def main() -> int:
             "submission_readiness_pass": readiness.get("submission_readiness_pass"),
             "registration_uuid": expected_uuid,
             "pr_target": readiness.get("pr_target"),
+        },
+        "quality_gate_evidence": {
+            "status": "pass",
+            "code_quality_report_path": "submissions/dexhand_lab/dataset/code_quality_report.json",
+            "rubric_readiness_report_path": "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
+            "unit_test_report_path": "submissions/dexhand_lab/dataset/unit_test_report.json",
+            "code_quality_pass": quality_report.get("code_quality_pass"),
+            "python_compile_pass": quality_report.get("python_compile_pass"),
+            "source_health_pass": quality_report.get("source_health_pass"),
+            "local_readiness_score_estimate_not_official": rubric_readiness.get("local_readiness_score_estimate_not_official"),
+            "all_rubric_rows_pass": rubric_readiness.get("all_rubric_rows_pass"),
         },
     }
     validator_report_path = OUTPUT_DIR / "validator_report.json"

@@ -17,30 +17,33 @@ The submission focuses on dexterity evidence instead of a simple pick-and-place 
 5. `EVIDENCE_INDEX.md`
 6. `outputs/event_rules_report.json`
 7. `outputs/submission_readiness_report.json`
-8. `outputs/blind_tactile_summary.json`
-9. `dataset/tactile_classifier_report.json`
-10. `dataset/tactile_confusion_matrix.json`
-11. `dataset/adaptive_regrasp_report.json`
-12. `dataset/unknown_arena_report.json`
-13. `media/blind_tactile_keyframes.png`
-14. `media/tactile_classifier_panel.png`
-15. `outputs/summary.json`
-16. `outputs/contact_timeline.json`
-17. `dataset/task_suite_report.json`
-18. `dataset/tactile_feedback_report.json`
-19. `dataset/tactile_taxels.csv`
-20. `dataset/minimum_jerk_report.json`
-21. `dataset/stress_eval.json`
-22. `outputs/baseline_vs_feedback.json`
-23. `dataset/hardware_adaptation_report.json`
-24. `dataset/tactile_pose_estimator_report.json`
-25. `dataset/precision_assembly_report.json`
-26. `dataset/jam_recovery_report.json`
-27. `dataset/no_ground_truth_control_audit.json`
-28. `media/assembly_keyframes.png`
-29. `media/tactile_pose_estimation_panel.png`
-30. `rubric_scorecard.json`
-31. `validate_submission.py`
+8. `outputs/rubric_readiness_report.json`
+9. `dataset/code_quality_report.json`
+10. `dataset/unit_test_report.json`
+11. `outputs/blind_tactile_summary.json`
+12. `dataset/tactile_classifier_report.json`
+13. `dataset/tactile_confusion_matrix.json`
+14. `dataset/adaptive_regrasp_report.json`
+15. `dataset/unknown_arena_report.json`
+16. `media/blind_tactile_keyframes.png`
+17. `media/tactile_classifier_panel.png`
+18. `outputs/summary.json`
+19. `outputs/contact_timeline.json`
+20. `dataset/task_suite_report.json`
+21. `dataset/tactile_feedback_report.json`
+22. `dataset/tactile_taxels.csv`
+23. `dataset/minimum_jerk_report.json`
+24. `dataset/stress_eval.json`
+25. `outputs/baseline_vs_feedback.json`
+26. `dataset/hardware_adaptation_report.json`
+27. `dataset/tactile_pose_estimator_report.json`
+28. `dataset/precision_assembly_report.json`
+29. `dataset/jam_recovery_report.json`
+30. `dataset/no_ground_truth_control_audit.json`
+31. `media/assembly_keyframes.png`
+32. `media/tactile_pose_estimation_panel.png`
+33. `rubric_scorecard.json`
+34. `validate_submission.py`
 
 Runability note: `python submissions/dexhand_lab/run_demo.py` preserves the included generated demo video and refreshes JSON/CSV evidence quickly for judge reproducibility. Use `python submissions/dexhand_lab/run_demo.py --force-render-video` when a fresh MuJoCo frame render is desired.
 
@@ -84,6 +87,7 @@ The main demo and evidence scripts report:
 - hardware replay audit status
 - event rule alignment pass/fail in `outputs/event_rules_report.json`
 - submission readiness pass/fail, UUID consistency, required outputs, and PR target in `outputs/submission_readiness_report.json`
+- local non-official rubric readiness and code-health pass/fail in `outputs/rubric_readiness_report.json` and `dataset/code_quality_report.json`
 
 ## Rubric Mapping
 
