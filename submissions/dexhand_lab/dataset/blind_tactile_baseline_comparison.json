@@ -1,0 +1,8 @@
+{
+  "project": "DexHand Lab",
+  "known_label_baseline_success_rate": 0.84375,
+  "blind_tactile_success_rate": 1.0,
+  "scripted_baseline_success_rate": 0.40625,
+  "feedback_vs_scripted_improvement": 59.375,
+  "object_snap_events": 0
+}

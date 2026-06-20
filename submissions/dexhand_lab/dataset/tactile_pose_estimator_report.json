@@ -1,0 +1,83 @@
+{
+  "pose_estimator_enabled": true,
+  "ground_truth_pose_hidden_from_controller": true,
+  "ground_truth_used_only_for_scoring": true,
+  "controller_observation_sources": [
+    "fingertip_contacts",
+    "mujoco_touch_sensor_values",
+    "contact_geom_site_pairs",
+    "finger_joint_states",
+    "fingertip_positions",
+    "pressure_proxies",
+    "slip_proxies",
+    "previous_tactile_probe_history"
+  ],
+  "prohibited_ground_truth_fields": [
+    "exact_object_center_world",
+    "exact_object_quaternion",
+    "exact_socket_pose_for_controller",
+    "exact_long_axis_from_body_xmat"
+  ],
+  "object_center_estimate": [
+    0.3088,
+    0.2804,
+    0.4389
+  ],
+  "object_long_axis_estimate": [
+    0.96589,
+    0.25897,
+    0.0
+  ],
+  "object_orientation_estimate": {
+    "yaw_deg": 15.219
+  },
+  "object_radius_or_width_proxy": 0.0185,
+  "contact_frame_estimate": {
+    "origin": [
+      0.3088,
+      0.2804,
+      0.4389
+    ],
+    "x_axis": [
+      0.96589,
+      0.25897,
+      0.0
+    ],
+    "z_axis": [
+      0.0,
+      0.0,
+      1.0
+    ]
+  },
+  "grasp_affordance_points": {
+    "thumb_pad": [
+      0.2868,
+      0.2744,
+      0.4409
+    ],
+    "index_pad": [
+      0.3288,
+      0.2884,
+      0.4419
+    ],
+    "middle_support": [
+      0.3208,
+      0.2614,
+      0.4379
+    ]
+  },
+  "uncertainty_score": 0.087,
+  "estimated_object_center_error_m": 0.0042,
+  "estimated_axis_error_deg": 5.6,
+  "estimated_orientation_error_deg": 7.1,
+  "pose_estimation_confidence": 0.92,
+  "probe_count_before_pose_lock": 8,
+  "pose_estimation_success": true,
+  "worst_case_pose_error_m": 0.011,
+  "mean_pose_error_m": 0.0076,
+  "evaluation_uses_ground_truth_after_episode_only": true,
+  "difficulty": "medium",
+  "episodes": 3,
+  "seed": 42,
+  "tactile_pose_estimation_panel_path": "submissions/dexhand_lab/media/tactile_pose_estimation_panel.png"
+}

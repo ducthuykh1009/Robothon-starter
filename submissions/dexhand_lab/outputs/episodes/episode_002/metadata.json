@@ -1,0 +1,465 @@
+{
+  "project_name": "DexHand Lab",
+  "seed": 15880,
+  "episode_index": 2,
+  "difficulty": "medium",
+  "hand_model_type": "custom human-like 5-finger primitive MuJoCo hand",
+  "hand_skeleton": {
+    "five_fingers_present": true,
+    "thumb_opposition_joint_present": true,
+    "thumb_abduction_joint_present": true,
+    "index_joints": "MCP/PIP/DIP",
+    "middle_joints": "MCP/PIP/DIP",
+    "ring_joints": "MCP/PIP/DIP",
+    "little_joints": "MCP/PIP/DIP",
+    "finger_length_order_ok": true,
+    "fingertip_pads_present": true,
+    "all_joints_limited": true,
+    "hand_skeleton_valid": true
+  },
+  "finger_count": 5,
+  "joint_count": 26,
+  "normalized_finger_lengths": {
+    "thumb": 0.7,
+    "index": 0.9,
+    "middle": 1.0,
+    "ring": 0.93,
+    "little": 0.75
+  },
+  "dynamic_grasp_pipeline_states": [
+    "RESET",
+    "SHOW_HAND_OPEN_CLOSE",
+    "OBJECT_CLASSIFY",
+    "GRASP_REFERENCE_SELECT",
+    "HAND_PRESHAPE",
+    "APPROACH_OBJECT",
+    "CONTACT_SEEK",
+    "SOFT_CLOSE",
+    "CONTACT_ESTIMATION",
+    "STABILITY_VERIFY",
+    "SECURE_GRASP",
+    "HOLD_STABLE",
+    "IN_HAND_ROTATION",
+    "SLIP_MONITOR",
+    "SLIP_RECOVERY",
+    "TRIPOD_TOOL_PICK",
+    "CHECKPOINT_TOUCH",
+    "INDEX_BUTTON_PRESS",
+    "CONTROLLED_RELEASE",
+    "FINAL_REPORT",
+    "FINISH"
+  ],
+  "object_classifications": [
+    {
+      "object_name": "sphere_object",
+      "object_type": "sphere",
+      "object_center": [
+        -0.20858,
+        -0.01269,
+        0.447
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.052
+      ],
+      "face_normals": [],
+      "radius": 0.052,
+      "long_axis": null,
+      "centerline": null,
+      "grasp_affordance_regions": {
+        "thumb": "lateral sphere side",
+        "index_middle": "opposite/front side",
+        "ring_little": "lower support cage"
+      },
+      "recommended_grasp_type": "SPHERICAL_ENCLOSURE_GRASP"
+    },
+    {
+      "object_name": "cube_object",
+      "object_type": "cube",
+      "object_center": [
+        0.0005,
+        0.00281,
+        0.44
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.045,
+        0.045,
+        0.045
+      ],
+      "face_normals": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          -1
+        ]
+      ],
+      "radius": null,
+      "long_axis": null,
+      "centerline": null,
+      "grasp_affordance_regions": {
+        "thumb": "center of selected face",
+        "index_middle": "center of opposing face",
+        "ring": "lower edge support"
+      },
+      "recommended_grasp_type": "OPPOSING_FACE_CUBE_GRASP"
+    },
+    {
+      "object_name": "cylinder_object",
+      "object_type": "cylinder_horizontal",
+      "object_center": [
+        0.22083,
+        -0.00044,
+        0.438
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.043,
+        0.06
+      ],
+      "face_normals": [],
+      "radius": 0.043,
+      "long_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          0.22083,
+          -0.06044,
+          0.438
+        ],
+        [
+          0.22083,
+          0.05956,
+          0.438
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "one side of cylinder body",
+        "index_middle": "opposite side around midpoint",
+        "ring_little": "lower body support"
+      },
+      "recommended_grasp_type": "LATERAL_CYLINDER_BODY_GRASP"
+    },
+    {
+      "object_name": "cap_knob",
+      "object_type": "cap_knob",
+      "object_center": [
+        0.36,
+        0.185,
+        0.445
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.038,
+        0.026
+      ],
+      "face_normals": [],
+      "radius": 0.038,
+      "long_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "centerline": [
+        [
+          0.36,
+          0.185,
+          0.419
+        ],
+        [
+          0.36,
+          0.185,
+          0.471
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "cap side counterhold",
+        "index": "tangential marker side push",
+        "middle_ring": "opposing support arc",
+        "little": "optional lower support"
+      },
+      "recommended_grasp_type": "CAP_KNOB_ROTATION_224"
+    },
+    {
+      "object_name": "stylus_tool",
+      "object_type": "stylus",
+      "object_center": [
+        -0.28,
+        0.28,
+        0.425
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.008,
+        0.055
+      ],
+      "face_normals": [],
+      "radius": 0.008,
+      "long_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          -0.335,
+          0.28,
+          0.425
+        ],
+        [
+          -0.225,
+          0.28,
+          0.425
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "handle side",
+        "index": "upper/front control side",
+        "middle": "lower support side"
+      },
+      "recommended_grasp_type": "TRIPOD_PRECISION_GRASP"
+    },
+    {
+      "object_name": "button",
+      "object_type": "button",
+      "object_center": [
+        0.12,
+        0.29,
+        0.429
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.032,
+        0.012
+      ],
+      "face_normals": [
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "radius": 0.032,
+      "long_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "centerline": null,
+      "grasp_affordance_regions": {
+        "index": "button center"
+      },
+      "recommended_grasp_type": "INDEX_FINGERTIP_PRESS"
+    }
+  ],
+  "object_list": [
+    {
+      "name": "sphere_object",
+      "type": "sphere",
+      "start_position": [
+        -0.20858,
+        -0.01269,
+        0.447
+      ]
+    },
+    {
+      "name": "cube_object",
+      "type": "cube",
+      "start_position": [
+        0.0005,
+        0.00281,
+        0.44
+      ]
+    },
+    {
+      "name": "cylinder_object",
+      "type": "cylinder",
+      "start_position": [
+        0.22083,
+        -0.00044,
+        0.438
+      ]
+    }
+  ],
+  "grasp_types": [
+    "CAPSULE_CENTER_SUPPORT_GRASP",
+    "CAP_KNOB_ROTATION_224",
+    "CONTROLLED_RELEASE",
+    "INDEX_FINGERTIP_PRESS",
+    "IN_HAND_ROTATION",
+    "LATERAL_CYLINDER_BODY_GRASP",
+    "OPPOSING_FACE_CUBE_GRASP",
+    "SHOW_HAND",
+    "SLIP_RECOVERY_REGRASP",
+    "SPHERICAL_ENCLOSURE_GRASP",
+    "TRIPOD_PRECISION_GRASP"
+  ],
+  "task_sequence": [
+    "SHOW_HAND_OPEN_CLOSE",
+    "SPHERE_GRASP",
+    "CUBE_FACE_GRASP",
+    "CYLINDER_SIDE_BODY_GRASP",
+    "IN_HAND_ROTATION",
+    "BLIND_TACTILE_ACTIVE_PERCEPTION",
+    "CAP_KNOB_ROTATION_224",
+    "SLIP_RECOVERY_LOAD_HOLD",
+    "STYLUS_TRIPOD_GRASP",
+    "CHECKPOINT_TOUCH",
+    "INDEX_BUTTON_PRESS"
+  ],
+  "successes": {
+    "sphere_grasp_success": true,
+    "cube_face_grasp_success": true,
+    "cylinder_grasp_success": true,
+    "cylinder_side_body_grasp_success": true,
+    "in_hand_rotation_success": true,
+    "tripod_tool_success": true,
+    "checkpoint_touch_success": true,
+    "button_press_success": true,
+    "index_only_button_press_success": true,
+    "cap_rotation_success": true,
+    "slip_recovery_success": true,
+    "load_hold_success": true
+  },
+  "blind_tactile_visual_segment_present": true,
+  "demo_contains_blind_tactile_segment": true,
+  "blind_tactile_demo_sequence": [
+    "label_hidden_unknown_object",
+    "index_probe_front",
+    "thumb_counter_probe",
+    "middle_support_probe",
+    "curvature_edge_test",
+    "tactile_classification",
+    "grasp_selection_from_tactile_evidence",
+    "adaptive_regrasp_precheck"
+  ],
+  "overall_task_success": true,
+  "average_active_fingers": 2.80187,
+  "average_grasp_stability_score": 0.71838,
+  "average_multi_side_contact_score": 0.63505,
+  "object_center_between_fingers_rate": 1.0,
+  "average_grasp_centroid_error_m": 0.02439,
+  "one_face_only_contact_count": 0,
+  "independent_finger_motion_score": 0.74517,
+  "thumb_opposition_score": 0.92,
+  "object_snap_events": 0,
+  "average_snap_distance_m": 0.0,
+  "verified_grasp_before_attach_rate": 1.0,
+  "attach_before_verification_count": 0,
+  "cylinder_side_body_grasp_success": true,
+  "top_down_cylinder_grasp_count": 0,
+  "achieved_rotation_deg": 90.0,
+  "rotation_error_deg": 0.0,
+  "finger_gait_count": 4,
+  "stable_hold_during_rotation": true,
+  "cap_rotation_target_deg": 224.0,
+  "cap_rotation_achieved_deg": 224.0,
+  "cap_rotation_error_deg": 0.0,
+  "cap_rotation_success": true,
+  "cap_marker_visible": true,
+  "cap_twist_active_fingers": [
+    "thumb",
+    "index",
+    "middle",
+    "ring"
+  ],
+  "cap_counterhold_fingers": [
+    "thumb",
+    "middle",
+    "ring"
+  ],
+  "cap_contact_balance_score": 1.0,
+  "cap_slip_mm": 0.34,
+  "cap_hybrid_rotation_used": true,
+  "cap_rotation_stable_hold": true,
+  "min_active_fingers_during_cap_rotation": 4,
+  "cap_twist_phase_count": 4,
+  "final_slip_mm": 0.28,
+  "max_slip_mm": 0.46,
+  "slip_recovery_success": true,
+  "load_hold_x": 9.0,
+  "load_hold_success": true,
+  "object_drop_count": 0,
+  "tactile_channels": 5,
+  "touch_sensor_count": 5,
+  "mujoco_touch_sensors_present": true,
+  "sensorized_fingertip_count": 5,
+  "mean_contact_confidence": 0.50441,
+  "active_contact_confidence": 0.6722,
+  "dexterous_contact_confidence": 0.7648,
+  "mean_friction_margin": 0.95436,
+  "mean_mujoco_touch_sensor_value": 25.107143,
+  "average_active_fingers_dexterous_grasps": 4.18314,
+  "average_multi_side_contact_score_dexterous_grasps": 0.91631,
+  "tripod_tool_success": true,
+  "checkpoint_touch_success": true,
+  "index_only_button_press_success": true,
+  "non_index_button_contact_count": 0,
+  "slip_events": 0,
+  "slip_recoveries": 0,
+  "limitations": [
+    "The controller uses simulation-native object pose perception and heuristic finger preshapes.",
+    "Hybrid carry and rotation are used only after stable grasp verification to keep the demo reproducible.",
+    "Finger contact values are controller contact proxies; the project does not claim perfect contact physics."
+  ],
+  "trajectory_steps": 641,
+  "frames_saved": 0
+}

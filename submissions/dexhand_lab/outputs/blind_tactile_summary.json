@@ -1,0 +1,267 @@
+{
+  "project": "DexHand Lab",
+  "mode": "blind_tactile_active_perception",
+  "blind_tactile_mode_available": true,
+  "unknown_object_arena_available": true,
+  "arena": "assembly",
+  "difficulty": "medium",
+  "episodes": 3,
+  "object_labels_hidden_from_controller": true,
+  "ground_truth_used_for_evaluation_only": true,
+  "objects_explored": 6,
+  "object_order_randomized": false,
+  "tactile_classifier_accuracy": 1.0,
+  "global_classifier_accuracy_32_seed": 1.0,
+  "classification_confidence_mean": 0.87189,
+  "average_probes_per_object": 5.33333,
+  "tactile_classifier_latency_steps": 5,
+  "blind_tactile_success_rate": 1.0,
+  "unknown_arena_success_rate": 1.0,
+  "adaptive_regrasp_success_rate": 1.0,
+  "misclassification_count": 0,
+  "correction_after_misclassification_count": 0,
+  "object_drop_count": 0,
+  "object_snap_events": 0,
+  "exploration_disturbed_object_count": 0,
+  "strategy_selected_from_tactile_perception": true,
+  "classifications": [
+    {
+      "unknown_object_id": "unknown_00",
+      "ground_truth_object_type": "sphere",
+      "predicted_object_type": "sphere",
+      "confidence_score": 0.90732,
+      "top_3_hypotheses": [
+        {
+          "object_type": "sphere",
+          "score": 0.92472
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.63693
+        },
+        {
+          "object_type": "cap",
+          "score": 0.28457
+        }
+      ],
+      "classification_reason": "smooth curvature, low edge response, no long-axis signal",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "SPHERICAL_ENCLOSURE_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_01",
+      "ground_truth_object_type": "cube",
+      "predicted_object_type": "cube",
+      "confidence_score": 0.99,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cube",
+          "score": 0.90098
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.22936
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.22227
+        }
+      ],
+      "classification_reason": "flat face response and edge contacts dominate",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "OPPOSING_FACE_CUBE_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_02",
+      "ground_truth_object_type": "cylinder",
+      "predicted_object_type": "cylinder",
+      "confidence_score": 0.79462,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cylinder",
+          "score": 0.76231
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.67325
+        },
+        {
+          "object_type": "stylus",
+          "score": 0.5843
+        }
+      ],
+      "classification_reason": "curvature plus long-axis response without strong twist affordance",
+      "required_next_probe": "EDGE_OR_CURVATURE_TEST",
+      "selected_grasp_strategy": "LATERAL_CYLINDER_BODY_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": true,
+      "uncertainty_handling_used": true,
+      "probe_count_before_classification": 6
+    },
+    {
+      "unknown_object_id": "unknown_03",
+      "ground_truth_object_type": "cap",
+      "predicted_object_type": "cap",
+      "confidence_score": 0.78761,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cap",
+          "score": 0.78392
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.72082
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.64066
+        }
+      ],
+      "classification_reason": "cylindrical response plus strong twist affordance",
+      "required_next_probe": "EDGE_OR_CURVATURE_TEST",
+      "selected_grasp_strategy": "CAP_KNOB_ROTATION_224_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": true,
+      "uncertainty_handling_used": true,
+      "probe_count_before_classification": 6
+    },
+    {
+      "unknown_object_id": "unknown_04",
+      "ground_truth_object_type": "stylus",
+      "predicted_object_type": "stylus",
+      "confidence_score": 0.83231,
+      "top_3_hypotheses": [
+        {
+          "object_type": "stylus",
+          "score": 0.91823
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.80627
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.6042
+        }
+      ],
+      "classification_reason": "thin high-slenderness long-axis response",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "TRIPOD_PRECISION_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_05",
+      "ground_truth_object_type": "button",
+      "predicted_object_type": "button",
+      "confidence_score": 0.91946,
+      "top_3_hypotheses": [
+        {
+          "object_type": "button",
+          "score": 0.95846
+        },
+        {
+          "object_type": "cube",
+          "score": 0.65624
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.4178
+        }
+      ],
+      "classification_reason": "fixed pressable flat surface with displacement affordance",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "INDEX_FINGERTIP_PRESS",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    }
+  ],
+  "feature_snapshots": {
+    "unknown_00": {
+      "curvature_proxy": 0.92292,
+      "edge_response": 0.07419,
+      "flat_face_response": 0.06606,
+      "long_axis_proxy": 0.07724,
+      "slenderness_proxy": 0.14471,
+      "twist_affordance": 0.06571,
+      "press_displacement_proxy": 0.0074,
+      "fixed_surface_proxy": 0.03339
+    },
+    "unknown_01": {
+      "curvature_proxy": 0.1458,
+      "edge_response": 0.91059,
+      "flat_face_response": 0.91951,
+      "long_axis_proxy": 0.1596,
+      "slenderness_proxy": 0.20351,
+      "twist_affordance": 0.05749,
+      "press_displacement_proxy": 0.04243,
+      "fixed_surface_proxy": 0.07769
+    },
+    "unknown_02": {
+      "curvature_proxy": 0.76508,
+      "edge_response": 0.2605,
+      "flat_face_response": 0.29481,
+      "long_axis_proxy": 0.76458,
+      "slenderness_proxy": 0.44211,
+      "twist_affordance": 0.22512,
+      "press_displacement_proxy": 0.01105,
+      "fixed_surface_proxy": 0.05327
+    },
+    "unknown_03": {
+      "curvature_proxy": 0.81443,
+      "edge_response": 0.25764,
+      "flat_face_response": 0.3919,
+      "long_axis_proxy": 0.55198,
+      "slenderness_proxy": 0.32355,
+      "twist_affordance": 0.93004,
+      "press_displacement_proxy": 0.00556,
+      "fixed_surface_proxy": 0.44096
+    },
+    "unknown_04": {
+      "curvature_proxy": 0.58796,
+      "edge_response": 0.10464,
+      "flat_face_response": 0.13624,
+      "long_axis_proxy": 1.0,
+      "slenderness_proxy": 0.93863,
+      "twist_affordance": 0.06028,
+      "press_displacement_proxy": 0.03668,
+      "fixed_surface_proxy": 0.06407
+    },
+    "unknown_05": {
+      "curvature_proxy": 0.18825,
+      "edge_response": 0.32234,
+      "flat_face_response": 0.85896,
+      "long_axis_proxy": 0.0656,
+      "slenderness_proxy": 0.05653,
+      "twist_affordance": 0.01818,
+      "press_displacement_proxy": 0.96953,
+      "fixed_surface_proxy": 0.9839
+    }
+  },
+  "adaptive_regrasp_report_path": "submissions/dexhand_lab/dataset/adaptive_regrasp_report.json",
+  "tactile_exploration_trace_path": "submissions/dexhand_lab/dataset/tactile_exploration_trace.csv",
+  "tactile_classifier_report_path": "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
+  "tactile_confusion_matrix_path": "submissions/dexhand_lab/dataset/tactile_confusion_matrix.json",
+  "unknown_arena_report_path": "submissions/dexhand_lab/dataset/unknown_arena_report.json",
+  "honest_note": "Blind tactile mode hides object labels from controller decision logic and uses deterministic contact-feature classification. Ground truth labels are used only for evaluation.",
+  "blind_tactile_keyframes_path": "submissions/dexhand_lab/media/blind_tactile_keyframes.png",
+  "tactile_classifier_panel_path": "submissions/dexhand_lab/media/tactile_classifier_panel.png"
+}

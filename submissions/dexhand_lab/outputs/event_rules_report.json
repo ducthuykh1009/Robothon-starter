@@ -1,0 +1,122 @@
+{
+  "project": "DexHand Lab",
+  "registration_uuid": "ae3845b8-7246-4fc9-8655-31d46dbeba99",
+  "official_rules_sources": [
+    "https://robothon.ff.com/",
+    "https://robothon.ff.com/official-rules",
+    "https://github.com/Faraday-Future-AI/Robothon-starter"
+  ],
+  "deliverables": {
+    "submission_folder": "submissions/dexhand_lab",
+    "registration_json_present": true,
+    "readme_present": true,
+    "judge_brief_present": true,
+    "run_demo_present": true,
+    "mujoco_scene_present": true,
+    "demo_video_present": true,
+    "demo_video_generated_by_submitted_code": true,
+    "writeup_present": true
+  },
+  "demo_video_rule": {
+    "required_duration_s_min": 60.0,
+    "required_duration_s_max": 180.0,
+    "actual_duration_s": 118.6,
+    "pass": true,
+    "path": "submissions/dexhand_lab/outputs/demo.mp4"
+  },
+  "required_commands": {
+    "main_demo": "python submissions/dexhand_lab/run_demo.py",
+    "no_video_eval": "python submissions/dexhand_lab/run_demo.py --episodes 3 --seed 42 --no-video --difficulty medium",
+    "stress_eval": "python submissions/dexhand_lab/run_stress_eval.py --seeds 32",
+    "validator": "python submissions/dexhand_lab/validate_submission.py",
+    "assembly_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose"
+  },
+  "rubric_alignment": {
+    "runability": {
+      "status": "pass",
+      "evidence": [
+        "validator passes",
+        "fixed-seed commands run without runtime errors",
+        "demo video is preserved if headless rendering fails before replacement",
+        "outputs/summary.json has validation_passed=true"
+      ]
+    },
+    "mujoco_depth": {
+      "status": "pass",
+      "evidence": [
+        "scene.xml contains articulated hand joints, collision geoms, touch sensors, cap hinge, button slide joint, and assembly plug/socket geoms",
+        "outputs/contact_timeline.json and dataset/tactile_taxels.csv expose contact/tactile evidence"
+      ]
+    },
+    "task_design": {
+      "status": "pass",
+      "evidence": [
+        "multi-stage dexterity benchmark",
+        "sphere/cube/cylinder/stylus/button/cap tasks",
+        "blind tactile unknown arena",
+        "tactile precision assembly arena"
+      ]
+    },
+    "control": {
+      "status": "pass",
+      "evidence": [
+        "no-snap verified grasp routine",
+        "minimum-jerk tactile controller",
+        "blind tactile classifier",
+        "adaptive regrasp",
+        "tactile pose estimation and compliant insertion with jam recovery"
+      ]
+    },
+    "dexterous_manipulation": {
+      "status": "pass",
+      "evidence": [
+        "five-finger hand",
+        "thumb opposition",
+        "multi-side contact",
+        "cap twist",
+        "in-hand rotation",
+        "tripod/stylus and index-only button press",
+        "precision assembly grasp"
+      ]
+    },
+    "engineering_quality": {
+      "status": "pass",
+      "evidence": [
+        "modular source files",
+        "machine-readable JSON/CSV evidence",
+        "submission_manifest.json",
+        "validate_submission.py",
+        "judge evidence pack"
+      ]
+    },
+    "presentation": {
+      "status": "pass",
+      "evidence": [
+        "outputs/demo.mp4",
+        "media/keyframes.png",
+        "media/blind_tactile_keyframes.png",
+        "media/assembly_keyframes.png",
+        "media/tactile_pose_estimation_panel.png",
+        "outputs/narration.srt"
+      ]
+    },
+    "innovation": {
+      "status": "pass",
+      "evidence": [
+        "blind tactile active perception",
+        "no-ground-truth tactile pose estimation",
+        "precision plug/socket assembly with jam recovery",
+        "224-degree cap/knob rotation",
+        "hardware replay audit"
+      ]
+    }
+  },
+  "latest_submission_note": "Robothon scoring counts the latest project submission; keep PR body UUID matching registration.json.",
+  "honest_scope": {
+    "not_learned_rl": true,
+    "not_camera_vision": true,
+    "not_real_hardware_trial": true,
+    "hybrid_contact_aware_routine": true
+  },
+  "rules_alignment_pass": true
+}

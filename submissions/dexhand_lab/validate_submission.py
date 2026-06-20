@@ -1,0 +1,409 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+PROJECT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = PROJECT_DIR / "outputs"
+DATASET_DIR = PROJECT_DIR / "dataset"
+
+
+def valid_json(path: Path) -> bool:
+    try:
+        json.loads(path.read_text(encoding="utf-8"))
+        return True
+    except Exception:
+        return False
+
+
+def main() -> int:
+    required_files = [
+        PROJECT_DIR / "registration.json",
+        PROJECT_DIR / "README.md",
+        PROJECT_DIR / "JUDGE_BRIEF.md",
+        PROJECT_DIR / "EVIDENCE_INDEX.md",
+        PROJECT_DIR / "run_demo.py",
+        PROJECT_DIR / "run_stress_eval.py",
+        PROJECT_DIR / "arena_task_suite.py",
+        PROJECT_DIR / "minimum_jerk_controller.py",
+        PROJECT_DIR / "contact_feedback_audit.py",
+        PROJECT_DIR / "hardware_adaptation_audit.py",
+        PROJECT_DIR / "tactile_active_perception.py",
+        PROJECT_DIR / "tactile_shape_classifier.py",
+        PROJECT_DIR / "adaptive_regrasp_policy.py",
+        PROJECT_DIR / "tactile_pose_estimator.py",
+        PROJECT_DIR / "precision_assembly_controller.py",
+        PROJECT_DIR / "scene.xml",
+        PROJECT_DIR / "human_grasp_library.py",
+        PROJECT_DIR / "object_classifier.py",
+        PROJECT_DIR / "dexhand_controller.py",
+        PROJECT_DIR / "rubric_scorecard.json",
+        PROJECT_DIR / "submission_manifest.json",
+        OUTPUT_DIR / "demo.mp4",
+        OUTPUT_DIR / "summary.json",
+        OUTPUT_DIR / "trajectory.json",
+        OUTPUT_DIR / "contact_timeline.json",
+        OUTPUT_DIR / "final_report.txt",
+        OUTPUT_DIR / "event_rules_report.json",
+        OUTPUT_DIR / "narration.srt",
+        OUTPUT_DIR / "policy_card.json",
+        OUTPUT_DIR / "sensor_manifest.json",
+        OUTPUT_DIR / "judge_summary.json",
+        OUTPUT_DIR / "blind_tactile_summary.json",
+        OUTPUT_DIR / "assembly_summary.json",
+        OUTPUT_DIR / "stress_eval.json",
+        OUTPUT_DIR / "baseline_vs_feedback.json",
+        OUTPUT_DIR / "stress_eval_summary.csv",
+        PROJECT_DIR / "media" / "keyframes.png",
+        PROJECT_DIR / "media" / "blind_tactile_keyframes.png",
+        PROJECT_DIR / "media" / "tactile_classifier_panel.png",
+        PROJECT_DIR / "media" / "assembly_keyframes.png",
+        PROJECT_DIR / "media" / "tactile_pose_estimation_panel.png",
+        PROJECT_DIR / "media" / "demo.mp4",
+        DATASET_DIR / "task_suite_report.json",
+        DATASET_DIR / "task_suite.csv",
+        DATASET_DIR / "tactile_feedback_report.json",
+        DATASET_DIR / "tactile_taxels.csv",
+        DATASET_DIR / "tactile_exploration_trace.csv",
+        DATASET_DIR / "tactile_classifier_report.json",
+        DATASET_DIR / "tactile_confusion_matrix.json",
+        DATASET_DIR / "adaptive_regrasp_report.json",
+        DATASET_DIR / "adaptive_regrasp_trace.csv",
+        DATASET_DIR / "unknown_arena_report.json",
+        DATASET_DIR / "blind_tactile_stress_eval.json",
+        DATASET_DIR / "blind_tactile_baseline_comparison.json",
+        DATASET_DIR / "tactile_pose_estimator_report.json",
+        DATASET_DIR / "tactile_pose_trace.csv",
+        DATASET_DIR / "precision_assembly_report.json",
+        DATASET_DIR / "precision_assembly_trace.csv",
+        DATASET_DIR / "jam_recovery_report.json",
+        DATASET_DIR / "jam_recovery_trace.csv",
+        DATASET_DIR / "no_ground_truth_control_audit.json",
+        DATASET_DIR / "minimum_jerk_report.json",
+        DATASET_DIR / "minimum_jerk_trace.csv",
+        DATASET_DIR / "stress_eval.json",
+        DATASET_DIR / "hardware_adaptation_report.json",
+        DATASET_DIR / "hardware_command_stream.csv",
+        DATASET_DIR / "sim2real_safety_case.json",
+        PROJECT_DIR / "hardware_transfer.json",
+        PROJECT_DIR / "HARDWARE_ADAPTATION.md",
+        OUTPUT_DIR / "episodes" / "episode_000" / "trajectory.json",
+        OUTPUT_DIR / "episodes" / "episode_000" / "metadata.json",
+    ]
+    json_files = [
+        PROJECT_DIR / "registration.json",
+        PROJECT_DIR / "rubric_scorecard.json",
+        PROJECT_DIR / "submission_manifest.json",
+        OUTPUT_DIR / "summary.json",
+        OUTPUT_DIR / "trajectory.json",
+        OUTPUT_DIR / "contact_timeline.json",
+        OUTPUT_DIR / "event_rules_report.json",
+        OUTPUT_DIR / "policy_card.json",
+        OUTPUT_DIR / "sensor_manifest.json",
+        OUTPUT_DIR / "judge_summary.json",
+        OUTPUT_DIR / "blind_tactile_summary.json",
+        OUTPUT_DIR / "assembly_summary.json",
+        OUTPUT_DIR / "stress_eval.json",
+        OUTPUT_DIR / "baseline_vs_feedback.json",
+        DATASET_DIR / "task_suite_report.json",
+        DATASET_DIR / "tactile_feedback_report.json",
+        DATASET_DIR / "tactile_classifier_report.json",
+        DATASET_DIR / "tactile_confusion_matrix.json",
+        DATASET_DIR / "adaptive_regrasp_report.json",
+        DATASET_DIR / "unknown_arena_report.json",
+        DATASET_DIR / "blind_tactile_stress_eval.json",
+        DATASET_DIR / "blind_tactile_baseline_comparison.json",
+        DATASET_DIR / "tactile_pose_estimator_report.json",
+        DATASET_DIR / "precision_assembly_report.json",
+        DATASET_DIR / "jam_recovery_report.json",
+        DATASET_DIR / "no_ground_truth_control_audit.json",
+        DATASET_DIR / "minimum_jerk_report.json",
+        DATASET_DIR / "stress_eval.json",
+        DATASET_DIR / "hardware_adaptation_report.json",
+        DATASET_DIR / "sim2real_safety_case.json",
+        PROJECT_DIR / "hardware_transfer.json",
+        OUTPUT_DIR / "episodes" / "episode_000" / "trajectory.json",
+        OUTPUT_DIR / "episodes" / "episode_000" / "metadata.json",
+    ]
+    missing = [path for path in required_files if not path.exists()]
+    invalid = [path for path in json_files if path.exists() and not valid_json(path)]
+    if missing or invalid:
+        print("DexHand validation failed")
+        if missing:
+            print("Missing files:")
+            for path in missing:
+                print(f"- {path}")
+        if invalid:
+            print("Invalid JSON:")
+            for path in invalid:
+                print(f"- {path}")
+        return 1
+    summary = json.loads((OUTPUT_DIR / "summary.json").read_text(encoding="utf-8"))
+    required_metrics = [
+        "hand_skeleton_valid",
+        "five_fingers_present",
+        "thumb_opposition_joint_present",
+        "object_snap_events",
+        "attach_before_verification_count",
+        "verified_grasp_before_attach_rate",
+        "sphere_enclosure_grasp_success",
+        "cube_opposing_face_grasp_success",
+        "cylinder_side_body_grasp_success",
+        "top_down_cylinder_grasp_count",
+        "in_hand_rotation_success",
+        "achieved_rotation_deg",
+        "rotation_error_deg",
+        "stylus_tripod_success",
+        "checkpoint_touch_success",
+        "index_only_button_press_success",
+        "stress_eval_available",
+        "tactile_channels",
+        "touch_sensor_count",
+        "mujoco_touch_sensors_present",
+        "sensorized_fingertip_count",
+        "active_contact_confidence",
+        "dexterous_contact_confidence",
+        "tactile_taxel_audit_confidence",
+        "cap_rotation_target_deg",
+        "cap_rotation_achieved_deg",
+        "cap_rotation_error_deg",
+        "cap_rotation_success",
+        "final_slip_mm",
+        "max_slip_mm",
+        "slip_recovery_success",
+        "load_hold_x",
+        "load_hold_success",
+        "object_drop_count",
+        "task_gate_count",
+        "task_gates_passed",
+        "task_gate_success_rate",
+        "stress_rollouts",
+        "stress_success_rate",
+        "baseline_success_rate",
+        "feedback_success_rate",
+        "improvement_percentage",
+        "average_active_fingers_dexterous_grasps",
+        "average_multi_side_contact_score_dexterous_grasps",
+        "minimum_jerk_controller_pass",
+        "hardware_audit_pass",
+        "object_center_between_fingers_rate",
+        "contact_timeline_path",
+        "judge_summary_path",
+        "evidence_index_path",
+        "overall_task_success",
+        "blind_tactile_mode_available",
+        "unknown_object_arena_available",
+        "tactile_classifier_accuracy",
+        "classification_confidence_mean",
+        "average_probes_per_object",
+        "blind_tactile_success_rate",
+        "adaptive_regrasp_success_rate",
+        "unknown_arena_success_rate",
+        "blind_tactile_summary_path",
+        "no_ground_truth_pose_mode_available",
+        "ground_truth_pose_hidden_from_controller",
+        "ground_truth_used_only_for_scoring",
+        "tactile_pose_estimator_enabled",
+        "pose_estimation_success",
+        "estimated_object_center_error_m",
+        "estimated_axis_error_deg",
+        "estimated_orientation_error_deg",
+        "precision_assembly_arena_available",
+        "assembly_success",
+        "insertion_depth_ratio",
+        "socket_alignment_error_m",
+        "socket_angle_error_deg",
+        "jam_detection_available",
+        "jam_recovery_report_path",
+        "precision_assembly_report_path",
+        "assembly_stress_eval_available",
+        "assembly_success_rate",
+        "jam_recovery_success_rate",
+        "mean_pose_estimation_error_m",
+        "event_rules_report_path",
+        "demo_video_duration_rule_pass",
+        "video_render_mode",
+        "runability_status",
+        "rules_alignment_pass",
+    ]
+    missing_metrics = [metric for metric in required_metrics if metric not in summary]
+    if missing_metrics:
+        print("DexHand validation failed")
+        print("Missing summary metrics:")
+        for metric in missing_metrics:
+            print(f"- {metric}")
+        return 1
+    expected_values = {
+        "hand_skeleton_valid": True,
+        "five_fingers_present": True,
+        "thumb_opposition_joint_present": True,
+        "sphere_enclosure_grasp_success": True,
+        "cube_opposing_face_grasp_success": True,
+        "cylinder_side_body_grasp_success": True,
+        "in_hand_rotation_success": True,
+        "stylus_tripod_success": True,
+        "checkpoint_touch_success": True,
+        "index_only_button_press_success": True,
+        "cap_rotation_success": True,
+        "slip_recovery_success": True,
+        "load_hold_success": True,
+        "minimum_jerk_controller_pass": True,
+        "hardware_audit_pass": True,
+        "overall_task_success": True,
+        "ground_truth_pose_hidden_from_controller": True,
+        "ground_truth_used_only_for_scoring": True,
+        "tactile_pose_estimator_enabled": True,
+        "pose_estimation_success": True,
+        "precision_assembly_arena_available": True,
+        "assembly_success": True,
+    }
+    bad_values = [
+        f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
+        for metric, expected in expected_values.items()
+        if summary.get(metric) != expected
+    ]
+    if int(summary.get("object_snap_events", 1)) != 0:
+        bad_values.append("object_snap_events expected 0")
+    if int(summary.get("attach_before_verification_count", 1)) != 0:
+        bad_values.append("attach_before_verification_count expected 0")
+    if int(summary.get("top_down_cylinder_grasp_count", 1)) != 0:
+        bad_values.append("top_down_cylinder_grasp_count expected 0")
+    if float(summary.get("verified_grasp_before_attach_rate", 0.0)) < 0.99:
+        bad_values.append("verified_grasp_before_attach_rate expected >= 0.99")
+    if float(summary.get("object_center_between_fingers_rate", 0.0)) < 0.99:
+        bad_values.append("object_center_between_fingers_rate expected >= 0.99")
+    if not bool(summary.get("stress_eval_available", False)):
+        bad_values.append("stress_eval_available expected true; run run_stress_eval.py --seeds 32")
+    if int(summary.get("tactile_channels", 0)) != 5:
+        bad_values.append("tactile_channels expected 5")
+    if int(summary.get("touch_sensor_count", 0)) != 5:
+        bad_values.append("touch_sensor_count expected 5")
+    if not bool(summary.get("mujoco_touch_sensors_present", False)):
+        bad_values.append("mujoco_touch_sensors_present expected true")
+    if int(summary.get("sensorized_fingertip_count", 0)) != 5:
+        bad_values.append("sensorized_fingertip_count expected 5")
+    if float(summary.get("cap_rotation_target_deg", 0.0)) != 224.0:
+        bad_values.append("cap_rotation_target_deg expected 224")
+    if float(summary.get("cap_rotation_achieved_deg", 0.0)) < 214.0:
+        bad_values.append("cap_rotation_achieved_deg expected >= 214")
+    if float(summary.get("final_slip_mm", 999.0)) > 0.5:
+        bad_values.append("final_slip_mm expected <= 0.5")
+    if float(summary.get("load_hold_x", 0.0)) < 5.0:
+        bad_values.append("load_hold_x expected >= 5.0")
+    if float(summary.get("task_gate_success_rate", 0.0)) < 0.90:
+        bad_values.append("task_gate_success_rate expected >= 0.90")
+    if float(summary.get("feedback_success_rate", 0.0)) < float(summary.get("baseline_success_rate", 0.0)):
+        bad_values.append("feedback_success_rate expected >= baseline_success_rate")
+    if float(summary.get("average_active_fingers_dexterous_grasps", 0.0)) < 4.0:
+        bad_values.append("average_active_fingers_dexterous_grasps expected >= 4.0")
+    if float(summary.get("average_multi_side_contact_score_dexterous_grasps", 0.0)) < 0.80:
+        bad_values.append("average_multi_side_contact_score_dexterous_grasps expected >= 0.80")
+    if not bool(summary.get("blind_tactile_mode_available", False)):
+        bad_values.append("blind_tactile_mode_available expected true")
+    if not bool(summary.get("unknown_object_arena_available", False)):
+        bad_values.append("unknown_object_arena_available expected true")
+    if float(summary.get("tactile_classifier_accuracy", 0.0)) < 0.90:
+        bad_values.append("tactile_classifier_accuracy expected >= 0.90")
+    if float(summary.get("blind_tactile_success_rate", 0.0)) < 0.80:
+        bad_values.append("blind_tactile_success_rate expected >= 0.80")
+    if float(summary.get("adaptive_regrasp_success_rate", 0.0)) < 0.80:
+        bad_values.append("adaptive_regrasp_success_rate expected >= 0.80")
+    if float(summary.get("average_probes_per_object", 0.0)) <= 0.0:
+        bad_values.append("average_probes_per_object expected > 0")
+    if not bool(summary.get("no_ground_truth_pose_mode_available", False)):
+        bad_values.append("no_ground_truth_pose_mode_available expected true")
+    if float(summary.get("estimated_object_center_error_m", 999.0)) > 0.012:
+        bad_values.append("estimated_object_center_error_m expected <= 0.012")
+    if float(summary.get("estimated_axis_error_deg", 999.0)) > 12.0:
+        bad_values.append("estimated_axis_error_deg expected <= 12")
+    if float(summary.get("insertion_depth_ratio", 0.0)) < 0.85:
+        bad_values.append("insertion_depth_ratio expected >= 0.85")
+    if not bool(summary.get("jam_detection_available", False)):
+        bad_values.append("jam_detection_available expected true")
+    if not bool(summary.get("assembly_stress_eval_available", False)):
+        bad_values.append("assembly_stress_eval_available expected true; run run_stress_eval.py --seeds 32 --arena assembly --blind-tactile --no-ground-truth-pose")
+    if float(summary.get("assembly_success_rate", 0.0)) < 0.80:
+        bad_values.append("assembly_success_rate expected >= 0.80")
+    if float(summary.get("jam_recovery_success_rate", 0.0)) < 0.80:
+        bad_values.append("jam_recovery_success_rate expected >= 0.80")
+    if not bool(summary.get("demo_video_duration_rule_pass", False)):
+        bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
+    if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:
+        bad_values.append("duration_s expected inside 60-180 second event window")
+    if str(summary.get("runability_status", "")).lower() != "pass":
+        bad_values.append("runability_status expected pass")
+    if not bool(summary.get("rules_alignment_pass", False)):
+        bad_values.append("rules_alignment_pass expected true")
+    if bad_values:
+        print("DexHand validation failed")
+        print("Unexpected summary values:")
+        for item in bad_values:
+            print(f"- {item}")
+        return 1
+    validator_report = {
+        "project": "DexHand Lab",
+        "validation_passed": True,
+        "blind_tactile_evidence": {
+            "status": "pass",
+            "blind_tactile_mode_available": bool(summary.get("blind_tactile_mode_available")),
+            "unknown_object_arena_available": bool(summary.get("unknown_object_arena_available")),
+            "tactile_classifier_accuracy": summary.get("tactile_classifier_accuracy"),
+            "blind_tactile_success_rate": summary.get("blind_tactile_success_rate"),
+            "adaptive_regrasp_success_rate": summary.get("adaptive_regrasp_success_rate"),
+            "average_probes_per_object": summary.get("average_probes_per_object"),
+            "object_snap_events": summary.get("object_snap_events"),
+        },
+        "core_evidence": {
+            "cap_rotation_success": summary.get("cap_rotation_success"),
+            "load_hold_success": summary.get("load_hold_success"),
+            "task_gate_success_rate": summary.get("task_gate_success_rate"),
+            "feedback_success_rate": summary.get("feedback_success_rate"),
+            "baseline_success_rate": summary.get("baseline_success_rate"),
+        },
+        "precision_assembly_evidence": {
+            "status": "pass",
+            "no_ground_truth_pose_mode_available": bool(summary.get("no_ground_truth_pose_mode_available")),
+            "ground_truth_pose_hidden_from_controller": bool(summary.get("ground_truth_pose_hidden_from_controller")),
+            "ground_truth_used_only_for_scoring": bool(summary.get("ground_truth_used_only_for_scoring")),
+            "pose_estimation_success": bool(summary.get("pose_estimation_success")),
+            "estimated_object_center_error_m": summary.get("estimated_object_center_error_m"),
+            "estimated_axis_error_deg": summary.get("estimated_axis_error_deg"),
+            "assembly_success": bool(summary.get("assembly_success")),
+            "insertion_depth_ratio": summary.get("insertion_depth_ratio"),
+            "jam_detection_available": bool(summary.get("jam_detection_available")),
+            "assembly_stress_eval_available": bool(summary.get("assembly_stress_eval_available")),
+            "assembly_success_rate": summary.get("assembly_success_rate"),
+            "jam_recovery_success_rate": summary.get("jam_recovery_success_rate"),
+            "mean_pose_estimation_error_m": summary.get("mean_pose_estimation_error_m"),
+            "checked_files": [
+                "dataset/tactile_pose_estimator_report.json",
+                "dataset/precision_assembly_report.json",
+                "dataset/jam_recovery_report.json",
+                "dataset/no_ground_truth_control_audit.json",
+                "outputs/assembly_summary.json",
+                "media/assembly_keyframes.png",
+                "media/tactile_pose_estimation_panel.png",
+            ],
+        },
+        "event_rules_alignment": {
+            "status": "pass",
+            "event_rules_report_path": summary.get("event_rules_report_path"),
+            "demo_video_duration_rule_pass": summary.get("demo_video_duration_rule_pass"),
+            "duration_s": summary.get("duration_s"),
+            "runability_status": summary.get("runability_status"),
+            "rules_alignment_pass": summary.get("rules_alignment_pass"),
+        },
+    }
+    validator_report_path = OUTPUT_DIR / "validator_report.json"
+    validator_report_path.write_text(json.dumps(validator_report, indent=2), encoding="utf-8")
+    summary["validator_report_path"] = "submissions/dexhand_lab/outputs/validator_report.json"
+    summary["validation_passed"] = True
+    (OUTPUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print("DexHand validation passed")
+    print(f"Summary: {OUTPUT_DIR / 'summary.json'}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

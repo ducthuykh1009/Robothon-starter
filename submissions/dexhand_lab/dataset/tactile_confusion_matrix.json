@@ -1,0 +1,63 @@
+{
+  "project": "DexHand Lab",
+  "mode": "blind_tactile_active_perception",
+  "confusion_matrix": {
+    "sphere": {
+      "sphere": 32,
+      "cube": 0,
+      "cylinder": 0,
+      "cap": 0,
+      "stylus": 0,
+      "button": 0
+    },
+    "cube": {
+      "sphere": 0,
+      "cube": 32,
+      "cylinder": 0,
+      "cap": 0,
+      "stylus": 0,
+      "button": 0
+    },
+    "cylinder": {
+      "sphere": 0,
+      "cube": 0,
+      "cylinder": 32,
+      "cap": 0,
+      "stylus": 0,
+      "button": 0
+    },
+    "cap": {
+      "sphere": 0,
+      "cube": 0,
+      "cylinder": 0,
+      "cap": 32,
+      "stylus": 0,
+      "button": 0
+    },
+    "stylus": {
+      "sphere": 0,
+      "cube": 0,
+      "cylinder": 0,
+      "cap": 0,
+      "stylus": 32,
+      "button": 0
+    },
+    "button": {
+      "sphere": 0,
+      "cube": 0,
+      "cylinder": 0,
+      "cap": 0,
+      "stylus": 0,
+      "button": 32
+    }
+  },
+  "object_types": [
+    "sphere",
+    "cube",
+    "cylinder",
+    "cap",
+    "stylus",
+    "button"
+  ],
+  "accuracy": 1.0
+}

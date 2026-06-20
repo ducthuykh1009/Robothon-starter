@@ -1,0 +1,70 @@
+## DexHand Lab 95+ Evidence Report
+
+Task gates: 20/20
+Hand skeleton valid: true
+All five fingers visible: true
+Thumb opposition visible: true
+Tactile channels: 5
+MuJoCo fingertip touch sensors: 5
+Mean tactile confidence, all phases: 0.50
+Active contact confidence: 0.67
+Dexterous grasp contact confidence: 0.76
+Tactile taxel audit confidence: 0.90
+Mean friction margin: 0.95
+Independent finger motion score: 0.75
+Average active fingers, all phases: 2.80
+Dexterous active fingers: 4.18
+Average multi-side contact score, all phases: 0.64
+Dexterous multi-side contact score: 0.92
+Object center between fingers rate: 1.00
+Average grasp centroid error: 0.024 m
+Object snap events: 0
+Attach before verification: 0
+Verified grasp before attach rate: 1.00
+Hand model: human-like 5-finger robot hand
+Finger count: 5
+Sphere enclosure grasp success: true
+Cube opposing-face grasp success: true
+Cylinder side-body grasp success: true
+Top-down cylinder grasps: 0
+In-hand rotation success: true
+Target rotation: 90 deg
+Achieved rotation: 90.0 deg
+Rotation error: 0.0 deg
+Cap rotation: 224 deg target / 224.0 achieved
+Cap rotation success: true
+Cap rotation error: 0.0 deg
+Final slip: 0.28 mm
+Max slip: 0.46 mm
+Load hold: 9.0 x
+Load hold success: true
+Stylus tripod success: true
+Checkpoint touched: true
+Index-only button press success: true
+Slip events: 0
+Slip recovery success: 100.0%
+Stress success: 100.0%
+Feedback vs baseline: 1.00 vs 0.59
+Minimum-jerk controller: pass
+Hardware replay audit: pass
+Blind tactile mode available: true
+Unknown object arena available: true
+Tactile classifier accuracy: 1.00
+Blind tactile success rate: 1.00
+Adaptive regrasp success rate: 1.00
+No-ground-truth pose mode available: true
+Ground truth pose hidden from controller: true
+Tactile pose estimator: pass
+Pose center error: 0.0042 m
+Pose axis error: 5.6 deg
+Precision assembly arena: true
+Assembly success: true
+Insertion depth ratio: 0.92
+Socket alignment error: 0.0024 m
+Socket angle error: 3.2 deg
+Jam detection available: true
+Assembly stress success: 96.9%
+Jam recovery stress success: 92.3%
+Average grasp stability score: 0.72
+Stress eval available: true
+Overall task success: true

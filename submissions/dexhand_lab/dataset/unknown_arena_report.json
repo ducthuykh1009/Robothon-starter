@@ -1,0 +1,187 @@
+{
+  "project": "DexHand Lab",
+  "arena": "UNKNOWN_OBJECT_ARENA",
+  "available": true,
+  "object_order": [
+    "sphere",
+    "cube",
+    "cylinder",
+    "cap",
+    "stylus",
+    "button"
+  ],
+  "object_labels_hidden_from_controller": true,
+  "classifications": [
+    {
+      "unknown_object_id": "unknown_00",
+      "ground_truth_object_type": "sphere",
+      "predicted_object_type": "sphere",
+      "confidence_score": 0.90732,
+      "top_3_hypotheses": [
+        {
+          "object_type": "sphere",
+          "score": 0.92472
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.63693
+        },
+        {
+          "object_type": "cap",
+          "score": 0.28457
+        }
+      ],
+      "classification_reason": "smooth curvature, low edge response, no long-axis signal",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "SPHERICAL_ENCLOSURE_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_01",
+      "ground_truth_object_type": "cube",
+      "predicted_object_type": "cube",
+      "confidence_score": 0.99,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cube",
+          "score": 0.90098
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.22936
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.22227
+        }
+      ],
+      "classification_reason": "flat face response and edge contacts dominate",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "OPPOSING_FACE_CUBE_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_02",
+      "ground_truth_object_type": "cylinder",
+      "predicted_object_type": "cylinder",
+      "confidence_score": 0.79462,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cylinder",
+          "score": 0.76231
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.67325
+        },
+        {
+          "object_type": "stylus",
+          "score": 0.5843
+        }
+      ],
+      "classification_reason": "curvature plus long-axis response without strong twist affordance",
+      "required_next_probe": "EDGE_OR_CURVATURE_TEST",
+      "selected_grasp_strategy": "LATERAL_CYLINDER_BODY_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": true,
+      "uncertainty_handling_used": true,
+      "probe_count_before_classification": 6
+    },
+    {
+      "unknown_object_id": "unknown_03",
+      "ground_truth_object_type": "cap",
+      "predicted_object_type": "cap",
+      "confidence_score": 0.78761,
+      "top_3_hypotheses": [
+        {
+          "object_type": "cap",
+          "score": 0.78392
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.72082
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.64066
+        }
+      ],
+      "classification_reason": "cylindrical response plus strong twist affordance",
+      "required_next_probe": "EDGE_OR_CURVATURE_TEST",
+      "selected_grasp_strategy": "CAP_KNOB_ROTATION_224_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": true,
+      "uncertainty_handling_used": true,
+      "probe_count_before_classification": 6
+    },
+    {
+      "unknown_object_id": "unknown_04",
+      "ground_truth_object_type": "stylus",
+      "predicted_object_type": "stylus",
+      "confidence_score": 0.83231,
+      "top_3_hypotheses": [
+        {
+          "object_type": "stylus",
+          "score": 0.91823
+        },
+        {
+          "object_type": "cylinder",
+          "score": 0.80627
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.6042
+        }
+      ],
+      "classification_reason": "thin high-slenderness long-axis response",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "TRIPOD_PRECISION_GRASP",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    },
+    {
+      "unknown_object_id": "unknown_05",
+      "ground_truth_object_type": "button",
+      "predicted_object_type": "button",
+      "confidence_score": 0.91946,
+      "top_3_hypotheses": [
+        {
+          "object_type": "button",
+          "score": 0.95846
+        },
+        {
+          "object_type": "cube",
+          "score": 0.65624
+        },
+        {
+          "object_type": "sphere",
+          "score": 0.4178
+        }
+      ],
+      "classification_reason": "fixed pressable flat surface with displacement affordance",
+      "required_next_probe": null,
+      "selected_grasp_strategy": "INDEX_FINGERTIP_PRESS",
+      "strategy_selected_from_tactile_perception": true,
+      "prediction_correct": true,
+      "fallback_used": false,
+      "uncertainty_handling_used": false,
+      "probe_count_before_classification": 5
+    }
+  ],
+  "unknown_arena_success_rate": 1.0,
+  "object_snap_events": 0,
+  "final_success": true
+}

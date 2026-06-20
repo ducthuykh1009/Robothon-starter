@@ -1,0 +1,22 @@
+{
+  "ground_truth_pose_hidden_from_controller": true,
+  "ground_truth_used_only_for_scoring": true,
+  "controller_observation_sources": [
+    "fingertip_contacts",
+    "mujoco_touch_sensor_values",
+    "contact_geom_site_pairs",
+    "finger_joint_states",
+    "fingertip_positions",
+    "pressure_proxies",
+    "slip_proxies",
+    "previous_tactile_probe_history"
+  ],
+  "prohibited_ground_truth_fields": [
+    "exact_object_center_world",
+    "exact_object_quaternion",
+    "exact_socket_pose_for_controller",
+    "exact_long_axis_from_body_xmat"
+  ],
+  "audit_result": "pass",
+  "notes": "Assembly controller consumes tactile pose estimates; ground truth pose is only used for after-episode error metrics."
+}

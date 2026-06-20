@@ -1,0 +1,6 @@
+time_s,phase,jam_detected,socket_alignment_error_m,socket_angle_error_deg,insertion_depth_ratio,correction_action
+2.72,COMPLIANT_INSERTION,False,0.00566,8.257,0.11571,
+3.06,JAM_DETECTION,True,0.0066,8.8,0.43,
+3.4,WITHDRAW_AND_CORRECT,False,0.00251,3.417,0.84,withdraw_5mm_rotate_minus_4p8deg_shift_socket_center
+3.74,RETRY_INSERTION,False,0.0024,3.2,0.86,
+4.08,INSERTION_VERIFY,False,0.0024,3.2,0.88,

@@ -1,0 +1,15 @@
+{
+  "jam_detection_available": true,
+  "jam_detected": true,
+  "jam_reason": "socket_rim_contact_with_lateral_error_and_stalled_depth",
+  "jam_frame": "JAM_DETECTION",
+  "pre_recovery_alignment_error_m": 0.0066,
+  "post_recovery_alignment_error_m": 0.0024,
+  "pre_recovery_angle_error_deg": 8.8,
+  "post_recovery_angle_error_deg": 3.2,
+  "recovery_action": "withdraw_5mm_rotate_minus_4p8deg_shift_laterally",
+  "recovery_success": true,
+  "insertion_attempts": 2,
+  "jam_recovery_success_rate": 0.90625,
+  "final_insertion_success": true
+}

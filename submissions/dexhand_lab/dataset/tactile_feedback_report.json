@@ -1,0 +1,14 @@
+{
+  "project": "DexHand Lab",
+  "tactile_channels": 5,
+  "touch_sensor_count": 5,
+  "mujoco_touch_sensors_present": true,
+  "fingertip_streams_present": true,
+  "mean_contact_confidence": 0.90248,
+  "mean_friction_margin": 0.86094,
+  "mean_mujoco_touch_sensor_value": 14.743707,
+  "max_shear_slip_mm": 3.59799,
+  "slip_recovery_success": true,
+  "contact_source": "mujoco_touch_sensor_plus_controller_pressure_proxy",
+  "honest_note": "The audit includes MuJoCo fingertip touch sensor channels and deterministic controller pressure proxies; it is not a physical hardware tactile log."
+}
