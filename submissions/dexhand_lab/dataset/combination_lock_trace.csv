@@ -1,0 +1,14 @@
+step,time_s,phase,target_angle_deg,achieved_angle_deg,angle_error_deg,thumb_contact,index_contact,middle_contact,ring_contact,little_contact,active_fingers,detent_detected,detent_confidence,pressure_target_n,shear_slip_proxy_mm,friction_margin,finger_role,latch_position_m,door_open_angle_deg,recovery_action,success
+0,0.0,LOCK_START,0.0,0.0,0.0,False,False,False,False,False,2,False,0.94,1.6,0.06,0.8892,thumb_index_preshape,0.0,0.0,none,True
+1,0.35,TACTILE_DIAL_PROBE,0.0,0.0,0.0,True,True,False,False,False,2,True,0.955,1.92,0.06,0.8919,index_probe_detent_ring,0.0,0.0,scan_knurled_rim,True
+2,0.7,DETENT_SCAN,0.0,0.0,0.0,True,True,True,False,False,3,True,0.955,2.24,0.06,0.8919,thumb_counterhold_middle_support,0.0,0.0,detent_peaks_found,True
+3,1.1,ROTATE_CODE_1,37.0,37.2895,0.2895,True,True,True,False,False,3,True,0.9515,2.56,0.06,0.8884,index_tangential_push,0.0,0.0,minimum_jerk_twist,True
+4,1.7,DETENT_VERIFY_1,37.0,37.1592,0.1592,True,True,True,False,False,3,True,0.9531,2.88,0.06,0.89,thumb_index_middle_hold,0.0,0.0,click_verified,True
+5,2.15,ROTATE_CODE_2,142.0,141.012,0.988,True,True,True,False,False,3,True,0.9431,3.2,0.079,0.8799,thumb_counterhold_index_push,0.0,0.0,reverse_twist,True
+6,2.8,DETENT_VERIFY_2,142.0,141.506,0.494,True,True,True,False,False,3,True,0.9491,3.52,0.06,0.8859,middle_ring_support,0.0,0.0,click_verified,True
+7,3.25,ROTATE_CODE_3,224.0,224.7129,0.7129,True,True,True,False,False,3,True,0.9464,3.84,0.06,0.8832,index_middle_gait,0.0,0.0,final_twist,True
+8,3.95,DETENT_VERIFY_3,224.0,224.3208,0.3208,True,True,True,True,False,4,True,0.9512,3.84,0.06,0.888,five_finger_lock,0.0,0.0,code_locked,True
+9,4.35,LATCH_PINCH,224.0,224.2139,0.2139,True,True,True,False,False,3,True,0.9524,3.84,0.06,0.8893,tripod_latch_pinch,0.0,0.0,thumb_index_latch_contact,True
+10,4.9,LATCH_PULL,224.0,224.1426,0.1426,True,True,True,True,False,4,True,0.9533,3.84,0.06,0.8902,thumb_index_pull_middle_brace,0.024,0.0,latch_retracted,True
+11,5.45,MICRO_DOOR_OPEN,224.0,224.1069,0.1069,True,True,True,True,True,5,True,0.9537,3.84,0.06,0.8906,ring_little_stabilize,0.024,42.0,door_opened,True
+12,5.95,LOCK_VERIFY,224.0,224.0713,0.0713,True,True,True,True,True,5,True,0.9541,3.84,0.06,0.891,stable_hold,0.026,48.0,sequence_success,True

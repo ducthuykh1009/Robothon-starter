@@ -229,6 +229,52 @@
       "recommended_grasp_type": "CAP_KNOB_ROTATION_224"
     },
     {
+      "object_name": "combination_lock_dial",
+      "object_type": "combination_lock",
+      "object_center": [
+        -0.426,
+        0.128,
+        0.469
+      ],
+      "object_orientation": [
+        0.70711,
+        0.70711,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.034,
+        0.015
+      ],
+      "face_normals": [],
+      "radius": 0.034,
+      "long_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          -0.426,
+          0.113,
+          0.469
+        ],
+        [
+          -0.426,
+          0.143,
+          0.469
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "index": "dial rim detent ridge",
+        "thumb": "dial rim counterhold",
+        "middle": "opposing dial support",
+        "ring": "latch pinch support",
+        "little": "micro-door stabilizer"
+      },
+      "recommended_grasp_type": "TACTILE_COMBINATION_LOCK"
+    },
+    {
       "object_name": "stylus_tool",
       "object_type": "stylus",
       "object_center": [
@@ -350,6 +396,7 @@
     "SHOW_HAND",
     "SLIP_RECOVERY_REGRASP",
     "SPHERICAL_ENCLOSURE_GRASP",
+    "TACTILE_COMBINATION_LOCK",
     "TRIPOD_PRECISION_GRASP"
   ],
   "task_sequence": [
@@ -392,13 +439,13 @@
     "adaptive_regrasp_precheck"
   ],
   "overall_task_success": true,
-  "average_active_fingers": 2.80187,
-  "average_grasp_stability_score": 0.71838,
-  "average_multi_side_contact_score": 0.63505,
+  "average_active_fingers": 2.916,
+  "average_grasp_stability_score": 0.74091,
+  "average_multi_side_contact_score": 0.64569,
   "object_center_between_fingers_rate": 1.0,
   "average_grasp_centroid_error_m": 0.02439,
   "one_face_only_contact_count": 0,
-  "independent_finger_motion_score": 0.74517,
+  "independent_finger_motion_score": 0.75018,
   "thumb_opposition_score": 0.92,
   "object_snap_events": 0,
   "average_snap_distance_m": 0.0,
@@ -442,13 +489,13 @@
   "touch_sensor_count": 5,
   "mujoco_touch_sensors_present": true,
   "sensorized_fingertip_count": 5,
-  "mean_contact_confidence": 0.50441,
-  "active_contact_confidence": 0.6722,
-  "dexterous_contact_confidence": 0.7648,
-  "mean_friction_margin": 0.95418,
-  "mean_mujoco_touch_sensor_value": 25.180068,
-  "average_active_fingers_dexterous_grasps": 4.18314,
-  "average_multi_side_contact_score_dexterous_grasps": 0.91631,
+  "mean_contact_confidence": 0.52823,
+  "active_contact_confidence": 0.67034,
+  "dexterous_contact_confidence": 0.76567,
+  "mean_friction_margin": 0.96383,
+  "mean_mujoco_touch_sensor_value": 44.442382,
+  "average_active_fingers_dexterous_grasps": 4.18659,
+  "average_multi_side_contact_score_dexterous_grasps": 0.91606,
   "tripod_tool_success": true,
   "checkpoint_touch_success": true,
   "index_only_button_press_success": true,
@@ -460,6 +507,6 @@
     "Hybrid carry and rotation are used only after stable grasp verification to keep the demo reproducible.",
     "Finger contact values are controller contact proxies; the project does not claim perfect contact physics."
   ],
-  "trajectory_steps": 641,
+  "trajectory_steps": 750,
   "frames_saved": 0
 }

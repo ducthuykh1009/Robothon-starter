@@ -1,0 +1,46 @@
+{
+  "project": "DexHand Lab",
+  "task": "TACTILE_COMBINATION_LOCK",
+  "combination_lock_task_available": true,
+  "combination_lock_success": true,
+  "combination_lock_code_sequence": [
+    37.0,
+    142.0,
+    224.0
+  ],
+  "combination_lock_detected_sequence": [
+    37.159,
+    141.506,
+    224.321
+  ],
+  "combination_lock_steps": 13,
+  "dial_rotation_targets_deg": [
+    37.0,
+    142.0,
+    224.0
+  ],
+  "dial_rotation_achieved_deg": [
+    37.159,
+    141.506,
+    224.321
+  ],
+  "detent_detection_success": true,
+  "detent_count": 3,
+  "latch_pull_success": true,
+  "micro_door_opened": true,
+  "combination_lock_recovery_count": 0,
+  "combination_lock_max_error_deg": 0.988,
+  "combination_lock_contact_confidence": 0.9506,
+  "combination_lock_slip_mm": 0.079,
+  "combination_lock_min_active_fingers": 2,
+  "combination_lock_hybrid_twist_used": true,
+  "honest_scope": "Deterministic tactile-detent controller; MuJoCo/contact proxies are used for evidence, not real hardware tactile sensing.",
+  "episodes": 1,
+  "difficulty": "medium",
+  "seed": 42,
+  "combination_lock_trace_path": "submissions/dexhand_lab/dataset/combination_lock_trace.csv",
+  "combination_lock_keyframes_path": "submissions/dexhand_lab/media/combination_lock_keyframes.png",
+  "object_snap_events": 0,
+  "attach_before_verification_count": 0,
+  "verified_grasp_before_twist": true
+}

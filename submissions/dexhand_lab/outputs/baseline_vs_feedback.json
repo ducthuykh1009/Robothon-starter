@@ -23,5 +23,14 @@
   "average_multi_side_contact_score": 0.95482,
   "average_multi_side_contact_score_dexterous_grasps": 0.95482,
   "average_rotation_error_deg": 2.26519,
-  "object_snap_events": 0
+  "object_snap_events": 0,
+  "combination_lock_stress_rollouts": 32,
+  "combination_lock_success_rate": 1.0,
+  "combination_lock_detent_success_rate": 1.0,
+  "combination_lock_latch_success_rate": 1.0,
+  "combination_lock_micro_door_success_rate": 1.0,
+  "combination_lock_mean_error_deg": 1.25004,
+  "combination_lock_mean_contact_confidence": 0.95026,
+  "combination_lock_mean_slip_mm": 0.1031,
+  "combination_lock_object_snap_events": 0
 }

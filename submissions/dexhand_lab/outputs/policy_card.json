@@ -49,6 +49,7 @@
     "SHOW_HAND",
     "SLIP_RECOVERY_REGRASP",
     "SPHERICAL_ENCLOSURE_GRASP",
+    "TACTILE_COMBINATION_LOCK",
     "TRIPOD_PRECISION_GRASP"
   ],
   "active_tactile_perception_policy": {

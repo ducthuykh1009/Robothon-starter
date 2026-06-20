@@ -43,6 +43,11 @@ def build_gates(summary: dict) -> list[dict]:
         {"gate": 18, "name": "slip_recovery_success", "passed": bool_metric(summary, "slip_recovery_success")},
         {"gate": 19, "name": "load_hold_success", "passed": bool_metric(summary, "load_hold_success") and float(summary.get("load_hold_x", 0.0)) >= 5.0},
         {"gate": 20, "name": "no_snap_verified", "passed": int(summary.get("object_snap_events", 1)) == 0 and int(summary.get("attach_before_verification_count", 1)) == 0},
+        {"gate": 21, "name": "combination_lock_task_available", "passed": bool_metric(summary, "combination_lock_task_available")},
+        {"gate": 22, "name": "combination_lock_success", "passed": bool_metric(summary, "combination_lock_success")},
+        {"gate": 23, "name": "combination_lock_detent_detection_success", "passed": bool_metric(summary, "detent_detection_success") and int(summary.get("detent_count", 0)) >= 3},
+        {"gate": 24, "name": "combination_lock_latch_pull_success", "passed": bool_metric(summary, "latch_pull_success")},
+        {"gate": 25, "name": "combination_lock_micro_door_opened", "passed": bool_metric(summary, "micro_door_opened")},
     ]
 
 
@@ -60,6 +65,17 @@ def update_summary(report: dict) -> None:
         }
     )
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    try:
+        from run_demo import write_evidence_index, write_final_report, write_judge_summary
+
+        summary["final_report_path"] = write_final_report(summary, OUTPUT_DIR)
+        summary["judge_summary_path"] = write_judge_summary(summary, OUTPUT_DIR)
+        summary["evidence_index_path"] = write_evidence_index(summary)
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    except Exception:
+        # Keep the gate suite independent from rendering/demo imports; validation will
+        # still use the machine-readable task_suite_report.json.
+        pass
 
 
 def main() -> int:
@@ -69,14 +85,14 @@ def main() -> int:
     passed = sum(1 for gate in gates if gate["passed"])
     report = {
         "project": "DexHand Lab",
-        "suite": "20-gate deterministic dexterity verification",
+        "suite": "25-gate deterministic dexterity verification",
         "gate_count": len(gates),
         "gates_passed": passed,
         "success_rate": round(passed / len(gates), 5),
         "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
         "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
         "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-        "final_task_success": passed >= 18,
+        "final_task_success": passed >= 23,
         "gates": gates,
     }
     (DATASET_DIR / "task_suite_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -90,7 +106,7 @@ def main() -> int:
     print(f"Gates passed: {passed}/{len(gates)}")
     if report["failed_gates"]:
         print("Failed gates: " + ", ".join(report["failed_gates"]))
-    return 0 if passed >= 18 else 1
+    return 0 if passed >= 23 else 1
 
 
 if __name__ == "__main__":

@@ -33,10 +33,12 @@ This is the shortest path through the submission evidence for judges and automat
 22. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.
 23. `media/assembly_keyframes.png` - visual proof of assembly sequence.
 24. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.
+25. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.
+26. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.
 
 ## Current Metrics
 
-- Task gates: 20/20
+- Task gates: 25/25
 - Cap rotation: 224 deg target / 224.0 deg achieved
 - Final slip: 0.28 mm
 - Load hold: 9.0x
@@ -54,6 +56,10 @@ This is the shortest path through the submission evidence for judges and automat
 - Assembly success: true
 - Insertion depth ratio: 0.92
 - Jam detection/recovery evidence: true
+- Combination lock success: true
+- Combination lock max error: 1.0 deg
+- Combination lock latch pull: true
+- Combination lock micro-door opened: true
 - Event rules alignment: true
 - Submission readiness audit: submissions/dexhand_lab/outputs/submission_readiness_report.json
 - Rubric readiness estimate: 99
@@ -67,6 +73,7 @@ This is the shortest path through the submission evidence for judges and automat
 - The selected grasp strategy comes from tactile classification, then adaptive regrasp corrects low-confidence or unstable contact.
 - Evidence files: `dataset/tactile_exploration_trace.csv`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, and `outputs/blind_tactile_summary.json`.
 - Precision assembly evidence: `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.
+- Tactile combination lock evidence: `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `outputs/combination_lock_summary.json`, and `media/combination_lock_keyframes.png`.
 
 ## Honest Scope
 

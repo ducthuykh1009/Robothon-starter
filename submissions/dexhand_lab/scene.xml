@@ -33,6 +33,10 @@
     <material name="assembly_plug_mat" rgba="0.18 0.42 0.92 1"/>
     <material name="assembly_socket_mat" rgba="0.10 0.12 0.16 1"/>
     <material name="assembly_marker_mat" rgba="1.00 0.82 0.12 1"/>
+    <material name="lock_body_mat" rgba="0.16 0.18 0.20 1"/>
+    <material name="lock_dial_mat" rgba="0.86 0.89 0.90 1"/>
+    <material name="lock_marker_mat" rgba="1.00 0.18 0.08 1"/>
+    <material name="lock_latch_mat" rgba="0.95 0.72 0.18 1"/>
   </asset>
 
   <worldbody>
@@ -44,6 +48,7 @@
     <camera name="grasp_camera" pos="0.42 -1.12 0.86" xyaxes="0.94 0.34 0 -0.18 0.46 0.87" fovy="58"/>
     <camera name="cap_camera" pos="0.36 0.185 1.28" xyaxes="1 0 0 0 1 0" fovy="58"/>
     <camera name="assembly_camera" pos="0.68 -0.62 0.84" xyaxes="0.72 0.69 0 -0.38 0.40 0.83" fovy="56"/>
+    <camera name="lock_camera" pos="-0.50 -0.72 0.82" xyaxes="0.82 -0.57 0 0.33 0.48 0.81" fovy="54"/>
     <camera name="top_camera" pos="0.0 0.0 1.72" xyaxes="1 0 0 0 1 0" fovy="60"/>
 
     <body name="table" pos="0 0 0.36">
@@ -109,6 +114,28 @@
         <site name="cap_marker_site" pos="0.038 0 0.030" size="0.006" rgba="1 0.2 0.1 1"/>
         <site name="cap_center_site" pos="0 0 0.028" size="0.007" rgba="0.2 0.6 1 1"/>
       </body>
+    </body>
+
+    <body name="combination_lock_station" pos="-0.40 0.180 0.405">
+      <geom name="combination_lock_base_geom" type="box" size="0.090 0.058 0.018" material="lock_body_mat"/>
+      <geom name="combination_lock_face_geom" type="box" pos="0 0 0.052" size="0.082 0.050 0.038" material="lock_body_mat"/>
+      <body name="combination_lock_dial" pos="-0.026 -0.052 0.064" euler="90 0 0">
+        <joint name="combination_lock_dial_joint" type="hinge" axis="0 0 1" range="-6.2832 6.2832" damping="2.2"/>
+        <geom name="combination_lock_dial_geom" type="cylinder" size="0.034 0.015" material="lock_dial_mat" mass="0.026"/>
+        <geom name="combination_lock_dial_marker_geom" type="box" pos="0.027 0 0.017" size="0.010 0.003 0.004" material="lock_marker_mat"/>
+        <site name="combination_lock_dial_site" pos="0 0 0.020" size="0.006" rgba="0.2 0.7 1 1"/>
+      </body>
+      <body name="combination_lock_latch" pos="0.048 -0.050 0.036">
+        <joint name="combination_lock_latch_joint" type="slide" axis="1 0 0" range="0 0.030" damping="7"/>
+        <geom name="combination_lock_latch_geom" type="box" size="0.026 0.008 0.010" material="lock_latch_mat" mass="0.015"/>
+        <site name="combination_lock_latch_site" pos="0.024 0 0" size="0.005" rgba="1 0.82 0.12 1"/>
+      </body>
+      <body name="combination_lock_micro_door" pos="0.084 -0.002 0.045">
+        <joint name="combination_lock_door_joint" type="hinge" axis="0 0 1" range="0 55" damping="3"/>
+        <geom name="combination_lock_micro_door_geom" type="box" size="0.006 0.042 0.030" material="lock_latch_mat" mass="0.018"/>
+        <site name="combination_lock_door_site" pos="0 0.036 0" size="0.005" rgba="0.2 1 0.3 1"/>
+      </body>
+      <site name="combination_lock_center_site" pos="-0.026 -0.052 0.064" size="0.007" rgba="1 0.2 0.1 1"/>
     </body>
 
     <body name="assembly_plug" pos="0.31 0.305 0.440">

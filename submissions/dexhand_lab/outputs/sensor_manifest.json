@@ -89,11 +89,14 @@
     "tactile_pose_estimator_report": "dataset/tactile_pose_estimator_report.json",
     "precision_assembly_report": "dataset/precision_assembly_report.json",
     "jam_recovery_report": "dataset/jam_recovery_report.json",
+    "combination_lock_report": "dataset/combination_lock_report.json",
+    "combination_lock_trace": "dataset/combination_lock_trace.csv",
     "video_cameras": [
       "grasp_camera",
       "front_camera",
       "cap_camera",
       "assembly_camera",
+      "lock_camera",
       "top_camera"
     ]
   },
@@ -115,7 +118,10 @@
     "load_hold_x",
     "tactile_classifier_accuracy",
     "adaptive_regrasp_success_rate",
-    "average_probes_per_object"
+    "average_probes_per_object",
+    "combination_lock_max_error_deg",
+    "detent_detection_success",
+    "latch_pull_success"
   ],
   "not_included": [
     "real camera images used for perception",

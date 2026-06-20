@@ -2,11 +2,11 @@
 
 ## One-Sentence Summary
 
-DexHand Lab is a human-like five-finger MuJoCo hand benchmark for object-specific grasping, blind tactile active perception, adaptive regrasp, cylinder in-hand rotation, a 224-degree cap/knob twist, tactile/contact evidence, slip recovery, load hold, stylus interaction, and index-only button pressing.
+DexHand Lab is a human-like five-finger MuJoCo hand benchmark for object-specific grasping, blind tactile active perception, adaptive regrasp, cylinder in-hand rotation, a 224-degree cap/knob twist, tactile combination lock manipulation, tactile/contact evidence, slip recovery, load hold, stylus interaction, and index-only button pressing.
 
 ## Why This Targets 95+
 
-The submission focuses on dexterity evidence instead of a simple pick-and-place animation: five independent fingers, thumb opposition, object-specific grasp strategies, blind tactile probing/classification, adaptive regrasp, no-snap verification before object motion, MuJoCo fingertip touch sensors plus tactile proxy streams, signature cap rotation, load-hold recovery, stress evaluation, and a multi-gate judge checklist.
+The submission focuses on dexterity evidence instead of a simple pick-and-place animation: five independent fingers, thumb opposition, object-specific grasp strategies, blind tactile probing/classification, adaptive regrasp, no-snap verification before object motion, MuJoCo fingertip touch sensors plus tactile proxy streams, signature cap rotation, tactile combination lock manipulation, load-hold recovery, stress evaluation, and a multi-gate judge checklist.
 
 ## Inspect First
 
@@ -42,8 +42,11 @@ The submission focuses on dexterity evidence instead of a simple pick-and-place 
 30. `dataset/no_ground_truth_control_audit.json`
 31. `media/assembly_keyframes.png`
 32. `media/tactile_pose_estimation_panel.png`
-33. `rubric_scorecard.json`
-34. `validate_submission.py`
+33. `dataset/combination_lock_report.json`
+34. `dataset/combination_lock_trace.csv`
+35. `media/combination_lock_keyframes.png`
+36. `rubric_scorecard.json`
+37. `validate_submission.py`
 
 Runability note: `python submissions/dexhand_lab/run_demo.py` preserves the included generated demo video and refreshes JSON/CSV evidence quickly for judge reproducibility. Use `python submissions/dexhand_lab/run_demo.py --force-render-video` when a fresh MuJoCo frame render is desired.
 
@@ -60,6 +63,10 @@ The main rendered demo also contains a visible blind tactile segment before the 
 The assembly arena goes beyond hiding labels: with `--no-ground-truth-pose`, the controller does not use exact object pose for decisions. The hand probes a small plug/key, estimates center, long axis, orientation, and grasp affordance points from fingertip/contact history, then uses that estimate to execute a precision plug/socket insertion task.
 
 The assembly controller performs precision grasp selection, in-hand orientation correction, socket search/alignment, compliant insertion, jam detection, withdraw-and-correct recovery, retry insertion, and final insertion verification. Ground-truth pose is logged only after the episode for scoring and audit. Evidence is in `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.
+
+## Harder Task Upgrade: Tactile Combination Lock
+
+The combination lock task adds a sequential manipulation challenge. The hand must probe a dial rim, detect three tactile detents, rotate through a code sequence, verify each click, pinch and pull a latch, then open a small micro-door. The sequence is logged in `dataset/combination_lock_report.json` and `dataset/combination_lock_trace.csv`; `media/combination_lock_keyframes.png` gives a visual evidence sheet. This is intentionally harder than a single object grasp because success requires multi-step tactile verification, sustained finger roles, and final latch actuation.
 
 ## Quantitative Evidence
 
@@ -80,6 +87,7 @@ The main demo and evidence scripts report:
 - tactile pose center/axis/orientation error
 - plug/socket insertion depth ratio
 - jam detection and recovery trace
+- tactile combination lock code error, detent count, latch pull, and micro-door open
 - stress success rate and baseline-vs-feedback comparison
 - object snap events: expected 0
 - average active fingers for dexterous grasps
@@ -93,12 +101,12 @@ The main demo and evidence scripts report:
 
 - Reproducibility: fixed seed CLI, deterministic task suite, validator, stress evaluation.
 - MuJoCo depth: articulated hand MJCF, named geoms/sites, fingertip collision pads, five fingertip touch sensors, contact timeline, object state logs, cap hinge joint, plug/socket collision geoms.
-- Task design: sphere, cube, cylinder, cap rotation, slip/load-hold, stylus checkpoint, button press.
-- Control: contact-aware verified grasp routine, minimum-jerk tactile-inspired segments, no-snap policy, blind tactile probing, confidence thresholding, tactile pose estimation, compliant insertion, jam detection, adaptive regrasp.
-- Dexterity: thumb opposition, independent finger roles, multi-side contact, cylinder rotation, cap twist, multi-finger active perception.
+- Task design: sphere, cube, cylinder, cap rotation, tactile combination lock, slip/load-hold, stylus checkpoint, button press.
+- Control: contact-aware verified grasp routine, minimum-jerk tactile-inspired segments, no-snap policy, blind tactile probing, confidence thresholding, tactile pose estimation, compliant insertion, jam detection, tactile detent verification, adaptive regrasp.
+- Dexterity: thumb opposition, independent finger roles, multi-side contact, cylinder rotation, cap twist, combination dial/latch manipulation, multi-finger active perception.
 - Engineering quality: JSON/CSV evidence pack, validator, manifest, final report, structured modules.
 - Presentation: long demo video, keyframes, narration SRT, final evidence report.
-- Innovation: blind tactile active perception arena, no-ground-truth tactile pose estimation, precision assembly with jam recovery, cap/knob 224-degree marker task, tactile proxy audit, adaptive regrasp, hardware replay safety audit.
+- Innovation: blind tactile active perception arena, no-ground-truth tactile pose estimation, precision assembly with jam recovery, tactile combination lock, cap/knob 224-degree marker task, tactile proxy audit, adaptive regrasp, hardware replay safety audit.
 
 ## Honest Scope
 
@@ -125,3 +133,4 @@ The tactile pose estimator is deterministic and contact/proxy based. In `--no-gr
 - `adaptive_regrasp_policy.py`: adaptive recovery/regrasp report and trace.
 - `tactile_pose_estimator.py`: no-ground-truth tactile pose estimator and audit.
 - `precision_assembly_controller.py`: plug/socket assembly, compliant insertion, jam recovery, and assembly stress evidence.
+- `combination_lock_controller.py`: tactile combination lock sequence, detent verification, latch pull, and micro-door evidence.

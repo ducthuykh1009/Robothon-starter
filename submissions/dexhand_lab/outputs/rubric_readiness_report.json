@@ -13,25 +13,25 @@
     {
       "rubric": "Depth of MuJoCo Use",
       "status": "pass",
-      "evidence": "Articulated hand, collision geoms, touch sensors, cap hinge, button, plug/socket, contact timeline.",
+      "evidence": "Articulated hand, collision geoms, touch sensors, cap hinge, tactile lock dial/latch joints, button, plug/socket, contact timeline.",
       "score_estimate": 12
     },
     {
       "rubric": "Task Design",
       "status": "pass",
-      "evidence": "Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly.",
+      "evidence": "Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly, tactile combination lock.",
       "score_estimate": 13
     },
     {
       "rubric": "Control",
       "status": "pass",
-      "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery.",
+      "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification.",
       "score_estimate": 13
     },
     {
       "rubric": "Dexterous Manipulation",
       "status": "pass",
-      "evidence": "Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tripod grasp.",
+      "evidence": "Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tactile dial/latch manipulation, tripod grasp.",
       "score_estimate": 14
     },
     {
@@ -49,17 +49,19 @@
     {
       "rubric": "Innovation",
       "status": "pass",
-      "evidence": "Blind tactile active perception plus no-ground-truth tactile pose estimation and assembly.",
+      "evidence": "Blind tactile active perception plus no-ground-truth tactile pose estimation, assembly, and tactile combination lock.",
       "score_estimate": 12
     }
   ],
   "uuid_consistency_pass": true,
-  "submission_readiness_pass": true,
+  "submission_readiness_pass": false,
   "validation_passed": true,
   "object_snap_events": 0,
   "cap_rotation_achieved_deg": 224.0,
   "load_hold_x": 9.0,
   "stress_success_rate": 1.0,
   "assembly_success_rate": 0.96875,
+  "combination_lock_success": true,
+  "combination_lock_max_error_deg": 0.988,
   "honest_scope": "Local readiness estimate derived from public rubric categories and generated evidence, not an official leaderboard score."
 }

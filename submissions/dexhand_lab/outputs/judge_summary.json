@@ -1,9 +1,9 @@
 {
   "project": "DexHand Lab",
   "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
-  "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
+  "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
   "score_target_evidence": {
-    "task_gates": "20/20",
+    "task_gates": "25/25",
     "cap_rotation_deg": {
       "target": 224.0,
       "achieved": 224.0,
@@ -18,8 +18,8 @@
     "baseline_success_rate": 0.59375,
     "feedback_success_rate": 1.0,
     "object_snap_events": 0,
-    "dexterous_active_fingers": 4.18314,
-    "dexterous_multi_side_contact": 0.91631,
+    "dexterous_active_fingers": 4.18659,
+    "dexterous_multi_side_contact": 0.91606,
     "minimum_jerk_controller_pass": true,
     "hardware_replay_audit_pass": true,
     "blind_tactile_mode_available": true,
@@ -51,10 +51,29 @@
       "jam_recovery_success_rate": 0.92308,
       "assembly_stress_rollouts": 32
     },
+    "tactile_combination_lock": {
+      "task_available": true,
+      "success": true,
+      "code_sequence": [
+        37.0,
+        142.0,
+        224.0
+      ],
+      "detected_sequence": [
+        37.159,
+        141.506,
+        224.321
+      ],
+      "max_error_deg": 0.988,
+      "detent_detection_success": true,
+      "latch_pull_success": true,
+      "micro_door_opened": true,
+      "contact_confidence": 0.9506
+    },
     "event_rules_alignment": {
       "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
       "demo_video_duration_rule_pass": true,
-      "duration_s": 118.6,
+      "duration_s": 129.8,
       "runability_status": "pass",
       "rules_alignment_pass": true
     }
@@ -73,6 +92,9 @@
     "submissions/dexhand_lab/dataset/jam_recovery_report.json",
     "submissions/dexhand_lab/media/assembly_keyframes.png",
     "submissions/dexhand_lab/media/tactile_pose_estimation_panel.png",
+    "submissions/dexhand_lab/dataset/combination_lock_report.json",
+    "submissions/dexhand_lab/dataset/combination_lock_trace.csv",
+    "submissions/dexhand_lab/media/combination_lock_keyframes.png",
     "submissions/dexhand_lab/media/demo.mp4",
     "submissions/dexhand_lab/media/keyframes.png",
     "submissions/dexhand_lab/outputs/summary.json",
@@ -88,12 +110,12 @@
     "runability": "run_demo, run_stress_eval, arena_task_suite, minimum_jerk_controller, contact_feedback_audit, hardware_adaptation_audit, and validate_submission all run deterministically from fixed seeds; event_rules_report.json maps this to the public rubric.",
     "reproducibility": "Fixed seeds and validator outputs make the submission easy to reproduce.",
     "mujoco_depth": "MJCF has articulated hand joints, fingertip pad collision geoms, cap hinge, button joint, plug/socket assembly geoms, and five MuJoCo fingertip touch sensors.",
-    "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, and precision plug/socket assembly.",
-    "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, and performs compliant insertion with jam recovery.",
-    "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, and adaptive regrasp.",
+    "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, precision plug/socket assembly, and tactile combination lock.",
+    "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, and runs tactile detent verification before latch pull.",
+    "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
     "engineering_quality": "Compact evidence files, validator, manifest, judge brief, stress comparison, and hardware replay audit.",
     "presentation": "75-120 second generated demo, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
-    "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation: labels and exact pose can be hidden, the hand probes contact evidence, estimates center/axis, and completes plug/socket assembly with jam recovery."
+    "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation and tactile combination lock: labels/exact pose can be hidden, the hand probes contact evidence, estimates center/axis, completes plug/socket assembly, and solves a multi-detent dial/latch sequence."
   },
   "honest_scope": [
     "Controller is deterministic and contact-aware; it is not learned RL.",

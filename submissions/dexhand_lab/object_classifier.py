@@ -32,6 +32,8 @@ OBJECT_TYPE_BY_NAME = {
     "stylus_tool": "stylus",
     "button": "button",
     "cap_knob": "cap_knob",
+    "combination_lock_dial": "combination_lock",
+    "combination_lock_station": "combination_lock",
 }
 
 RECOMMENDED_GRASP = {
@@ -44,6 +46,7 @@ RECOMMENDED_GRASP = {
     "stylus": "TRIPOD_PRECISION_GRASP",
     "button": "INDEX_FINGERTIP_PRESS",
     "cap_knob": "CAP_KNOB_ROTATION_224",
+    "combination_lock": "TACTILE_COMBINATION_LOCK",
 }
 
 
@@ -138,6 +141,23 @@ def classify_object(model, data, mujoco, object_name: str) -> ObjectAffordance:
             "index": "tangential marker side push",
             "middle_ring": "opposing support arc",
             "little": "optional lower support",
+        }
+    elif object_type == "combination_lock":
+        radius = 0.034
+        half_height = 0.015
+        size = [radius, half_height]
+        long_axis = [0.0, 1.0, 0.0]
+        centerline = [
+            (center - np.array([0.0, half_height, 0.0])).round(5).tolist(),
+            (center + np.array([0.0, half_height, 0.0])).round(5).tolist(),
+        ]
+        face_normals = []
+        regions = {
+            "index": "dial rim detent ridge",
+            "thumb": "dial rim counterhold",
+            "middle": "opposing dial support",
+            "ring": "latch pinch support",
+            "little": "micro-door stabilizer",
         }
     else:
         radius = None

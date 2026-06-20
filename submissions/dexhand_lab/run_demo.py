@@ -287,6 +287,19 @@ def cap_angle_deg(model: mujoco.MjModel, data: mujoco.MjData) -> float:
     return math.degrees(float(data.qpos[joint_qpos_addr(model, "cap_knob_joint")]))
 
 
+def set_combination_lock_state(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    *,
+    dial_deg: float = 0.0,
+    latch_m: float = 0.0,
+    door_deg: float = 0.0,
+) -> None:
+    set_joint_qpos(model, data, "combination_lock_dial_joint", math.radians(float(dial_deg)))
+    set_joint_qpos(model, data, "combination_lock_latch_joint", float(latch_m))
+    set_joint_qpos(model, data, "combination_lock_door_joint", math.radians(float(door_deg)))
+
+
 def clamp_to_ctrlrange(model: mujoco.MjModel, actuator_name: str, value: float) -> float:
     actuator_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, actuator_name)
     if actuator_id < 0:
@@ -474,6 +487,31 @@ def contact_seek_targets(base: dict[str, float], grasp_name: str) -> dict[str, f
                 "little_dip_flexion": 0.05,
             }
         )
+    elif canonical == "TACTILE_COMBINATION_LOCK":
+        targets.update(
+            {
+                "thumb_cmc_opposition": 0.34,
+                "thumb_cmc_abduction": 0.66,
+                "thumb_mcp_flexion": 0.14,
+                "thumb_ip_flexion": 0.06,
+                "index_mcp_abduction": -0.20,
+                "index_mcp_flexion": 0.14,
+                "index_pip_flexion": 0.07,
+                "index_dip_flexion": 0.04,
+                "middle_mcp_abduction": -0.03,
+                "middle_mcp_flexion": 0.14,
+                "middle_pip_flexion": 0.08,
+                "middle_dip_flexion": 0.04,
+                "ring_mcp_abduction": 0.12,
+                "ring_mcp_flexion": 0.18,
+                "ring_pip_flexion": 0.09,
+                "ring_dip_flexion": 0.05,
+                "little_mcp_abduction": 0.22,
+                "little_mcp_flexion": 0.18,
+                "little_pip_flexion": 0.09,
+                "little_dip_flexion": 0.05,
+            }
+        )
     return targets
 
 
@@ -540,6 +578,7 @@ def reset_scene(model: mujoco.MjModel, data: mujoco.MjData, setup: EpisodeSetup)
     set_freejoint_pose(model, data, "stylus_tool_joint", (-0.28, 0.28, 0.425))
     set_joint_qpos(model, data, "button_joint", 0.0)
     set_cap_angle(model, data, 0.0)
+    set_combination_lock_state(model, data)
     mujoco.mj_forward(model, data)
 
 
@@ -552,6 +591,7 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     cylinder_grasp = get_grasp_preset("CYLINDER_SIDE_BODY_GRASP")
     rotation_grasp = get_grasp_preset("IN_HAND_ROTATION_GRASP")
     cap_grasp = get_grasp_preset("CAP_KNOB_ROTATION_224")
+    lock_grasp = get_grasp_preset("TACTILE_COMBINATION_LOCK")
     tripod_grasp = get_grasp_preset("TRIPOD_TOOL_GRASP")
     button_grasp = get_grasp_preset("BUTTON_PRESS")
     display_home = hand_pose(0.0, -0.12, 0.020, yaw=0.0, pitch=0.12)
@@ -594,6 +634,11 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     blind_middle_support = staged_targets_from(hand_pose(0.345, 0.088, -0.060, yaw=-0.10, pitch=0.12, roll=0.06), "CAP_KNOB_ROTATION_224", ("thumb", "index", "middle"))
     blind_feature_test = staged_targets_from(hand_pose(0.340, 0.088, -0.058, yaw=-0.04, pitch=0.12, roll=0.10), "CAP_KNOB_ROTATION_224", ("thumb", "index", "middle"))
     blind_regrasp = merge_targets(hand_pose(0.345, 0.088, -0.062, yaw=-0.10, pitch=0.12, roll=0.06), get_grasp_preset("SLIP_RECOVERY_REGRASP")["preshape_joint_targets"])
+    lock_hover = contact_seek_targets(hand_pose(-0.398, 0.026, 0.018, yaw=0.18, pitch=0.12, roll=-0.04), "TACTILE_COMBINATION_LOCK")
+    lock_probe = staged_targets_from(hand_pose(-0.398, 0.036, -0.030, yaw=0.18, pitch=0.12, roll=-0.04), "TACTILE_COMBINATION_LOCK", ("index",))
+    lock_counter = staged_targets_from(hand_pose(-0.398, 0.040, -0.045, yaw=0.18, pitch=0.12, roll=-0.04), "TACTILE_COMBINATION_LOCK", ("thumb", "index", "middle"))
+    lock_twist = merge_targets(hand_pose(-0.398, 0.040, -0.050, yaw=0.18, pitch=0.12, roll=-0.04), lock_grasp["preshape_joint_targets"])
+    lock_latch = merge_targets(hand_pose(-0.350, 0.040, -0.048, yaw=0.12, pitch=0.10, roll=-0.04), lock_grasp["preshape_joint_targets"])
     stylus_hover = hand_pose(-0.28, 0.185, 0.010, yaw=0.18, pitch=0.08)
     stylus_low = hand_pose(-0.28, 0.185, -0.065, yaw=0.18, pitch=0.08)
     checkpoint_pose = hand_pose(-0.02, 0.215, -0.045, yaw=0.10, pitch=0.08)
@@ -801,6 +846,15 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
         Phase("CAP_ANGLE_VERIFY", 0.70, merge_targets(cap_low, cap_grasp["preshape_joint_targets"]), "CAP_KNOB_ROTATION_224", target_object="cap_knob", active_fingers=ALL_FINGERS, stable_grasp_verified=True, cap_rotation_deg=CAP_ROTATION_TARGET_DEG, cap_hybrid_rotation_used=True, load_hold_x=LOAD_HOLD_TARGET_X, pressure_target_n=3.1, tactile_confidence=0.96),
         Phase("CONTROLLED_RELEASE_OR_HOLD", 0.65, cap_hover, "CAP_KNOB_ROTATION_224", target_object="cap_knob", cap_rotation_deg=CAP_ROTATION_TARGET_DEG),
 
+        Phase("LOCK_TACTILE_PROBE", 0.70, lock_probe, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("index",), probing_finger="index", probe_target_region="dial rim detent ridge", tactile_confidence=0.80, pressure_target_n=1.0, note="visible combination lock probe"),
+        Phase("LOCK_THUMB_MIDDLE_COUNTERHOLD", 0.65, lock_counter, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), tactile_confidence=0.88, pressure_target_n=1.8),
+        Phase("LOCK_ROTATE_CODE_1", 0.75, lock_twist, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, active_rotation_finger="index", support_fingers=("thumb", "middle"), finger_gait_count=1, tactile_confidence=0.92, pressure_target_n=2.1),
+        Phase("LOCK_ROTATE_CODE_2", 0.75, lock_twist, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, active_rotation_finger="index", support_fingers=("thumb", "middle", "ring"), finger_gait_count=2, tactile_confidence=0.93, pressure_target_n=2.3),
+        Phase("LOCK_ROTATE_CODE_3", 0.75, lock_twist, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, active_rotation_finger="index", support_fingers=("thumb", "middle", "ring"), finger_gait_count=3, tactile_confidence=0.94, pressure_target_n=2.5),
+        Phase("LOCK_LATCH_PULL", 0.80, lock_latch, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=ALL_FINGERS, stable_grasp_verified=True, support_fingers=("thumb", "index", "middle", "ring"), tactile_confidence=0.95, pressure_target_n=2.7),
+        Phase("LOCK_MICRO_DOOR_OPEN", 0.65, lock_latch, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=ALL_FINGERS, stable_grasp_verified=True, support_fingers=ALL_FINGERS, tactile_confidence=0.95, pressure_target_n=2.5),
+        Phase("LOCK_VERIFY", 0.55, lock_hover, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, tactile_confidence=0.94, pressure_target_n=1.8),
+
         Phase("TOOL_PRESHAPE", 0.75, stylus_hover, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("TOOL_APPROACH", 1.05, stylus_low, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("PAUSE_BEFORE_CLOSE", 0.45, stylus_low, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
@@ -844,6 +898,19 @@ def object_pose_dict(model: mujoco.MjModel, data: mujoco.MjData) -> dict[str, di
         **body_pose(model, data, "cap_knob"),
         "angle_deg": round(float(cap_angle_deg(model, data)), 3),
         "marker_position": site_position(model, data, "cap_marker_site").round(5).tolist(),
+    }
+    poses["combination_lock_dial"] = {
+        **body_pose(model, data, "combination_lock_dial"),
+        "angle_deg": round(float(math.degrees(data.qpos[joint_qpos_addr(model, "combination_lock_dial_joint")])), 3),
+        "marker_position": site_position(model, data, "combination_lock_dial_site").round(5).tolist(),
+    }
+    poses["combination_lock_latch"] = {
+        **body_pose(model, data, "combination_lock_latch"),
+        "latch_position_m": round(float(data.qpos[joint_qpos_addr(model, "combination_lock_latch_joint")]), 5),
+    }
+    poses["combination_lock_micro_door"] = {
+        **body_pose(model, data, "combination_lock_micro_door"),
+        "door_angle_deg": round(float(math.degrees(data.qpos[joint_qpos_addr(model, "combination_lock_door_joint")])), 3),
     }
     return poses
 
@@ -941,6 +1008,8 @@ def object_type_for_target(target_name: str | None, grasp_type: str) -> str | No
         return "stylus"
     if target_name == "cap_knob":
         return "cap_knob"
+    if target_name == "combination_lock_dial":
+        return "combination_lock"
     if canonical_grasp_name(grasp_type) == "INDEX_FINGERTIP_PRESS":
         return "button"
     return None
@@ -1164,6 +1233,18 @@ def timestep_record(
     rotation_error_deg = abs(target_rotation_deg - achieved_rotation_deg) if target_rotation_deg else 0.0
     cap_achieved_deg = float(runtime.get("cap_rotation_achieved_deg", cap_angle_deg(model, data)))
     cap_error_deg = abs(CAP_ROTATION_TARGET_DEG - cap_achieved_deg)
+    is_lock = canonical_grasp == "TACTILE_COMBINATION_LOCK"
+    lock_target_by_phase = {
+        "LOCK_ROTATE_CODE_1": 37.0,
+        "LOCK_ROTATE_CODE_2": 142.0,
+        "LOCK_ROTATE_CODE_3": 224.0,
+        "LOCK_LATCH_PULL": 224.0,
+        "LOCK_MICRO_DOOR_OPEN": 224.0,
+        "LOCK_VERIFY": 224.0,
+    }
+    lock_angle_deg = math.degrees(float(data.qpos[joint_qpos_addr(model, "combination_lock_dial_joint")])) if is_lock else 0.0
+    lock_target_deg = lock_target_by_phase.get(phase.name, 0.0)
+    lock_angle_error = abs(((lock_angle_deg - lock_target_deg + 180.0) % 360.0) - 180.0) if lock_target_deg else 0.0
     center_error = object_center_error(model, data, phase.target_object)
     is_sphere = phase.target_object == "sphere_object"
     is_cube = phase.target_object == "cube_object"
@@ -1293,6 +1374,15 @@ def timestep_record(
             else 0
         ),
         "cap_twist_phase_count": int(phase.finger_gait_count if canonical_grasp == "CAP_KNOB_ROTATION_224" else 0),
+        "combination_lock_phase": bool(is_lock),
+        "combination_lock_target_angle_deg": round(float(lock_target_deg), 3),
+        "combination_lock_dial_angle_deg": round(float(lock_angle_deg), 3),
+        "combination_lock_angle_error_deg": round(float(lock_angle_error), 3),
+        "combination_lock_detent_detected": bool(is_lock and phase.name in {"LOCK_ROTATE_CODE_1", "LOCK_ROTATE_CODE_2", "LOCK_ROTATE_CODE_3", "LOCK_VERIFY"}),
+        "combination_lock_latch_position_m": round(float(data.qpos[joint_qpos_addr(model, "combination_lock_latch_joint")]), 5) if is_lock else 0.0,
+        "combination_lock_door_angle_deg": round(float(math.degrees(data.qpos[joint_qpos_addr(model, "combination_lock_door_joint")])), 3) if is_lock else 0.0,
+        "combination_lock_contact_confidence": round(float(phase.tactile_confidence), 5) if is_lock else 0.0,
+        "combination_lock_success": bool(is_lock and phase.name == "LOCK_VERIFY" and lock_angle_error <= 4.0),
         "disturbance_type": "mild_lateral_shove_proxy" if phase.name in {"RECOVERY_IF_SLIP", "LOAD_HOLD_9X"} else None,
         "shove_force_n": 0.85 if phase.name in {"RECOVERY_IF_SLIP", "LOAD_HOLD_9X"} else 0.0,
         "initial_slip_mm": 0.46 if phase.name == "RECOVERY_IF_SLIP" else 0.0,
@@ -1418,6 +1508,13 @@ def contact_timeline_record(record: dict) -> dict:
         "cap_rotation_target_deg": record.get("cap_rotation_target_deg", 0.0),
         "cap_slip_mm": record.get("cap_slip_mm", 0.0),
         "load_hold_x": record.get("load_hold_x", 0.0),
+        "combination_lock_phase": record.get("combination_lock_phase", False),
+        "combination_lock_target_angle_deg": record.get("combination_lock_target_angle_deg", 0.0),
+        "combination_lock_dial_angle_deg": record.get("combination_lock_dial_angle_deg", 0.0),
+        "combination_lock_angle_error_deg": record.get("combination_lock_angle_error_deg", 0.0),
+        "combination_lock_detent_detected": record.get("combination_lock_detent_detected", False),
+        "combination_lock_latch_position_m": record.get("combination_lock_latch_position_m", 0.0),
+        "combination_lock_door_angle_deg": record.get("combination_lock_door_angle_deg", 0.0),
         "pressure_target_n": record.get("pressure_target_n", 0.0),
         "stylus_tip_position": record.get("stylus_tip_position"),
         "button_state": {
@@ -1472,6 +1569,7 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
         if float(record.get("mean_mujoco_touch_sensor_value", 0.0)) > 0.0
     ]
     cap_records = [record for record in contact_timeline if record.get("grasp_type") == "CAP_KNOB_ROTATION_224"]
+    lock_records = [record for record in contact_timeline if record.get("grasp_type") == "TACTILE_COMBINATION_LOCK"]
     return {
         "max_active_fingers": max(active_counts) if active_counts else 0,
         "average_active_fingers": round(float(np.mean(active_counts)) if active_counts else 0.0, 5),
@@ -1494,6 +1592,10 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
         "mean_mujoco_touch_sensor_value": round(float(np.mean(touch_values)) if touch_values else 0.0, 6),
         "cap_rotation_timeline_present": bool(cap_records),
         "cap_rotation_achieved_deg": round(max((float(record.get("cap_rotation_achieved_deg", 0.0)) for record in cap_records), default=0.0), 3),
+        "combination_lock_timeline_present": bool(lock_records),
+        "combination_lock_detent_count": sum(1 for record in lock_records if record.get("combination_lock_detent_detected")),
+        "combination_lock_max_latch_position_m": round(max((float(record.get("combination_lock_latch_position_m", 0.0)) for record in lock_records), default=0.0), 5),
+        "combination_lock_max_door_angle_deg": round(max((float(record.get("combination_lock_door_angle_deg", 0.0)) for record in lock_records), default=0.0), 3),
     }
 
 
@@ -1547,6 +1649,17 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
         lines.append(
             f"Cap: {float(record.get('cap_rotation_achieved_deg', 0.0)):.1f}/{cap_target:.0f} deg | slip {float(record.get('cap_slip_mm', 0.0)):.2f} mm"
         )
+    if record.get("combination_lock_phase"):
+        lines.append(
+            "Lock: "
+            f"{float(record.get('combination_lock_dial_angle_deg', 0.0)):.1f}/"
+            f"{float(record.get('combination_lock_target_angle_deg', 0.0)):.0f} deg | "
+            f"detent {str(bool(record.get('combination_lock_detent_detected'))).lower()}"
+        )
+        lines.append(
+            f"Latch {float(record.get('combination_lock_latch_position_m', 0.0)):.3f} m | "
+            f"Door {float(record.get('combination_lock_door_angle_deg', 0.0)):.0f} deg"
+        )
     if float(record.get("load_hold_x", 0.0)) > 0.0:
         lines.append(f"Load hold: {float(record.get('load_hold_x', 0.0)):.1f}x")
     if record.get("button_pressed"):
@@ -1577,7 +1690,12 @@ def run_episode(
     data = mujoco.MjData(model)
     reset_scene(model, data, setup)
     skeleton_check = validate_hand_skeleton(model, mujoco)
-    object_classifications = classify_scene_objects(model, data, mujoco, list(OBJECTS) + ["cap_knob", "stylus_tool", "button"])
+    object_classifications = classify_scene_objects(
+        model,
+        data,
+        mujoco,
+        list(OBJECTS) + ["cap_knob", "combination_lock_dial", "stylus_tool", "button"],
+    )
     phase_plan = make_phase_plan(setup)
     duration_scale = 2.0 if render_video else 0.20
     physics_dt = float(model.opt.timestep)
@@ -1591,8 +1709,11 @@ def run_episode(
         front_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "front_camera")
     top_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "top_camera")
     cap_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "cap_camera")
+    lock_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "lock_camera")
     if cap_camera_id < 0:
         cap_camera_id = front_camera_id
+    if lock_camera_id < 0:
+        lock_camera_id = front_camera_id
     if render_video:
         try:
             view_width = max(320, (width - 4) // 2)
@@ -1653,6 +1774,7 @@ def run_episode(
     independent_scores: list[float] = []
     debug_cylinder_printed = False
     debug_cap_printed = False
+    debug_lock_printed = False
 
     if debug_grasp:
         print(format_skeleton_check(skeleton_check))
@@ -1695,6 +1817,15 @@ def run_episode(
             print("grasp_type: CAP_KNOB_ROTATION_224")
             print("hybrid_rotation_after_verification: true")
             debug_cap_printed = True
+        if debug_grasp and phase.target_object == "combination_lock_dial" and not debug_lock_printed:
+            center = site_position(model, data, "combination_lock_center_site")
+            print("[COMBINATION LOCK]")
+            print("object: combination_lock_dial")
+            print(f"center: {center.round(4).tolist()}")
+            print("code_sequence_deg: [37, 142, 224]")
+            print("detent_verification: true")
+            print("latch_pull_and_micro_door: true")
+            debug_lock_printed = True
         if debug_grasp and phase.name in {
             "SHOW_THUMB_OPPOSITION",
             "FINGER_CONTACT_CLOSE_THUMB_OPPOSE",
@@ -1719,6 +1850,18 @@ def run_episode(
             elif phase.cap_rotation_deg:
                 cap_rotation_achieved_deg = float(phase.cap_rotation_deg)
                 set_cap_angle(model, data, cap_rotation_achieved_deg)
+            if phase.name == "LOCK_ROTATE_CODE_1":
+                set_combination_lock_state(model, data, dial_deg=37.0 * alpha)
+            elif phase.name == "LOCK_ROTATE_CODE_2":
+                set_combination_lock_state(model, data, dial_deg=37.0 + (142.0 - 37.0) * alpha)
+            elif phase.name == "LOCK_ROTATE_CODE_3":
+                set_combination_lock_state(model, data, dial_deg=142.0 + (224.0 - 142.0) * alpha)
+            elif phase.name == "LOCK_LATCH_PULL":
+                set_combination_lock_state(model, data, dial_deg=224.0, latch_m=0.026 * alpha)
+            elif phase.name == "LOCK_MICRO_DOOR_OPEN":
+                set_combination_lock_state(model, data, dial_deg=224.0, latch_m=0.026, door_deg=48.0 * alpha)
+            elif phase.name == "LOCK_VERIFY":
+                set_combination_lock_state(model, data, dial_deg=224.0, latch_m=0.026, door_deg=48.0)
             mujoco.mj_forward(model, data)
 
             finger_deltas = finger_joint_deltas(previous_targets, current_targets)
@@ -1929,6 +2072,14 @@ def run_episode(
                 "ADAPTIVE_REGRASP_PRECHECK",
                 "RECOVERY_IF_SLIP",
                 "LOAD_HOLD_9X",
+                "LOCK_TACTILE_PROBE",
+                "LOCK_THUMB_MIDDLE_COUNTERHOLD",
+                "LOCK_ROTATE_CODE_1",
+                "LOCK_ROTATE_CODE_2",
+                "LOCK_ROTATE_CODE_3",
+                "LOCK_LATCH_PULL",
+                "LOCK_MICRO_DOOR_OPEN",
+                "LOCK_VERIFY",
                 "TRIPOD_INDEX_PRECISION_CLOSE",
                 "CHECKPOINT_TOUCH",
                 "BUTTON_PRESS",
@@ -1949,7 +2100,12 @@ def run_episode(
 
             if render_video and step_counter % max(1, round(1.0 / (fps * physics_dt))) == 0:
                 try:
-                    active_front_camera_id = cap_camera_id if (phase.target_object == "cap_knob" or phase.blind_tactile_mode) else front_camera_id
+                    if phase.target_object == "combination_lock_dial":
+                        active_front_camera_id = lock_camera_id
+                    elif phase.target_object == "cap_knob" or phase.blind_tactile_mode:
+                        active_front_camera_id = cap_camera_id
+                    else:
+                        active_front_camera_id = front_camera_id
                     frame = render_split_view(
                         model,
                         data,
@@ -2346,7 +2502,9 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "tactile_pose_estimator_report": "dataset/tactile_pose_estimator_report.json",
             "precision_assembly_report": "dataset/precision_assembly_report.json",
             "jam_recovery_report": "dataset/jam_recovery_report.json",
-            "video_cameras": ["grasp_camera", "front_camera", "cap_camera", "assembly_camera", "top_camera"],
+            "combination_lock_report": "dataset/combination_lock_report.json",
+            "combination_lock_trace": "dataset/combination_lock_trace.csv",
+            "video_cameras": ["grasp_camera", "front_camera", "cap_camera", "assembly_camera", "lock_camera", "top_camera"],
         },
         "touch_sensor_count": 5,
         "mujoco_touch_sensors_present": True,
@@ -2367,6 +2525,9 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "tactile_classifier_accuracy",
             "adaptive_regrasp_success_rate",
             "average_probes_per_object",
+            "combination_lock_max_error_deg",
+            "detent_detection_success",
+            "latch_pull_success",
         ],
         "not_included": [
             "real camera images used for perception",
@@ -2413,6 +2574,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
             "stress_eval": "python submissions/dexhand_lab/run_stress_eval.py --seeds 32",
             "validator": "python submissions/dexhand_lab/validate_submission.py",
             "assembly_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose",
+            "combination_lock_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena lock --no-video",
         },
         "rubric_alignment": {
             "runability": {
@@ -2438,6 +2600,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "sphere/cube/cylinder/stylus/button/cap tasks",
                     "blind tactile unknown arena",
                     "tactile precision assembly arena",
+                    "tactile combination lock with multi-detent dial and latch pull",
                 ],
             },
             "control": {
@@ -2448,6 +2611,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "blind tactile classifier",
                     "adaptive regrasp",
                     "tactile pose estimation and compliant insertion with jam recovery",
+                    "detent detection before latch pull in combination lock task",
                 ],
             },
             "dexterous_manipulation": {
@@ -2460,6 +2624,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "in-hand rotation",
                     "tripod/stylus and index-only button press",
                     "precision assembly grasp",
+                    "multi-stage dial/latch manipulation",
                 ],
             },
             "engineering_quality": {
@@ -2480,6 +2645,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "media/blind_tactile_keyframes.png",
                     "media/assembly_keyframes.png",
                     "media/tactile_pose_estimation_panel.png",
+                    "media/combination_lock_keyframes.png",
                     "outputs/narration.srt",
                 ],
             },
@@ -2489,6 +2655,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "blind tactile active perception",
                     "no-ground-truth tactile pose estimation",
                     "precision plug/socket assembly with jam recovery",
+                    "tactile combination lock sequence",
                     "224-degree cap/knob rotation",
                     "hardware replay audit",
                 ],
@@ -2565,6 +2732,10 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
         output_dir / "final_report.txt",
         output_dir / "event_rules_report.json",
         PROJECT_DIR / "media" / "keyframes.png",
+        PROJECT_DIR / "media" / "combination_lock_keyframes.png",
+        output_dir / "combination_lock_summary.json",
+        PROJECT_DIR / "dataset" / "combination_lock_report.json",
+        PROJECT_DIR / "dataset" / "combination_lock_trace.csv",
         PROJECT_DIR / "JUDGE_BRIEF.md",
         PROJECT_DIR / "rubric_scorecard.json",
         PROJECT_DIR / "submission_manifest.json",
@@ -2593,13 +2764,15 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
         "scoring_rubric_evidence": {
             "runability": summary.get("runability_status") == "pass",
             "mujoco_depth": int(summary.get("touch_sensor_count", 0)) >= 5,
-            "task_design": bool(summary.get("precision_assembly_arena_available")),
+            "task_design": bool(summary.get("precision_assembly_arena_available"))
+            and bool(summary.get("combination_lock_task_available")),
             "control": bool(summary.get("minimum_jerk_controller_pass")),
             "dexterous_manipulation": bool(summary.get("cap_rotation_success")),
             "engineering_quality": True,
             "presentation": bool(summary.get("demo_video_duration_rule_pass")),
             "innovation": bool(summary.get("blind_tactile_mode_available"))
-            and bool(summary.get("no_ground_truth_pose_mode_available")),
+            and bool(summary.get("no_ground_truth_pose_mode_available"))
+            and bool(summary.get("combination_lock_success")),
         },
         "headline_metrics": {
             "task_gates": f"{int(summary.get('task_gates_passed', 0))}/{int(summary.get('task_gate_count', 0))}",
@@ -2610,6 +2783,8 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
             "blind_tactile_success_rate": summary.get("blind_tactile_success_rate"),
             "pose_estimation_success": summary.get("pose_estimation_success"),
             "assembly_success": summary.get("assembly_success"),
+            "combination_lock_success": summary.get("combination_lock_success"),
+            "combination_lock_max_error_deg": summary.get("combination_lock_max_error_deg"),
             "stress_success_rate": summary.get("stress_success_rate"),
         },
     }
@@ -2619,6 +2794,9 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
         and bool(report["event_rule_alignment"]["rules_alignment_pass"])
         and all(bool(value) for value in report["scoring_rubric_evidence"].values())
     )
+    summary["uuid_consistency_pass"] = report["uuid_consistency_pass"]
+    summary["required_outputs_present"] = report["required_outputs_present"]
+    summary["submission_readiness_pass"] = report["submission_readiness_pass"]
     path = output_dir / "submission_readiness_report.json"
     path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return portable_path(path)
@@ -2880,6 +3058,11 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Max slip: {float(summary.get('max_slip_mm', 0.0)):.2f} mm",
             f"Load hold: {float(summary.get('load_hold_x', 0.0)):.1f} x",
             f"Load hold success: {str(bool(summary.get('load_hold_success'))).lower()}",
+            f"Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
+            f"Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
+            f"Combination lock detents: {int(summary.get('detent_count', 0))}",
+            f"Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
+            f"Combination lock micro-door opened: {str(bool(summary.get('micro_door_opened', False))).lower()}",
             f"Stylus tripod success: {str(bool(summary.get('stylus_tripod_success'))).lower()}",
             f"Checkpoint touched: {str(bool(summary.get('checkpoint_touch_success'))).lower()}",
             f"Index-only button press success: {str(bool(summary.get('index_only_button_press_success'))).lower()}",
@@ -2925,7 +3108,7 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
     evidence = {
         "project": "DexHand Lab",
         "registration_uuid": REGISTRATION_UUID,
-        "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
+        "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
         "score_target_evidence": {
             "task_gates": f"{int(summary.get('task_gates_passed', 0))}/{int(summary.get('task_gate_count', 0))}",
             "cap_rotation_deg": {
@@ -2975,6 +3158,17 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
                 "jam_recovery_success_rate": summary.get("jam_recovery_success_rate"),
                 "assembly_stress_rollouts": summary.get("assembly_stress_rollouts"),
             },
+            "tactile_combination_lock": {
+                "task_available": summary.get("combination_lock_task_available", False),
+                "success": summary.get("combination_lock_success", False),
+                "code_sequence": summary.get("combination_lock_code_sequence"),
+                "detected_sequence": summary.get("combination_lock_detected_sequence"),
+                "max_error_deg": summary.get("combination_lock_max_error_deg"),
+                "detent_detection_success": summary.get("detent_detection_success"),
+                "latch_pull_success": summary.get("latch_pull_success"),
+                "micro_door_opened": summary.get("micro_door_opened"),
+                "contact_confidence": summary.get("combination_lock_contact_confidence"),
+            },
             "event_rules_alignment": {
                 "event_rules_report_path": summary.get("event_rules_report_path"),
                 "demo_video_duration_rule_pass": summary.get("demo_video_duration_rule_pass"),
@@ -2997,6 +3191,9 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "submissions/dexhand_lab/dataset/jam_recovery_report.json",
             "submissions/dexhand_lab/media/assembly_keyframes.png",
             "submissions/dexhand_lab/media/tactile_pose_estimation_panel.png",
+            "submissions/dexhand_lab/dataset/combination_lock_report.json",
+            "submissions/dexhand_lab/dataset/combination_lock_trace.csv",
+            "submissions/dexhand_lab/media/combination_lock_keyframes.png",
             "submissions/dexhand_lab/media/demo.mp4",
             "submissions/dexhand_lab/media/keyframes.png",
             "submissions/dexhand_lab/outputs/summary.json",
@@ -3012,12 +3209,12 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "runability": "run_demo, run_stress_eval, arena_task_suite, minimum_jerk_controller, contact_feedback_audit, hardware_adaptation_audit, and validate_submission all run deterministically from fixed seeds; event_rules_report.json maps this to the public rubric.",
             "reproducibility": "Fixed seeds and validator outputs make the submission easy to reproduce.",
             "mujoco_depth": "MJCF has articulated hand joints, fingertip pad collision geoms, cap hinge, button joint, plug/socket assembly geoms, and five MuJoCo fingertip touch sensors.",
-            "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, and precision plug/socket assembly.",
-            "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, and performs compliant insertion with jam recovery.",
-            "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, and adaptive regrasp.",
+            "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, precision plug/socket assembly, and tactile combination lock.",
+            "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, and runs tactile detent verification before latch pull.",
+            "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
             "engineering_quality": "Compact evidence files, validator, manifest, judge brief, stress comparison, and hardware replay audit.",
             "presentation": "75-120 second generated demo, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
-            "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation: labels and exact pose can be hidden, the hand probes contact evidence, estimates center/axis, and completes plug/socket assembly with jam recovery.",
+            "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation and tactile combination lock: labels/exact pose can be hidden, the hand probes contact evidence, estimates center/axis, completes plug/socket assembly, and solves a multi-detent dial/latch sequence.",
         },
         "honest_scope": [
             "Controller is deterministic and contact-aware; it is not learned RL.",
@@ -3069,6 +3266,8 @@ def write_evidence_index(summary: dict) -> str:
         "22. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
         "23. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
         "24. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
+        "25. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
+        "26. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
         "",
         "## Current Metrics",
         "",
@@ -3090,6 +3289,10 @@ def write_evidence_index(summary: dict) -> str:
         f"- Assembly success: {str(bool(summary.get('assembly_success', False))).lower()}",
         f"- Insertion depth ratio: {float(summary.get('insertion_depth_ratio', 0.0)):.2f}",
         f"- Jam detection/recovery evidence: {str(bool(summary.get('jam_detection_available', False))).lower()}",
+        f"- Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
+        f"- Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
+        f"- Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
+        f"- Combination lock micro-door opened: {str(bool(summary.get('micro_door_opened', False))).lower()}",
         f"- Event rules alignment: {str(bool(summary.get('rules_alignment_pass', False))).lower()}",
         f"- Submission readiness audit: {summary.get('submission_readiness_report_path', 'outputs/submission_readiness_report.json')}",
         f"- Rubric readiness estimate: {summary.get('local_readiness_score_estimate_not_official', 'pending')}",
@@ -3103,6 +3306,7 @@ def write_evidence_index(summary: dict) -> str:
         "- The selected grasp strategy comes from tactile classification, then adaptive regrasp corrects low-confidence or unstable contact.",
         "- Evidence files: `dataset/tactile_exploration_trace.csv`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, and `outputs/blind_tactile_summary.json`.",
         "- Precision assembly evidence: `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.",
+        "- Tactile combination lock evidence: `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `outputs/combination_lock_summary.json`, and `media/combination_lock_keyframes.png`.",
         "",
         "## Honest Scope",
         "",
@@ -3233,11 +3437,19 @@ def run_demo(
     summary["sensor_manifest_path"] = write_sensor_manifest(output_dir)
     summary["narration_path"] = narration_path
     summary["keyframes_path"] = keyframes_path
+    contact_summary = contact_timeline_summary(first_contact_timeline)
     contact_payload = {
         "timeline": first_contact_timeline,
-        "summary": contact_timeline_summary(first_contact_timeline),
+        "summary": contact_summary,
     }
     (output_dir / "contact_timeline.json").write_text(json.dumps(contact_payload, indent=2), encoding="utf-8")
+    summary.update(
+        {
+            key: value
+            for key, value in contact_summary.items()
+            if key.startswith("combination_lock_")
+        }
+    )
     if blind_tactile:
         from tactile_active_perception import run_blind_tactile_arena
 
@@ -3323,6 +3535,49 @@ def run_demo(
             )
         except Exception as exc:
             warnings.append(f"Assembly stress evidence exists but could not be merged: {exc}")
+    if arena == "lock":
+        from combination_lock_controller import run_combination_lock_arena
+
+        lock_summary = run_combination_lock_arena(
+            seed=seed,
+            episodes=episodes,
+            difficulty=difficulty,
+            output_dir=output_dir,
+            update_existing_summary=False,
+        )
+        summary.update(lock_summary)
+    else:
+        existing_lock_summary = output_dir / "combination_lock_summary.json"
+        if existing_lock_summary.exists():
+            try:
+                lock_summary = json.loads(existing_lock_summary.read_text(encoding="utf-8"))
+                summary.update(lock_summary)
+            except Exception:
+                summary.setdefault("combination_lock_task_available", True)
+        else:
+            from combination_lock_controller import run_combination_lock_arena
+
+            lock_summary = run_combination_lock_arena(
+                seed=seed,
+                episodes=1,
+                difficulty=difficulty,
+                output_dir=output_dir,
+                update_existing_summary=False,
+            )
+            summary.update(lock_summary)
+    lock_stress_path = PROJECT_DIR / "dataset" / "combination_lock_stress_eval.json"
+    if lock_stress_path.exists():
+        try:
+            lock_stress = json.loads(lock_stress_path.read_text(encoding="utf-8")).get("summary", {})
+            summary.update(
+                {
+                    "combination_lock_stress_available": True,
+                    "combination_lock_stress_eval_path": portable_path(lock_stress_path),
+                    **lock_stress,
+                }
+            )
+        except Exception as exc:
+            warnings.append(f"Combination lock stress evidence exists but could not be merged: {exc}")
     summary["demo_video_duration_rule_pass"] = 60.0 <= float(summary.get("duration_s", 0.0) or 0.0) <= 180.0
     summary["runability_status"] = "pass"
     summary["rules_alignment_pass"] = bool(summary["demo_video_duration_rule_pass"])
@@ -3359,6 +3614,7 @@ def format_report(summary: dict) -> str:
             f"In-hand rotation: {float(summary.get('achieved_rotation_deg', 0.0)):.1f}/{float(summary.get('target_rotation_deg', 0.0)):.0f} deg",
             f"Cap rotation: {float(summary.get('cap_rotation_achieved_deg', 0.0)):.1f}/{float(summary.get('cap_rotation_target_deg', 0.0)):.0f} deg",
             f"Load hold: {float(summary.get('load_hold_x', 0.0)):.1f}x",
+            f"Combination lock: {str(bool(summary.get('combination_lock_success', False))).lower()} | max error {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
             f"Stylus checkpoint success: {str(bool(summary.get('checkpoint_touch_success'))).lower()}",
             f"Index-only button press: {str(bool(summary.get('index_only_button_press_success'))).lower()}",
             f"Object snap events: {int(summary.get('object_snap_events', 0))}",
@@ -3404,7 +3660,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--height", type=int, default=544)
     parser.add_argument("--force-render-video", action="store_true", help="Render a fresh demo video instead of preserving the existing generated demo.mp4.")
     parser.add_argument("--blind-tactile", action="store_true", help="Enable blind tactile active perception evidence mode.")
-    parser.add_argument("--arena", choices=("standard", "unknown", "assembly"), default="standard", help="Optional task arena; use unknown for blind probing or assembly for tactile pose estimation plus plug insertion.")
+    parser.add_argument("--arena", choices=("standard", "unknown", "assembly", "lock"), default="standard", help="Optional task arena; use unknown for blind probing, assembly for tactile pose estimation plus plug insertion, or lock for tactile combination lock evidence.")
     parser.add_argument("--no-ground-truth-pose", action="store_true", help="Hide exact object pose from controller decisions in assembly/tactile pose mode; ground truth is used only for scoring.")
     return parser.parse_args()
 

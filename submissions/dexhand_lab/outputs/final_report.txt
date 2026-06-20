@@ -1,20 +1,20 @@
 ## DexHand Lab 95+ Evidence Report
 
-Task gates: 20/20
+Task gates: 25/25
 Hand skeleton valid: true
 All five fingers visible: true
 Thumb opposition visible: true
 Tactile channels: 5
 MuJoCo fingertip touch sensors: 5
-Mean tactile confidence, all phases: 0.50
+Mean tactile confidence, all phases: 0.53
 Active contact confidence: 0.67
-Dexterous grasp contact confidence: 0.76
+Dexterous grasp contact confidence: 0.77
 Tactile taxel audit confidence: 0.90
-Mean friction margin: 0.95
+Mean friction margin: 0.96
 Independent finger motion score: 0.75
-Average active fingers, all phases: 2.80
-Dexterous active fingers: 4.18
-Average multi-side contact score, all phases: 0.64
+Average active fingers, all phases: 2.92
+Dexterous active fingers: 4.19
+Average multi-side contact score, all phases: 0.65
 Dexterous multi-side contact score: 0.92
 Object center between fingers rate: 1.00
 Average grasp centroid error: 0.024 m
@@ -38,6 +38,11 @@ Final slip: 0.28 mm
 Max slip: 0.46 mm
 Load hold: 9.0 x
 Load hold success: true
+Combination lock success: true
+Combination lock max error: 1.0 deg
+Combination lock detents: 3
+Combination lock latch pull: true
+Combination lock micro-door opened: true
 Stylus tripod success: true
 Checkpoint touched: true
 Index-only button press success: true
@@ -68,6 +73,6 @@ Socket angle error: 3.2 deg
 Jam detection available: true
 Assembly stress success: 96.9%
 Jam recovery stress success: 92.3%
-Average grasp stability score: 0.72
+Average grasp stability score: 0.74
 Stress eval available: true
 Overall task success: true

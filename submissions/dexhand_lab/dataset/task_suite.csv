@@ -19,3 +19,8 @@ gate,name,passed
 18,slip_recovery_success,True
 19,load_hold_success,True
 20,no_snap_verified,True
+21,combination_lock_task_available,True
+22,combination_lock_success,True
+23,combination_lock_detent_detection_success,True
+24,combination_lock_latch_pull_success,True
+25,combination_lock_micro_door_opened,True

@@ -79,25 +79,27 @@ def build_rubric_rows(summary: dict, readiness: dict) -> list[dict]:
         {
             "rubric": "Depth of MuJoCo Use",
             "status": "pass" if int(summary.get("touch_sensor_count", 0)) >= 5 else "review",
-            "evidence": "Articulated hand, collision geoms, touch sensors, cap hinge, button, plug/socket, contact timeline.",
+            "evidence": "Articulated hand, collision geoms, touch sensors, cap hinge, tactile lock dial/latch joints, button, plug/socket, contact timeline.",
             "score_estimate": 12,
         },
         {
             "rubric": "Task Design",
-            "status": "pass" if bool(summary.get("precision_assembly_arena_available")) else "review",
-            "evidence": "Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly.",
+            "status": "pass"
+            if bool(summary.get("precision_assembly_arena_available")) and bool(summary.get("combination_lock_task_available"))
+            else "review",
+            "evidence": "Sphere, cube, cylinder, cap twist, load hold, stylus, button, blind tactile arena, precision assembly, tactile combination lock.",
             "score_estimate": 13,
         },
         {
             "rubric": "Control",
             "status": "pass" if bool(summary.get("minimum_jerk_controller_pass")) else "review",
-            "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery.",
+            "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification.",
             "score_estimate": 13,
         },
         {
             "rubric": "Dexterous Manipulation",
             "status": "pass" if float(summary.get("average_active_fingers_dexterous_grasps", 0.0)) >= 4.0 else "review",
-            "evidence": "Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tripod grasp.",
+            "evidence": "Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tactile dial/latch manipulation, tripod grasp.",
             "score_estimate": 14,
         },
         {
@@ -118,7 +120,7 @@ def build_rubric_rows(summary: dict, readiness: dict) -> list[dict]:
             if bool(summary.get("blind_tactile_mode_available"))
             and bool(summary.get("no_ground_truth_pose_mode_available"))
             else "review",
-            "evidence": "Blind tactile active perception plus no-ground-truth tactile pose estimation and assembly.",
+            "evidence": "Blind tactile active perception plus no-ground-truth tactile pose estimation, assembly, and tactile combination lock.",
             "score_estimate": 12,
         },
     ]
@@ -183,6 +185,8 @@ def build_quality_reports(project_dir: Path | None = None, *, run_tests: bool = 
         "load_hold_x": summary.get("load_hold_x"),
         "stress_success_rate": summary.get("stress_success_rate"),
         "assembly_success_rate": summary.get("assembly_success_rate"),
+        "combination_lock_success": summary.get("combination_lock_success"),
+        "combination_lock_max_error_deg": summary.get("combination_lock_max_error_deg"),
         "honest_scope": "Local readiness estimate derived from public rubric categories and generated evidence, not an official leaderboard score.",
     }
     rubric_report_path = output_dir / "rubric_readiness_report.json"

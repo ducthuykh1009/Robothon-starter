@@ -20,7 +20,7 @@
   "demo_video_rule": {
     "required_duration_s_min": 60.0,
     "required_duration_s_max": 180.0,
-    "actual_duration_s": 118.6,
+    "actual_duration_s": 129.8,
     "pass": true,
     "path": "submissions/dexhand_lab/outputs/demo.mp4"
   },
@@ -29,7 +29,8 @@
     "no_video_eval": "python submissions/dexhand_lab/run_demo.py --episodes 3 --seed 42 --no-video --difficulty medium",
     "stress_eval": "python submissions/dexhand_lab/run_stress_eval.py --seeds 32",
     "validator": "python submissions/dexhand_lab/validate_submission.py",
-    "assembly_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose"
+    "assembly_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose",
+    "combination_lock_arena": "python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena lock --no-video"
   },
   "rubric_alignment": {
     "runability": {
@@ -54,7 +55,8 @@
         "multi-stage dexterity benchmark",
         "sphere/cube/cylinder/stylus/button/cap tasks",
         "blind tactile unknown arena",
-        "tactile precision assembly arena"
+        "tactile precision assembly arena",
+        "tactile combination lock with multi-detent dial and latch pull"
       ]
     },
     "control": {
@@ -64,7 +66,8 @@
         "minimum-jerk tactile controller",
         "blind tactile classifier",
         "adaptive regrasp",
-        "tactile pose estimation and compliant insertion with jam recovery"
+        "tactile pose estimation and compliant insertion with jam recovery",
+        "detent detection before latch pull in combination lock task"
       ]
     },
     "dexterous_manipulation": {
@@ -76,7 +79,8 @@
         "cap twist",
         "in-hand rotation",
         "tripod/stylus and index-only button press",
-        "precision assembly grasp"
+        "precision assembly grasp",
+        "multi-stage dial/latch manipulation"
       ]
     },
     "engineering_quality": {
@@ -97,6 +101,7 @@
         "media/blind_tactile_keyframes.png",
         "media/assembly_keyframes.png",
         "media/tactile_pose_estimation_panel.png",
+        "media/combination_lock_keyframes.png",
         "outputs/narration.srt"
       ]
     },
@@ -106,6 +111,7 @@
         "blind tactile active perception",
         "no-ground-truth tactile pose estimation",
         "precision plug/socket assembly with jam recovery",
+        "tactile combination lock sequence",
         "224-degree cap/knob rotation",
         "hardware replay audit"
       ]

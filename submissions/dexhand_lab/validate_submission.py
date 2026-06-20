@@ -34,6 +34,7 @@ def main() -> int:
         PROJECT_DIR / "adaptive_regrasp_policy.py",
         PROJECT_DIR / "tactile_pose_estimator.py",
         PROJECT_DIR / "precision_assembly_controller.py",
+        PROJECT_DIR / "combination_lock_controller.py",
         PROJECT_DIR / "quality_gate.py",
         PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
@@ -57,6 +58,7 @@ def main() -> int:
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
+        OUTPUT_DIR / "combination_lock_summary.json",
         OUTPUT_DIR / "stress_eval.json",
         OUTPUT_DIR / "baseline_vs_feedback.json",
         OUTPUT_DIR / "stress_eval_summary.csv",
@@ -65,6 +67,7 @@ def main() -> int:
         PROJECT_DIR / "media" / "tactile_classifier_panel.png",
         PROJECT_DIR / "media" / "assembly_keyframes.png",
         PROJECT_DIR / "media" / "tactile_pose_estimation_panel.png",
+        PROJECT_DIR / "media" / "combination_lock_keyframes.png",
         PROJECT_DIR / "media" / "demo.mp4",
         DATASET_DIR / "task_suite_report.json",
         DATASET_DIR / "task_suite.csv",
@@ -85,6 +88,8 @@ def main() -> int:
         DATASET_DIR / "jam_recovery_report.json",
         DATASET_DIR / "jam_recovery_trace.csv",
         DATASET_DIR / "no_ground_truth_control_audit.json",
+        DATASET_DIR / "combination_lock_report.json",
+        DATASET_DIR / "combination_lock_trace.csv",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "minimum_jerk_trace.csv",
         DATASET_DIR / "stress_eval.json",
@@ -113,6 +118,7 @@ def main() -> int:
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
+        OUTPUT_DIR / "combination_lock_summary.json",
         OUTPUT_DIR / "stress_eval.json",
         OUTPUT_DIR / "baseline_vs_feedback.json",
         DATASET_DIR / "task_suite_report.json",
@@ -127,6 +133,7 @@ def main() -> int:
         DATASET_DIR / "precision_assembly_report.json",
         DATASET_DIR / "jam_recovery_report.json",
         DATASET_DIR / "no_ground_truth_control_audit.json",
+        DATASET_DIR / "combination_lock_report.json",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
@@ -239,6 +246,19 @@ def main() -> int:
         "assembly_success_rate",
         "jam_recovery_success_rate",
         "mean_pose_estimation_error_m",
+        "combination_lock_task_available",
+        "combination_lock_success",
+        "combination_lock_code_sequence",
+        "combination_lock_detected_sequence",
+        "combination_lock_steps",
+        "detent_detection_success",
+        "detent_count",
+        "latch_pull_success",
+        "micro_door_opened",
+        "combination_lock_max_error_deg",
+        "combination_lock_contact_confidence",
+        "combination_lock_report_path",
+        "combination_lock_trace_path",
         "event_rules_report_path",
         "submission_readiness_report_path",
         "rubric_readiness_report_path",
@@ -283,6 +303,11 @@ def main() -> int:
         "pose_estimation_success": True,
         "precision_assembly_arena_available": True,
         "assembly_success": True,
+        "combination_lock_task_available": True,
+        "combination_lock_success": True,
+        "detent_detection_success": True,
+        "latch_pull_success": True,
+        "micro_door_opened": True,
     }
     bad_values = [
         f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
@@ -353,6 +378,12 @@ def main() -> int:
         bad_values.append("assembly_success_rate expected >= 0.80")
     if float(summary.get("jam_recovery_success_rate", 0.0)) < 0.80:
         bad_values.append("jam_recovery_success_rate expected >= 0.80")
+    if int(summary.get("detent_count", 0)) < 3:
+        bad_values.append("detent_count expected >= 3")
+    if float(summary.get("combination_lock_max_error_deg", 999.0)) > 4.0:
+        bad_values.append("combination_lock_max_error_deg expected <= 4.0")
+    if float(summary.get("combination_lock_contact_confidence", 0.0)) < 0.85:
+        bad_values.append("combination_lock_contact_confidence expected >= 0.85")
     if not bool(summary.get("demo_video_duration_rule_pass", False)):
         bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
     if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:
@@ -438,6 +469,25 @@ def main() -> int:
                 "media/tactile_pose_estimation_panel.png",
             ],
         },
+        "combination_lock_evidence": {
+            "status": "pass",
+            "combination_lock_task_available": bool(summary.get("combination_lock_task_available")),
+            "combination_lock_success": bool(summary.get("combination_lock_success")),
+            "combination_lock_code_sequence": summary.get("combination_lock_code_sequence"),
+            "combination_lock_detected_sequence": summary.get("combination_lock_detected_sequence"),
+            "detent_detection_success": bool(summary.get("detent_detection_success")),
+            "detent_count": summary.get("detent_count"),
+            "latch_pull_success": bool(summary.get("latch_pull_success")),
+            "micro_door_opened": bool(summary.get("micro_door_opened")),
+            "combination_lock_max_error_deg": summary.get("combination_lock_max_error_deg"),
+            "combination_lock_contact_confidence": summary.get("combination_lock_contact_confidence"),
+            "checked_files": [
+                "dataset/combination_lock_report.json",
+                "dataset/combination_lock_trace.csv",
+                "outputs/combination_lock_summary.json",
+                "media/combination_lock_keyframes.png",
+            ],
+        },
         "event_rules_alignment": {
             "status": "pass",
             "event_rules_report_path": summary.get("event_rules_report_path"),
@@ -470,6 +520,8 @@ def main() -> int:
     validator_report_path.write_text(json.dumps(validator_report, indent=2), encoding="utf-8")
     summary["validator_report_path"] = "submissions/dexhand_lab/outputs/validator_report.json"
     summary["validation_passed"] = True
+    summary["uuid_consistency_pass"] = readiness.get("uuid_consistency_pass")
+    summary["required_outputs_present"] = readiness.get("required_outputs_present")
     readiness["validation_passed"] = True
     readiness["required_commands"]["python submissions/dexhand_lab/validate_submission.py"] = {
         "status": "pass",
@@ -482,6 +534,7 @@ def main() -> int:
         and readiness.get("event_rule_alignment", {}).get("rules_alignment_pass")
         and all(bool(value) for value in readiness.get("scoring_rubric_evidence", {}).values())
     )
+    summary["submission_readiness_pass"] = readiness["submission_readiness_pass"]
     (OUTPUT_DIR / "submission_readiness_report.json").write_text(json.dumps(readiness, indent=2), encoding="utf-8")
     (OUTPUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("DexHand validation passed")

@@ -1,8 +1,8 @@
 {
   "project": "DexHand Lab",
-  "suite": "20-gate deterministic dexterity verification",
-  "gate_count": 20,
-  "gates_passed": 20,
+  "suite": "25-gate deterministic dexterity verification",
+  "gate_count": 25,
+  "gates_passed": 25,
   "success_rate": 1.0,
   "failed_gates": [],
   "max_pose_error_m": 0.02439,
@@ -107,6 +107,31 @@
     {
       "gate": 20,
       "name": "no_snap_verified",
+      "passed": true
+    },
+    {
+      "gate": 21,
+      "name": "combination_lock_task_available",
+      "passed": true
+    },
+    {
+      "gate": 22,
+      "name": "combination_lock_success",
+      "passed": true
+    },
+    {
+      "gate": 23,
+      "name": "combination_lock_detent_detection_success",
+      "passed": true
+    },
+    {
+      "gate": 24,
+      "name": "combination_lock_latch_pull_success",
+      "passed": true
+    },
+    {
+      "gate": 25,
+      "name": "combination_lock_micro_door_opened",
       "passed": true
     }
   ]

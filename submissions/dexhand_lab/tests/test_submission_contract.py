@@ -51,6 +51,11 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "precision_assembly_arena_available",
             "assembly_success",
             "jam_detection_available",
+            "combination_lock_task_available",
+            "combination_lock_success",
+            "detent_detection_success",
+            "latch_pull_success",
+            "micro_door_opened",
             "minimum_jerk_controller_pass",
             "hardware_audit_pass",
         ]
@@ -60,6 +65,7 @@ class DexHandSubmissionContractTest(unittest.TestCase):
         self.assertGreaterEqual(float(summary["tactile_classifier_accuracy"]), 0.90)
         self.assertGreaterEqual(float(summary["assembly_success_rate"]), 0.80)
         self.assertGreaterEqual(float(summary["jam_recovery_success_rate"]), 0.80)
+        self.assertLessEqual(float(summary["combination_lock_max_error_deg"]), 4.0)
 
     def test_required_media_and_reports_exist(self) -> None:
         required_paths = [
@@ -69,6 +75,7 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "media/blind_tactile_keyframes.png",
             "media/assembly_keyframes.png",
             "media/tactile_pose_estimation_panel.png",
+            "media/combination_lock_keyframes.png",
             "outputs/contact_timeline.json",
             "outputs/final_report.txt",
             "outputs/event_rules_report.json",
@@ -78,6 +85,8 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "dataset/tactile_pose_estimator_report.json",
             "dataset/precision_assembly_report.json",
             "dataset/jam_recovery_report.json",
+            "dataset/combination_lock_report.json",
+            "dataset/combination_lock_trace.csv",
             "dataset/hardware_adaptation_report.json",
         ]
         for relative_path in required_paths:

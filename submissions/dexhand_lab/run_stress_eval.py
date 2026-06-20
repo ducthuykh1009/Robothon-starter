@@ -136,7 +136,7 @@ def main() -> int:
     parser.add_argument("--seeds", type=int, default=32)
     parser.add_argument("--seed-start", type=int, default=42)
     parser.add_argument("--blind-tactile", action="store_true", help="Also run blind tactile classifier/adaptive regrasp stress evaluation.")
-    parser.add_argument("--arena", choices=("standard", "assembly"), default="standard", help="Optional stress arena; assembly adds tactile pose estimation and plug/socket insertion stress evidence.")
+    parser.add_argument("--arena", choices=("standard", "assembly", "lock"), default="standard", help="Optional stress arena; assembly adds tactile pose estimation and plug/socket insertion stress evidence; lock adds multi-detent dial/latch stress evidence.")
     parser.add_argument("--no-ground-truth-pose", action="store_true", help="Run assembly stress with exact object pose hidden from the controller.")
     args = parser.parse_args()
     if args.seeds < 1:
@@ -193,6 +193,27 @@ def main() -> int:
             }
         )
         (OUTPUT_DIR / "baseline_vs_feedback.json").write_text(json.dumps(comparison, indent=2), encoding="utf-8")
+    if args.arena == "lock":
+        from combination_lock_controller import run_combination_lock_stress_eval
+
+        lock_stress = run_combination_lock_stress_eval(
+            seeds=args.seeds,
+            seed_start=args.seed_start,
+            difficulty="medium",
+        )
+        comparison.update(lock_stress)
+        summary_path = OUTPUT_DIR / "summary.json"
+        if summary_path.exists():
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            summary.update(
+                {
+                    "combination_lock_stress_available": True,
+                    "combination_lock_stress_eval_path": "submissions/dexhand_lab/dataset/combination_lock_stress_eval.json",
+                    **lock_stress,
+                }
+            )
+            summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        (OUTPUT_DIR / "baseline_vs_feedback.json").write_text(json.dumps(comparison, indent=2), encoding="utf-8")
     print("DexHand stress evaluation")
     print("-------------------------")
     print(f"Seeds: {args.seeds}")
@@ -206,6 +227,9 @@ def main() -> int:
         print(f"Assembly success rate: {comparison['assembly_success_rate'] * 100.0:.1f}%")
         print(f"Jam recovery success rate: {comparison['jam_recovery_success_rate'] * 100.0:.1f}%")
         print(f"Mean pose error: {comparison['mean_pose_estimation_error_m']:.4f} m")
+    if args.arena == "lock":
+        print(f"Combination lock success rate: {comparison['combination_lock_success_rate'] * 100.0:.1f}%")
+        print(f"Combination lock mean error: {comparison['combination_lock_mean_error_deg']:.2f} deg")
     print("Saved: submissions/dexhand_lab/outputs/stress_eval.json")
     return 0
 

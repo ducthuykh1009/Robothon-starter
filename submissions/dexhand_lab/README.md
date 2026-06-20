@@ -1,6 +1,6 @@
 # DexHand Lab
 
-DexHand Lab is a hand-only MuJoCo dexterous manipulation benchmark built around a human-like five-finger robotic hand. The project demonstrates object-specific grasping, in-hand rotation, a signature 224-degree cap/knob twist, tactile/contact evidence, slip recovery, load hold, and judge-readable evaluation artifacts.
+DexHand Lab is a hand-only MuJoCo dexterous manipulation benchmark built around a human-like five-finger robotic hand. The project demonstrates object-specific grasping, in-hand rotation, a signature 224-degree cap/knob twist, a tactile combination lock task, tactile/contact evidence, slip recovery, load hold, and judge-readable evaluation artifacts.
 
 ## Project Summary
 
@@ -43,6 +43,12 @@ The cylinder is rotated in-hand by a contact-aware hybrid routine. The index fin
 ## Signature Cap/Knob Rotation
 
 The score-focused evidence upgrade adds `CAP_KNOB_ROTATION_224`. A visible marker on the cap shows a 224-degree twist after five-finger contact verification. The cap task logs target angle, achieved angle, angle error, active/counterhold fingers, cap slip, contact balance, pressure targets, and whether hybrid rotation was used.
+
+## Tactile Combination Lock
+
+The harder task upgrade adds `TACTILE_COMBINATION_LOCK`. The hand probes a dial rim, detects tactile detents, rotates through a three-step code sequence, verifies each click, pinches and pulls a latch, then opens a small micro-door. This task is designed to exercise sequential dexterous control rather than a single grasp: thumb/index/middle perform dial twisting, ring/little stabilize during verification and latch pull, and the controller logs max code error, detent confidence, latch travel, door angle, contact confidence, and no-snap evidence.
+
+Run it directly with `python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena lock --no-video`. Evidence is written to `outputs/combination_lock_summary.json`, `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, and `media/combination_lock_keyframes.png`.
 
 ## Blind Tactile Active Perception
 
@@ -129,18 +135,21 @@ python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty m
 python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena unknown --blind-tactile --no-video
 python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose
 python submissions/dexhand_lab/run_demo.py --episodes 3 --seed 42 --difficulty medium --arena assembly --blind-tactile --no-ground-truth-pose --no-video
+python submissions/dexhand_lab/run_demo.py --episodes 1 --seed 42 --difficulty medium --arena lock --no-video
 python submissions/dexhand_lab/run_stress_eval.py --seeds 32 --blind-tactile
 python submissions/dexhand_lab/run_stress_eval.py --seeds 32 --arena assembly --blind-tactile --no-ground-truth-pose
+python submissions/dexhand_lab/run_stress_eval.py --seeds 32 --arena lock
 python submissions/dexhand_lab/tactile_active_perception.py
 python submissions/dexhand_lab/tactile_pose_estimator.py
 python submissions/dexhand_lab/precision_assembly_controller.py
+python submissions/dexhand_lab/combination_lock_controller.py
 python submissions/dexhand_lab/adaptive_regrasp_policy.py
 python submissions/dexhand_lab/validate_submission.py
 ```
 
 ## Outputs
 
-Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `outputs/event_rules_report.json`, `outputs/submission_readiness_report.json`, `outputs/rubric_readiness_report.json`, `outputs/rubric_readiness_scorecard.csv`, `outputs/judge_summary.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/code_quality_report.json`, `dataset/unit_test_report.json`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
+Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `media/combination_lock_keyframes.png`, `outputs/event_rules_report.json`, `outputs/submission_readiness_report.json`, `outputs/rubric_readiness_report.json`, `outputs/rubric_readiness_scorecard.csv`, `outputs/judge_summary.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `outputs/combination_lock_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/code_quality_report.json`, `dataset/unit_test_report.json`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
 
 ## Limitations
 
