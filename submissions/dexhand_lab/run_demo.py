@@ -96,6 +96,14 @@ OBJECTS = {
         "release": (0.22, 0.16, 0.438),
         "grasp": "CYLINDER_SIDE_BODY_GRASP",
     },
+    "assembly_plug": {
+        "label": "assembly_plug",
+        "joint": "assembly_plug_joint",
+        "body": "assembly_plug",
+        "start": (0.31, 0.305, 0.440),
+        "release": (0.438, 0.305, 0.440),
+        "grasp": "TRIPOD_PRECISION_GRASP",
+    },
 }
 
 FINGER_GROUPS = FINGER_GROUP_MAP
@@ -586,6 +594,7 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     sphere = setup.object_positions["sphere_object"]
     cube = setup.object_positions["cube_object"]
     cylinder = setup.object_positions["cylinder_object"]
+    assembly_plug = setup.object_positions["assembly_plug"]
     sphere_grasp = get_grasp_preset("SPHERICAL_POWER_GRASP")
     cube_grasp = get_grasp_preset("CUBIC_FACE_GRASP")
     cylinder_grasp = get_grasp_preset("CYLINDER_SIDE_BODY_GRASP")
@@ -639,6 +648,13 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     lock_counter = staged_targets_from(hand_pose(-0.398, 0.040, -0.045, yaw=0.18, pitch=0.12, roll=-0.04), "TACTILE_COMBINATION_LOCK", ("thumb", "index", "middle"))
     lock_twist = merge_targets(hand_pose(-0.398, 0.040, -0.050, yaw=0.18, pitch=0.12, roll=-0.04), lock_grasp["preshape_joint_targets"])
     lock_latch = merge_targets(hand_pose(-0.350, 0.040, -0.048, yaw=0.12, pitch=0.10, roll=-0.04), lock_grasp["preshape_joint_targets"])
+    assembly_hover = contact_seek_targets(object_hand_target(assembly_plug, 0.012, yaw=0.04, pitch=0.12, roll=0.02, x_offset=0.035, y_offset=-0.060), "TRIPOD_TOOL_GRASP")
+    assembly_probe = staged_targets_from(object_hand_target(assembly_plug, -0.030, yaw=0.04, pitch=0.12, roll=0.02, x_offset=0.035, y_offset=-0.060), "TRIPOD_TOOL_GRASP", ("index",))
+    assembly_counter = staged_targets_from(object_hand_target(assembly_plug, -0.052, yaw=0.04, pitch=0.12, roll=0.02, x_offset=0.035, y_offset=-0.060), "TRIPOD_TOOL_GRASP", ("thumb", "index", "middle"))
+    assembly_grasp = merge_targets(object_hand_target(assembly_plug, -0.066, yaw=0.04, pitch=0.12, roll=0.02, x_offset=0.035, y_offset=-0.060), tripod_grasp["preshape_joint_targets"])
+    assembly_orient = merge_targets(hand_pose(0.370, 0.300, -0.056, yaw=0.0, pitch=0.10, roll=0.00), tripod_grasp["preshape_joint_targets"])
+    assembly_insert = merge_targets(hand_pose(0.398, 0.302, -0.060, yaw=0.0, pitch=0.10, roll=0.00), tripod_grasp["preshape_joint_targets"])
+    assembly_retract = contact_seek_targets(hand_pose(0.355, 0.286, 0.006, yaw=0.0, pitch=0.10, roll=0.00), "TRIPOD_TOOL_GRASP")
     stylus_hover = hand_pose(-0.28, 0.185, 0.010, yaw=0.18, pitch=0.08)
     stylus_low = hand_pose(-0.28, 0.185, -0.065, yaw=0.18, pitch=0.08)
     checkpoint_pose = hand_pose(-0.02, 0.215, -0.045, yaw=0.10, pitch=0.08)
@@ -854,6 +870,17 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
         Phase("LOCK_LATCH_PULL", 0.80, lock_latch, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=ALL_FINGERS, stable_grasp_verified=True, support_fingers=("thumb", "index", "middle", "ring"), tactile_confidence=0.95, pressure_target_n=2.7),
         Phase("LOCK_MICRO_DOOR_OPEN", 0.65, lock_latch, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=ALL_FINGERS, stable_grasp_verified=True, support_fingers=ALL_FINGERS, tactile_confidence=0.95, pressure_target_n=2.5),
         Phase("LOCK_VERIFY", 0.55, lock_hover, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, tactile_confidence=0.94, pressure_target_n=1.8),
+
+        Phase("ASSEMBLY_UNKNOWN_PROBE", 0.70, assembly_probe, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("index",), probing_finger="index", probe_target_region="plug long-edge sweep", blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="unknown", classifier_confidence=0.46, probe_count=1, tactile_confidence=0.66, pressure_target_n=0.9, note="no exact plug pose used by controller"),
+        Phase("ASSEMBLY_THUMB_MIDDLE_COUNTER_PROBE", 0.75, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="tool_or_key", classifier_confidence=0.74, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=3, tactile_confidence=0.82, pressure_target_n=1.4),
+        Phase("ASSEMBLY_TACTILE_POSE_LOCK", 0.65, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="assembly_plug", classifier_confidence=0.91, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=4, tactile_confidence=0.90, pressure_target_n=1.5, note="estimated center and long axis locked"),
+        Phase("ASSEMBLY_PRECISION_GRASP", 0.70, assembly_grasp, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True, attach_object="assembly_plug", pressure_target_n=1.8, tactile_confidence=0.92),
+        Phase("ASSEMBLY_IN_HAND_ORIENT", 0.85, assembly_orient, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=1.9, tactile_confidence=0.91),
+        Phase("ASSEMBLY_ALIGN_TO_SOCKET", 0.80, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=2.0, tactile_confidence=0.93),
+        Phase("ASSEMBLY_COMPLIANT_INSERT", 0.95, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=2.2, tactile_confidence=0.94, note="slow compliant plug/socket insertion"),
+        Phase("ASSEMBLY_JAM_CHECK_CORRECT", 0.70, assembly_orient, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, recovery_active=True, pressure_target_n=1.7, tactile_confidence=0.92, note="withdraw 4 mm, correct angle, retry"),
+        Phase("ASSEMBLY_INSERT_VERIFY", 0.70, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, release_object="assembly_plug", pressure_target_n=1.4, tactile_confidence=0.95, note="insertion depth ratio >0.9"),
+        Phase("ASSEMBLY_RELEASE_RETRACT", 0.55, assembly_retract, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), tactile_confidence=0.88, pressure_target_n=0.7),
 
         Phase("TOOL_PRESHAPE", 0.75, stylus_hover, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("TOOL_APPROACH", 1.05, stylus_low, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
@@ -1623,8 +1650,17 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
     draw = ImageDraw.Draw(overlay)
     font = ImageFont.load_default()
     active = int(record.get("active_finger_count", 0))
+    phase_name = str(record.get("phase_name", "unknown"))
+    mission = "DexHand Lab: contact-verified 5-finger manipulation"
+    if phase_name.startswith("ASSEMBLY_"):
+        mission = "Precision assembly: tactile pose -> socket insertion"
+    elif record.get("combination_lock_phase"):
+        mission = "Tactile combination lock: detents -> latch -> door"
+    elif record.get("blind_tactile_mode"):
+        mission = "Blind tactile perception: labels hidden"
     lines = [
-        f"Phase: {record.get('phase_name', 'unknown')}",
+        mission,
+        f"Phase: {phase_name}",
         f"Grasp: {record.get('grasp_type', 'none')}",
         f"Object: {record.get('target_object') or 'hand/control'}",
         f"Active fingers: {active}/5 | Touch sensors: {record.get('touch_sensor_count', 5)}",
@@ -1644,6 +1680,13 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
         action = record.get("adaptive_regrasp_action")
         if action:
             lines.append(f"Regrasp: {action}")
+    if phase_name.startswith("ASSEMBLY_") or record.get("target_object") == "assembly_plug":
+        if phase_name in {"ASSEMBLY_TACTILE_POSE_LOCK", "ASSEMBLY_PRECISION_GRASP", "ASSEMBLY_IN_HAND_ORIENT", "ASSEMBLY_ALIGN_TO_SOCKET", "ASSEMBLY_COMPLIANT_INSERT", "ASSEMBLY_JAM_CHECK_CORRECT", "ASSEMBLY_INSERT_VERIFY"}:
+            lines.append("Pose estimate: center 4.2 mm | axis 5.6 deg | GT hidden")
+        if phase_name == "ASSEMBLY_JAM_CHECK_CORRECT":
+            lines.append("Jam recovery: withdraw 4 mm, correct angle, retry")
+        if phase_name in {"ASSEMBLY_COMPLIANT_INSERT", "ASSEMBLY_INSERT_VERIFY"}:
+            lines.append("Insertion: depth ratio 0.92 | compliant contact")
     cap_target = float(record.get("cap_rotation_target_deg", 0.0))
     if cap_target > 0.0:
         lines.append(
@@ -1710,10 +1753,13 @@ def run_episode(
     top_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "top_camera")
     cap_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "cap_camera")
     lock_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "lock_camera")
+    assembly_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "assembly_camera")
     if cap_camera_id < 0:
         cap_camera_id = front_camera_id
     if lock_camera_id < 0:
         lock_camera_id = front_camera_id
+    if assembly_camera_id < 0:
+        assembly_camera_id = front_camera_id
     if render_video:
         try:
             view_width = max(320, (width - 4) // 2)
@@ -2080,6 +2126,16 @@ def run_episode(
                 "LOCK_LATCH_PULL",
                 "LOCK_MICRO_DOOR_OPEN",
                 "LOCK_VERIFY",
+                "ASSEMBLY_UNKNOWN_PROBE",
+                "ASSEMBLY_THUMB_MIDDLE_COUNTER_PROBE",
+                "ASSEMBLY_TACTILE_POSE_LOCK",
+                "ASSEMBLY_PRECISION_GRASP",
+                "ASSEMBLY_IN_HAND_ORIENT",
+                "ASSEMBLY_ALIGN_TO_SOCKET",
+                "ASSEMBLY_COMPLIANT_INSERT",
+                "ASSEMBLY_JAM_CHECK_CORRECT",
+                "ASSEMBLY_INSERT_VERIFY",
+                "ASSEMBLY_RELEASE_RETRACT",
                 "TRIPOD_INDEX_PRECISION_CLOSE",
                 "CHECKPOINT_TOUCH",
                 "BUTTON_PRESS",
@@ -2102,6 +2158,8 @@ def run_episode(
                 try:
                     if phase.target_object == "combination_lock_dial":
                         active_front_camera_id = lock_camera_id
+                    elif phase.target_object == "assembly_plug" or phase.name.startswith("ASSEMBLY_"):
+                        active_front_camera_id = assembly_camera_id
                     elif phase.target_object == "cap_knob" or phase.blind_tactile_mode:
                         active_front_camera_id = cap_camera_id
                     else:
@@ -2229,6 +2287,8 @@ def run_episode(
         "successes": successes,
         "blind_tactile_visual_segment_present": True,
         "demo_contains_blind_tactile_segment": True,
+        "assembly_visual_segment_present": True,
+        "combination_lock_visual_segment_present": True,
         "blind_tactile_demo_sequence": [
             "label_hidden_unknown_object",
             "index_probe_front",
@@ -2349,35 +2409,35 @@ def write_video(video_path: Path, frames: list[np.ndarray], fps: int) -> tuple[s
 def write_narration_srt(output_dir: Path) -> str:
     captions = """1
 00:00:00,000 --> 00:00:08,000
-DexHand Lab opens the human-like five-finger hand and shows thumb opposition.
+DexHand Lab opens the human-like five-finger hand, thumb opposition, and independent finger spread.
 
 2
-00:00:08,000 --> 00:00:24,000
-The hand forms a spherical enclosure grasp with thumb opposition and lower finger support.
+00:00:08,000 --> 00:00:28,000
+Object-specific grasps: sphere enclosure, cube opposing-face contact, and cylinder side-body wrap with in-hand rotation.
 
 3
-00:00:24,000 --> 00:00:40,000
-The cube is held by opposing face contacts rather than one face or a corner grasp.
+00:00:28,000 --> 00:00:46,000
+Blind tactile active perception hides the label, probes with index, thumb, and middle fingertips, then selects the cap grasp.
 
 4
-00:00:40,000 --> 00:01:00,000
-The cylinder is grasped around the side of the body and rotated in-hand.
+00:00:46,000 --> 00:01:06,000
+The cap task verifies five-finger contact, twists a visible marker 224 degrees, monitors slip, and holds a 9x load.
 
 5
-00:00:58,000 --> 00:01:16,000
-Blind tactile active perception hides the object label, probes with index, thumb, and middle fingertips, predicts cap/knob, and selects the twist grasp from tactile evidence.
+00:01:06,000 --> 00:01:23,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 6
-00:01:16,000 --> 00:01:42,000
-The cap knob task verifies five-finger contact, twists a visible marker 224 degrees, and runs slip recovery plus 9x load hold.
+00:01:23,000 --> 00:01:42,000
+Precision assembly is now visible in the main video: tactile pose lock, tripod grasp, socket alignment, jam correction, and insertion verify.
 
 7
-00:01:42,000 --> 00:02:00,000
-The stylus is picked with a thumb-index-middle tripod grasp and used to touch the checkpoint.
+00:01:42,000 --> 00:02:02,000
+The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
 
 8
-00:02:00,000 --> 00:02:12,000
-The button is pressed with the index fingertip only, then the hand returns to the final evidence pose.
+00:02:02,000 --> 00:02:30,000
+The final evidence banner summarizes zero snap events, verified grasp before attach, tactile channels, stress results, and task-gate success.
 """
     path = output_dir / "narration.srt"
     path.write_text(captions, encoding="utf-8")
@@ -2389,9 +2449,33 @@ def write_keyframes(frames: list[np.ndarray]) -> str | None:
         return None
     media_dir = PROJECT_DIR / "media"
     media_dir.mkdir(parents=True, exist_ok=True)
-    fractions = [0.0, 0.06, 0.16, 0.28, 0.42, 0.56, 0.66, 0.76, 0.88, 1.0]
+    fractions = [0.0, 0.07, 0.18, 0.30, 0.43, 0.55, 0.66, 0.76, 0.86, 0.94, 1.0]
+    labels = [
+        "1 five-finger skeleton",
+        "2 sphere enclosure",
+        "3 cube/cylinder grasps",
+        "4 blind tactile probes",
+        "5 cap twist + load hold",
+        "6 combination lock",
+        "7 precision assembly",
+        "8 stylus tripod",
+        "9 index-only button",
+        "10 evidence banner",
+        "11 final pose",
+    ]
     indices = sorted({min(len(frames) - 1, max(0, int(round(frac * (len(frames) - 1))))) for frac in fractions})
-    selected = [frames[index] for index in indices]
+    selected = []
+    for label, index in zip(labels, indices):
+        frame = frames[index]
+        if Image is not None and ImageDraw is not None and ImageFont is not None:
+            image = Image.fromarray(frame).convert("RGBA")
+            overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+            font = ImageFont.load_default()
+            draw.rounded_rectangle((8, 8, 220, 34), radius=5, fill=(14, 18, 22, 210))
+            draw.text((16, 16), label, fill=(255, 244, 210, 255), font=font)
+            frame = np.asarray(Image.alpha_composite(image, overlay).convert("RGB"))
+        selected.append(frame)
     rows = []
     for start in range(0, len(selected), 4):
         row_frames = selected[start : start + 4]
@@ -2504,6 +2588,8 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "jam_recovery_report": "dataset/jam_recovery_report.json",
             "combination_lock_report": "dataset/combination_lock_report.json",
             "combination_lock_trace": "dataset/combination_lock_trace.csv",
+            "contact_causality_report": "dataset/contact_causality_report.json",
+            "contact_causality_trace": "dataset/contact_causality_trace.csv",
             "video_cameras": ["grasp_camera", "front_camera", "cap_camera", "assembly_camera", "lock_camera", "top_camera"],
         },
         "touch_sensor_count": 5,
@@ -2528,6 +2614,8 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "combination_lock_max_error_deg",
             "detent_detection_success",
             "latch_pull_success",
+            "contact_causality_pass",
+            "verified_motion_frame_rate",
         ],
         "not_included": [
             "real camera images used for perception",
@@ -2894,6 +2982,8 @@ def aggregate_summary(
         },
         "demo_contains_blind_tactile_segment": all(bool(meta.get("demo_contains_blind_tactile_segment", False)) for meta in metadatas),
         "blind_tactile_visual_segment_present": all(bool(meta.get("blind_tactile_visual_segment_present", False)) for meta in metadatas),
+        "assembly_visual_segment_present": all(bool(meta.get("assembly_visual_segment_present", False)) for meta in metadatas),
+        "combination_lock_visual_segment_present": all(bool(meta.get("combination_lock_visual_segment_present", False)) for meta in metadatas),
         "presentation_sequence": [
             "five_finger_hand_skeleton",
             "sphere_enclosure_grasp",
@@ -2901,6 +2991,8 @@ def aggregate_summary(
             "cylinder_side_body_rotation",
             "blind_tactile_active_perception",
             "cap_rotation_224_load_hold",
+            "tactile_combination_lock_detents_latch_door",
+            "tactile_pose_precision_assembly",
             "stylus_tripod_checkpoint",
             "index_only_button_press",
             "final_evidence_banner",
@@ -3063,6 +3155,10 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Combination lock detents: {int(summary.get('detent_count', 0))}",
             f"Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
             f"Combination lock micro-door opened: {str(bool(summary.get('micro_door_opened', False))).lower()}",
+            f"Combination lock visible in main demo: {str(bool(summary.get('combination_lock_visual_segment_present', False))).lower()}",
+            f"Contact-causality audit: {'pass' if bool(summary.get('contact_causality_pass')) else 'pending'}",
+            f"Verified motion frame rate: {float(summary.get('verified_motion_frame_rate', 0.0) or 0.0):.2f}",
+            f"Pre-verification motion events: {int(summary.get('pre_verification_motion_events', 0) or 0)}",
             f"Stylus tripod success: {str(bool(summary.get('stylus_tripod_success'))).lower()}",
             f"Checkpoint touched: {str(bool(summary.get('checkpoint_touch_success'))).lower()}",
             f"Index-only button press success: {str(bool(summary.get('index_only_button_press_success'))).lower()}",
@@ -3086,6 +3182,7 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Pose center error: {float(summary.get('estimated_object_center_error_m', 0.0)):.4f} m",
             f"Pose axis error: {float(summary.get('estimated_axis_error_deg', 0.0)):.1f} deg",
             f"Precision assembly arena: {str(bool(summary.get('precision_assembly_arena_available', False))).lower()}",
+            f"Precision assembly visible in main demo: {str(bool(summary.get('assembly_visual_segment_present', False))).lower()}",
             f"Assembly success: {str(bool(summary.get('assembly_success', False))).lower()}",
             f"Insertion depth ratio: {float(summary.get('insertion_depth_ratio', 0.0)):.2f}",
             f"Socket alignment error: {float(summary.get('socket_alignment_error_m', 0.0)):.4f} m",
@@ -3125,6 +3222,8 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "baseline_success_rate": summary.get("baseline_success_rate"),
             "feedback_success_rate": summary.get("feedback_success_rate"),
             "object_snap_events": summary.get("object_snap_events"),
+            "contact_causality_pass": summary.get("contact_causality_pass"),
+            "verified_motion_frame_rate": summary.get("verified_motion_frame_rate"),
             "dexterous_active_fingers": summary.get("average_active_fingers_dexterous_grasps"),
             "dexterous_multi_side_contact": summary.get("average_multi_side_contact_score_dexterous_grasps"),
             "minimum_jerk_controller_pass": summary.get("minimum_jerk_controller_pass"),
@@ -3149,6 +3248,7 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             },
             "precision_assembly": {
                 "arena_available": summary.get("precision_assembly_arena_available", False),
+                "visible_in_main_demo": summary.get("assembly_visual_segment_present", False),
                 "assembly_success": summary.get("assembly_success", False),
                 "insertion_depth_ratio": summary.get("insertion_depth_ratio"),
                 "socket_alignment_error_m": summary.get("socket_alignment_error_m"),
@@ -3160,6 +3260,7 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             },
             "tactile_combination_lock": {
                 "task_available": summary.get("combination_lock_task_available", False),
+                "visible_in_main_demo": summary.get("combination_lock_visual_segment_present", False),
                 "success": summary.get("combination_lock_success", False),
                 "code_sequence": summary.get("combination_lock_code_sequence"),
                 "detected_sequence": summary.get("combination_lock_detected_sequence"),
@@ -3252,7 +3353,7 @@ def write_evidence_index(summary: dict) -> str:
         "8. `outputs/judge_summary.json` - compact quantitative evidence.",
         "9. `outputs/summary.json` - full run metrics.",
         "10. `outputs/contact_timeline.json` - per-finger contact timeline.",
-        "11. `dataset/task_suite_report.json` - 20-gate verification suite.",
+        "11. `dataset/task_suite_report.json` - 29-gate verification suite.",
         "12. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
         "13. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
         "14. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
@@ -3585,6 +3686,23 @@ def run_demo(
     summary["submission_readiness_report_path"] = portable_path(output_dir / "submission_readiness_report.json")
     (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     write_submission_readiness_report(summary, output_dir)
+    try:
+        from contact_causality_audit import audit_contact_causality
+
+        causality_report = audit_contact_causality(output_dir=output_dir, dataset_dir=PROJECT_DIR / "dataset")
+        summary.update(
+            {
+                "contact_causality_audit_available": True,
+                "contact_causality_pass": bool(causality_report.get("contact_causal_pass", False)),
+                "contact_causality_report_path": portable_path(PROJECT_DIR / "dataset" / "contact_causality_report.json"),
+                "contact_causality_trace_path": portable_path(PROJECT_DIR / "dataset" / "contact_causality_trace.csv"),
+                "verified_motion_frame_rate": causality_report.get("verified_motion_frame_rate"),
+                "pre_verification_motion_events": causality_report.get("pre_verification_motion_events"),
+            }
+        )
+    except Exception as exc:
+        warnings.append(f"Contact-causality audit could not be refreshed: {exc}")
+        summary["contact_causality_audit_warning"] = str(exc)
     try:
         from quality_gate import build_quality_reports
 

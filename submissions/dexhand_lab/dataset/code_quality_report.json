@@ -7,7 +7,7 @@
   "finding_count": 0,
   "findings": [],
   "validator_passed": true,
-  "submission_readiness_pass": false,
+  "submission_readiness_pass": true,
   "notes": [
     "This audit checks maintainability and event readiness signals; it is not an official judge score.",
     "The simulation metrics remain in outputs/summary.json and task-specific dataset reports."

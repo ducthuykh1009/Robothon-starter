@@ -19,7 +19,7 @@ This is the shortest path through the submission evidence for judges and automat
 8. `outputs/judge_summary.json` - compact quantitative evidence.
 9. `outputs/summary.json` - full run metrics.
 10. `outputs/contact_timeline.json` - per-finger contact timeline.
-11. `dataset/task_suite_report.json` - 20-gate verification suite.
+11. `dataset/task_suite_report.json` - 29-gate verification suite.
 12. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.
 13. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.
 14. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.
@@ -38,7 +38,7 @@ This is the shortest path through the submission evidence for judges and automat
 
 ## Current Metrics
 
-- Task gates: 25/25
+- Task gates: 29/29
 - Cap rotation: 224 deg target / 224.0 deg achieved
 - Final slip: 0.28 mm
 - Load hold: 9.0x

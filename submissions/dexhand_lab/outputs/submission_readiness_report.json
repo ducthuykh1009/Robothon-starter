@@ -35,7 +35,7 @@
     "mujoco_primary_engine": true,
     "run_instructions_present": true,
     "demo_video_rule_pass": true,
-    "demo_duration_s": 129.8,
+    "demo_duration_s": 144.5,
     "rules_alignment_pass": true,
     "event_rules_report": "submissions/dexhand_lab/outputs/event_rules_report.json"
   },
@@ -50,7 +50,7 @@
     "innovation": true
   },
   "headline_metrics": {
-    "task_gates": "25/25",
+    "task_gates": "29/29",
     "object_snap_events": 0,
     "cap_rotation_achieved_deg": 224.0,
     "load_hold_x": 9.0,

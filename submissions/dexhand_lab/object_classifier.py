@@ -34,6 +34,7 @@ OBJECT_TYPE_BY_NAME = {
     "cap_knob": "cap_knob",
     "combination_lock_dial": "combination_lock",
     "combination_lock_station": "combination_lock",
+    "assembly_plug": "assembly_plug",
 }
 
 RECOMMENDED_GRASP = {
@@ -47,6 +48,7 @@ RECOMMENDED_GRASP = {
     "button": "INDEX_FINGERTIP_PRESS",
     "cap_knob": "CAP_KNOB_ROTATION_224",
     "combination_lock": "TACTILE_COMBINATION_LOCK",
+    "assembly_plug": "TACTILE_PRECISION_ASSEMBLY",
 }
 
 
@@ -158,6 +160,25 @@ def classify_object(model, data, mujoco, object_name: str) -> ObjectAffordance:
             "middle": "opposing dial support",
             "ring": "latch pinch support",
             "little": "micro-door stabilizer",
+        }
+    elif object_type == "assembly_plug":
+        half_length = 0.055
+        half_width = 0.015
+        half_height = 0.012
+        radius = None
+        size = [half_length, half_width, half_height]
+        long_axis_vec = np.array([1.0, 0.0, 0.0], dtype=float)
+        long_axis = long_axis_vec.round(5).tolist()
+        centerline = [
+            (center - long_axis_vec * half_length).round(5).tolist(),
+            (center + long_axis_vec * half_length).round(5).tolist(),
+        ]
+        face_normals = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]]
+        regions = {
+            "thumb": "plug side face for precision opposition",
+            "index": "upper long edge tactile pose probe",
+            "middle": "opposing lower side support",
+            "ring": "anti-roll stabilizer during socket alignment",
         }
     else:
         radius = None

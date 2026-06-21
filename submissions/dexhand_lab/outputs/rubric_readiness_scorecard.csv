@@ -5,5 +5,5 @@ Task Design,pass,"Sphere, cube, cylinder, cap twist, load hold, stylus, button, 
 Control,pass,"No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification.",13
 Dexterous Manipulation,pass,"Five-finger roles, thumb opposition, multi-side contact, in-hand rotation, cap twist, tactile dial/latch manipulation, tripod grasp.",14
 Engineering Quality,pass,"Structured modules, validator, manifest, reports, JSON/CSV datasets, quality gate, unit tests.",12
-Presentation,pass,"118.6s generated video, HUD/keyframes, narration, judge brief, final report.",11
+Presentation,pass,"about 145s generated video, wider cameras, HUD/keyframes, narration, judge brief, final report.",11
 Innovation,pass,"Blind tactile active perception plus no-ground-truth tactile pose estimation, assembly, and tactile combination lock.",12

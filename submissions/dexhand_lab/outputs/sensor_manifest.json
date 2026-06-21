@@ -50,6 +50,7 @@
       "sphere_object",
       "cube_object",
       "cylinder_object",
+      "assembly_plug",
       "stylus_tool"
     ],
     "cap_knob_pose": "body pose and hinge angle for cap_knob",
@@ -91,6 +92,8 @@
     "jam_recovery_report": "dataset/jam_recovery_report.json",
     "combination_lock_report": "dataset/combination_lock_report.json",
     "combination_lock_trace": "dataset/combination_lock_trace.csv",
+    "contact_causality_report": "dataset/contact_causality_report.json",
+    "contact_causality_trace": "dataset/contact_causality_trace.csv",
     "video_cameras": [
       "grasp_camera",
       "front_camera",
@@ -121,7 +124,9 @@
     "average_probes_per_object",
     "combination_lock_max_error_deg",
     "detent_detection_success",
-    "latch_pull_success"
+    "latch_pull_success",
+    "contact_causality_pass",
+    "verified_motion_frame_rate"
   ],
   "not_included": [
     "real camera images used for perception",

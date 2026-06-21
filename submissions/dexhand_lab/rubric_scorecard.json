@@ -104,6 +104,7 @@
       "evidence": [
         "modular classifier, grasp library, controller, stress eval, audits",
         "separate tactile pose estimator and precision assembly controller",
+        "contact-causality audit verifies no snap and contact-gated manipulation",
         "JSON/CSV evidence pack",
         "validator checks core files and metrics"
       ],
@@ -116,8 +117,9 @@
     },
     "presentation": {
       "evidence": [
-        "118.6-second generated demo video inside the 1-3 minute event window",
+        "about 145-second generated demo video inside the 1-3 minute event window",
         "main demo includes blind tactile probing/classification before cap rotation",
+        "main demo now includes tactile combination lock and precision assembly highlights",
         "assembly keyframes and tactile pose estimation panel",
         "media/keyframes.png",
         "outputs/judge_summary.json",

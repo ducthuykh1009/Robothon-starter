@@ -111,7 +111,7 @@ def build_rubric_rows(summary: dict, readiness: dict) -> list[dict]:
         {
             "rubric": "Presentation",
             "status": "pass" if bool(summary.get("demo_video_duration_rule_pass")) else "review",
-            "evidence": "118.6s generated video, HUD/keyframes, narration, judge brief, final report.",
+            "evidence": "about 145s generated video, wider cameras, HUD/keyframes, narration, judge brief, final report.",
             "score_estimate": 11,
         },
         {

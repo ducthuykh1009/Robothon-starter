@@ -1,31 +1,31 @@
 1
 00:00:00,000 --> 00:00:08,000
-DexHand Lab opens the human-like five-finger hand and shows thumb opposition.
+DexHand Lab opens the human-like five-finger hand, thumb opposition, and independent finger spread.
 
 2
-00:00:08,000 --> 00:00:24,000
-The hand forms a spherical enclosure grasp with thumb opposition and lower finger support.
+00:00:08,000 --> 00:00:28,000
+Object-specific grasps: sphere enclosure, cube opposing-face contact, and cylinder side-body wrap with in-hand rotation.
 
 3
-00:00:24,000 --> 00:00:40,000
-The cube is held by opposing face contacts rather than one face or a corner grasp.
+00:00:28,000 --> 00:00:46,000
+Blind tactile active perception hides the label, probes with index, thumb, and middle fingertips, then selects the cap grasp.
 
 4
-00:00:40,000 --> 00:01:00,000
-The cylinder is grasped around the side of the body and rotated in-hand.
+00:00:46,000 --> 00:01:06,000
+The cap task verifies five-finger contact, twists a visible marker 224 degrees, monitors slip, and holds a 9x load.
 
 5
-00:00:58,000 --> 00:01:16,000
-Blind tactile active perception hides the object label, probes with index, thumb, and middle fingertips, predicts cap/knob, and selects the twist grasp from tactile evidence.
+00:01:06,000 --> 00:01:23,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 6
-00:01:16,000 --> 00:01:42,000
-The cap knob task verifies five-finger contact, twists a visible marker 224 degrees, and runs slip recovery plus 9x load hold.
+00:01:23,000 --> 00:01:42,000
+Precision assembly is now visible in the main video: tactile pose lock, tripod grasp, socket alignment, jam correction, and insertion verify.
 
 7
-00:01:42,000 --> 00:02:00,000
-The stylus is picked with a thumb-index-middle tripod grasp and used to touch the checkpoint.
+00:01:42,000 --> 00:02:02,000
+The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
 
 8
-00:02:00,000 --> 00:02:12,000
-The button is pressed with the index fingertip only, then the hand returns to the final evidence pose.
+00:02:02,000 --> 00:02:30,000
+The final evidence banner summarizes zero snap events, verified grasp before attach, tactile channels, stress results, and task-gate success.

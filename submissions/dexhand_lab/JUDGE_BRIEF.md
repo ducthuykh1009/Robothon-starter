@@ -72,10 +72,12 @@ The combination lock task adds a sequential manipulation challenge. The hand mus
 
 The main demo and evidence scripts report:
 
-- 20-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
+- 29-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
 - cap rotation target: 224 degrees
 - cap rotation achieved: saved as `cap_rotation_achieved_deg`
-- main demo duration: saved as `duration_s`, currently about 118.6 seconds
+- main demo duration: saved as `duration_s`, currently about 145 seconds after adding the visible assembly highlight segment
+- contact-causality/no-snap audit: saved in `dataset/contact_causality_report.json`
+- precision assembly and tactile combination lock are visible in the main demo, not only in offline evidence files
 - blind tactile visible in main demo: saved as `demo_contains_blind_tactile_segment`
 - final slip: saved as `final_slip_mm`
 - load hold: saved as `load_hold_x`
@@ -124,7 +126,8 @@ The tactile pose estimator is deterministic and contact/proxy based. In `--no-gr
 - `object_classifier.py`: simulation-native affordance classifier.
 - `minimum_jerk_controller.py`: tactile-inspired trajectory evidence.
 - `contact_feedback_audit.py`: five-fingertip tactile evidence.
-- `arena_task_suite.py`: 20-gate verification suite.
+- `arena_task_suite.py`: 29-gate verification suite.
+- `contact_causality_audit.py`: no-snap/contact-gated manipulation audit.
 - `run_stress_eval.py`: fixed-seed stress evaluation and baseline comparison.
 - `hardware_adaptation_audit.py`: simulated hardware replay audit.
 - `validate_submission.py`: final evidence and metric validator.

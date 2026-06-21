@@ -25,6 +25,7 @@
     "tactile_pose_estimator.py",
     "precision_assembly_controller.py",
     "combination_lock_controller.py",
+    "contact_causality_audit.py",
     "quality_gate.py",
     "hardware_adaptation_audit.py",
     "validate_submission.py",
@@ -82,6 +83,8 @@
     "dataset/no_ground_truth_control_audit.json",
     "dataset/combination_lock_report.json",
     "dataset/combination_lock_trace.csv",
+    "dataset/contact_causality_report.json",
+    "dataset/contact_causality_trace.csv",
     "dataset/assembly_stress_eval.json",
     "dataset/assembly_baseline_comparison.json",
     "dataset/blind_tactile_stress_eval.json",
@@ -104,8 +107,7 @@
     "object_snap_events = 0",
     "load_hold_x >= 5",
     "task_gate_success_rate >= 0.9",
-    "feedback_success_rate >= baseline_success_rate"
-    ,
+    "feedback_success_rate >= baseline_success_rate",
     "demo_video_duration_rule_pass = true",
     "runability_status = pass",
     "rules_alignment_pass = true",
@@ -116,15 +118,16 @@
     "blind_tactile_mode_available = true",
     "tactile_classifier_accuracy >= 0.90",
     "adaptive_regrasp_success_rate >= 0.80",
-    "blind_tactile_success_rate >= 0.80"
-    ,
+    "blind_tactile_success_rate >= 0.80",
     "no_ground_truth_pose_mode_available = true",
     "pose_estimation_success = true",
     "assembly_success = true",
     "insertion_depth_ratio >= 0.85",
     "jam_detection_available = true",
     "combination_lock_success = true",
-    "combination_lock_max_error_deg <= 4"
+    "combination_lock_max_error_deg <= 4",
+    "contact_causality_pass = true",
+    "verified_motion_frame_rate >= 0.95"
   ],
   "honest_limitations": [
     "simulation-native object pose perception",

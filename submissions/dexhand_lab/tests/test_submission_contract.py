@@ -56,6 +56,10 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "detent_detection_success",
             "latch_pull_success",
             "micro_door_opened",
+            "assembly_visual_segment_present",
+            "combination_lock_visual_segment_present",
+            "contact_causality_audit_available",
+            "contact_causality_pass",
             "minimum_jerk_controller_pass",
             "hardware_audit_pass",
         ]
@@ -66,6 +70,8 @@ class DexHandSubmissionContractTest(unittest.TestCase):
         self.assertGreaterEqual(float(summary["assembly_success_rate"]), 0.80)
         self.assertGreaterEqual(float(summary["jam_recovery_success_rate"]), 0.80)
         self.assertLessEqual(float(summary["combination_lock_max_error_deg"]), 4.0)
+        self.assertGreaterEqual(float(summary["verified_motion_frame_rate"]), 0.95)
+        self.assertEqual(int(summary["pre_verification_motion_events"]), 0)
 
     def test_required_media_and_reports_exist(self) -> None:
         required_paths = [
@@ -87,6 +93,8 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "dataset/jam_recovery_report.json",
             "dataset/combination_lock_report.json",
             "dataset/combination_lock_trace.csv",
+            "dataset/contact_causality_report.json",
+            "dataset/contact_causality_trace.csv",
             "dataset/hardware_adaptation_report.json",
         ]
         for relative_path in required_paths:

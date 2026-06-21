@@ -20,7 +20,7 @@
   "demo_video_rule": {
     "required_duration_s_min": 60.0,
     "required_duration_s_max": 180.0,
-    "actual_duration_s": 129.8,
+    "actual_duration_s": 144.5,
     "pass": true,
     "path": "submissions/dexhand_lab/outputs/demo.mp4"
   },

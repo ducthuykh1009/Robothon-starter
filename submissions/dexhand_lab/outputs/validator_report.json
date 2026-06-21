@@ -70,11 +70,23 @@
       "media/combination_lock_keyframes.png"
     ]
   },
+  "contact_causality_evidence": {
+    "status": "pass",
+    "contact_causality_pass": true,
+    "verified_motion_frame_rate": 1.0,
+    "pre_verification_motion_events": 0,
+    "object_snap_events": 0,
+    "attach_before_verification_count": 0,
+    "checked_files": [
+      "dataset/contact_causality_report.json",
+      "dataset/contact_causality_trace.csv"
+    ]
+  },
   "event_rules_alignment": {
     "status": "pass",
     "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
     "demo_video_duration_rule_pass": true,
-    "duration_s": 129.8,
+    "duration_s": 144.5,
     "runability_status": "pass",
     "rules_alignment_pass": true
   },

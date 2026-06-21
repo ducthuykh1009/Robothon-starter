@@ -184,6 +184,73 @@
       "recommended_grasp_type": "LATERAL_CYLINDER_BODY_GRASP"
     },
     {
+      "object_name": "assembly_plug",
+      "object_type": "assembly_plug",
+      "object_center": [
+        0.3121,
+        0.31106,
+        0.44
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.055,
+        0.015,
+        0.012
+      ],
+      "face_normals": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ]
+      ],
+      "radius": null,
+      "long_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          0.2571,
+          0.31106,
+          0.44
+        ],
+        [
+          0.3671,
+          0.31106,
+          0.44
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "plug side face for precision opposition",
+        "index": "upper long edge tactile pose probe",
+        "middle": "opposing lower side support",
+        "ring": "anti-roll stabilizer during socket alignment"
+      },
+      "recommended_grasp_type": "TACTILE_PRECISION_ASSEMBLY"
+    },
+    {
       "object_name": "cap_knob",
       "object_type": "cap_knob",
       "object_center": [
@@ -383,6 +450,15 @@
         0.00359,
         0.438
       ]
+    },
+    {
+      "name": "assembly_plug",
+      "type": "assembly_plug",
+      "start_position": [
+        0.3121,
+        0.31106,
+        0.44
+      ]
     }
   ],
   "grasp_types": [
@@ -428,6 +504,8 @@
   },
   "blind_tactile_visual_segment_present": true,
   "demo_contains_blind_tactile_segment": true,
+  "assembly_visual_segment_present": true,
+  "combination_lock_visual_segment_present": true,
   "blind_tactile_demo_sequence": [
     "label_hidden_unknown_object",
     "index_probe_front",
@@ -439,13 +517,13 @@
     "adaptive_regrasp_precheck"
   ],
   "overall_task_success": true,
-  "average_active_fingers": 2.916,
-  "average_grasp_stability_score": 0.74091,
-  "average_multi_side_contact_score": 0.64569,
+  "average_active_fingers": 2.98443,
+  "average_grasp_stability_score": 0.76314,
+  "average_multi_side_contact_score": 0.69607,
   "object_center_between_fingers_rate": 1.0,
   "average_grasp_centroid_error_m": 0.02439,
   "one_face_only_contact_count": 0,
-  "independent_finger_motion_score": 0.75018,
+  "independent_finger_motion_score": 0.75551,
   "thumb_opposition_score": 0.92,
   "object_snap_events": 0,
   "average_snap_distance_m": 0.0,
@@ -489,13 +567,13 @@
   "touch_sensor_count": 5,
   "mujoco_touch_sensors_present": true,
   "sensorized_fingertip_count": 5,
-  "mean_contact_confidence": 0.52823,
-  "active_contact_confidence": 0.67034,
-  "dexterous_contact_confidence": 0.76567,
-  "mean_friction_margin": 0.96383,
-  "mean_mujoco_touch_sensor_value": 44.445532,
-  "average_active_fingers_dexterous_grasps": 4.18659,
-  "average_multi_side_contact_score_dexterous_grasps": 0.91606,
+  "mean_contact_confidence": 0.54053,
+  "active_contact_confidence": 0.65756,
+  "dexterous_contact_confidence": 0.73488,
+  "mean_friction_margin": 0.93272,
+  "mean_mujoco_touch_sensor_value": 44.441867,
+  "average_active_fingers_dexterous_grasps": 4.02096,
+  "average_multi_side_contact_score_dexterous_grasps": 0.93964,
   "tripod_tool_success": true,
   "checkpoint_touch_success": true,
   "index_only_button_press_success": true,
@@ -507,6 +585,6 @@
     "Hybrid carry and rotation are used only after stable grasp verification to keep the demo reproducible.",
     "Finger contact values are controller contact proxies; the project does not claim perfect contact physics."
   ],
-  "trajectory_steps": 750,
+  "trajectory_steps": 899,
   "frames_saved": 0
 }

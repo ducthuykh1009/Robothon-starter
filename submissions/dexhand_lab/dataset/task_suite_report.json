@@ -1,8 +1,8 @@
 {
   "project": "DexHand Lab",
-  "suite": "25-gate deterministic dexterity verification",
-  "gate_count": 25,
-  "gates_passed": 25,
+  "suite": "29-gate deterministic dexterity verification",
+  "gate_count": 29,
+  "gates_passed": 29,
   "success_rate": 1.0,
   "failed_gates": [],
   "max_pose_error_m": 0.02439,
@@ -132,6 +132,26 @@
     {
       "gate": 25,
       "name": "combination_lock_micro_door_opened",
+      "passed": true
+    },
+    {
+      "gate": 26,
+      "name": "combination_lock_visible_in_main_demo",
+      "passed": true
+    },
+    {
+      "gate": 27,
+      "name": "precision_assembly_visible_in_main_demo",
+      "passed": true
+    },
+    {
+      "gate": 28,
+      "name": "contact_causality_pass",
+      "passed": true
+    },
+    {
+      "gate": 29,
+      "name": "verified_motion_frame_rate_high",
       "passed": true
     }
   ]

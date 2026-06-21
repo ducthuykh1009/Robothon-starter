@@ -24,3 +24,7 @@ gate,name,passed
 23,combination_lock_detent_detection_success,True
 24,combination_lock_latch_pull_success,True
 25,combination_lock_micro_door_opened,True
+26,combination_lock_visible_in_main_demo,True
+27,precision_assembly_visible_in_main_demo,True
+28,contact_causality_pass,True
+29,verified_motion_frame_rate_high,True

@@ -44,12 +44,12 @@
     <light name="key_light" pos="0.0 -1.2 1.8" dir="0.0 0.4 -1" diffuse="0.95 0.95 0.92"/>
     <light name="fill_light" pos="-1.0 1.1 1.5" dir="0.5 -0.4 -1" diffuse="0.35 0.40 0.48"/>
 
-    <camera name="front_camera" pos="0.48 -1.34 0.90" xyaxes="0.94 0.34 0 -0.16 0.45 0.88" fovy="60"/>
-    <camera name="grasp_camera" pos="0.42 -1.12 0.86" xyaxes="0.94 0.34 0 -0.18 0.46 0.87" fovy="58"/>
-    <camera name="cap_camera" pos="0.36 0.185 1.28" xyaxes="1 0 0 0 1 0" fovy="58"/>
-    <camera name="assembly_camera" pos="0.68 -0.62 0.84" xyaxes="0.72 0.69 0 -0.38 0.40 0.83" fovy="56"/>
-    <camera name="lock_camera" pos="-0.50 -0.72 0.82" xyaxes="0.82 -0.57 0 0.33 0.48 0.81" fovy="54"/>
-    <camera name="top_camera" pos="0.0 0.0 1.72" xyaxes="1 0 0 0 1 0" fovy="60"/>
+    <camera name="front_camera" pos="0.58 -1.52 1.02" xyaxes="0.94 0.34 0 -0.17 0.47 0.86" fovy="66"/>
+    <camera name="grasp_camera" pos="0.54 -1.36 0.98" xyaxes="0.94 0.34 0 -0.18 0.47 0.86" fovy="64"/>
+    <camera name="cap_camera" pos="0.36 0.145 1.42" xyaxes="1 0 0 0 1 0" fovy="66"/>
+    <camera name="assembly_camera" pos="0.76 -0.78 0.98" xyaxes="0.72 0.69 0 -0.38 0.42 0.82" fovy="64"/>
+    <camera name="lock_camera" pos="-0.62 -0.86 0.96" xyaxes="0.82 -0.57 0 0.34 0.49 0.80" fovy="64"/>
+    <camera name="top_camera" pos="0.0 0.0 1.96" xyaxes="1 0 0 0 1 0" fovy="66"/>
 
     <body name="table" pos="0 0 0.36">
       <geom name="table_top" type="box" size="0.55 0.42 0.035" material="table_mat"/>
