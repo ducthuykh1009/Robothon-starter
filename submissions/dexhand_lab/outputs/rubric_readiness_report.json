@@ -25,7 +25,7 @@
     {
       "rubric": "Control",
       "status": "pass",
-      "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification.",
+      "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification, and closed-loop reflex benchmark.",
       "score_estimate": 13
     },
     {

@@ -125,8 +125,8 @@
   "baseline_success_rate": 0.59375,
   "feedback_success_rate": 1.0,
   "improvement_percentage": 40.625,
-  "task_gate_count": 31,
-  "task_gates_passed": 31,
+  "task_gate_count": 34,
+  "task_gates_passed": 34,
   "task_gate_success_rate": 1.0,
   "minimum_jerk_controller_pass": true,
   "hardware_audit_pass": true,
@@ -2120,6 +2120,20 @@
   "contact_causality_trace_path": "submissions/dexhand_lab/dataset/contact_causality_trace.csv",
   "verified_motion_frame_rate": 1.0,
   "pre_verification_motion_events": 0,
+  "closed_loop_reflex_benchmark_available": true,
+  "closed_loop_reflex_report_path": "submissions/dexhand_lab/dataset/closed_loop_reflex_report.json",
+  "closed_loop_reflex_trace_path": "submissions/dexhand_lab/dataset/closed_loop_reflex_trace.csv",
+  "closed_loop_reflex_scorecard_path": "submissions/dexhand_lab/outputs/closed_loop_reflex_scorecard.json",
+  "closed_loop_reflex_success": true,
+  "reflex_response_latency_ms": 10.0,
+  "reflex_latency_pass": true,
+  "reflex_latency_threshold_ms": 20.0,
+  "reflex_initial_slip_mm": 0.46,
+  "reflex_final_slip_mm": 0.28,
+  "reflex_pressure_boost_n": 0.4,
+  "reflex_active_fingers": 5,
+  "reflex_contact_confidence": 0.9627,
+  "reflex_friction_margin": 1.0,
   "judge_replay_index_available": true,
   "judge_replay_index_path": "submissions/dexhand_lab/dataset/judge_video_replay_index.json",
   "judge_replay_index_csv_path": "submissions/dexhand_lab/dataset/judge_video_replay_index.csv",
@@ -2140,7 +2154,6 @@
   "unit_tests_pass": true,
   "judge_summary_path": "submissions/dexhand_lab/outputs/judge_summary.json",
   "evidence_index_path": "submissions/dexhand_lab/EVIDENCE_INDEX.md",
-  "validation_passed": true,
   "dataset_stress_eval_path": "submissions/dexhand_lab/dataset/stress_eval.json",
   "stress_eval_summary": {
     "seeds": 32,
@@ -2166,5 +2179,6 @@
     "average_multi_side_contact_score_dexterous_grasps": 0.95482,
     "average_rotation_error_deg": 2.26519,
     "object_snap_events": 0
-  }
+  },
+  "validation_passed": true
 }

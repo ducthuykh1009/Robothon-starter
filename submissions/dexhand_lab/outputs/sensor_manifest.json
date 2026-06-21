@@ -96,6 +96,8 @@
     "contact_causality_trace": "dataset/contact_causality_trace.csv",
     "judge_video_replay_index": "dataset/judge_video_replay_index.json",
     "judge_video_replay_index_csv": "dataset/judge_video_replay_index.csv",
+    "closed_loop_reflex_report": "dataset/closed_loop_reflex_report.json",
+    "closed_loop_reflex_trace": "dataset/closed_loop_reflex_trace.csv",
     "video_cameras": [
       "grasp_camera",
       "front_camera",
@@ -130,7 +132,10 @@
     "contact_causality_pass",
     "verified_motion_frame_rate",
     "video_replay_coverage_rate",
-    "rubric_replay_category_count"
+    "rubric_replay_category_count",
+    "reflex_response_latency_ms",
+    "reflex_pressure_boost_n",
+    "closed_loop_reflex_success"
   ],
   "not_included": [
     "real camera images used for perception",

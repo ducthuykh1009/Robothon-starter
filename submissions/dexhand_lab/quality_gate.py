@@ -93,7 +93,7 @@ def build_rubric_rows(summary: dict, readiness: dict) -> list[dict]:
         {
             "rubric": "Control",
             "status": "pass" if bool(summary.get("minimum_jerk_controller_pass")) else "review",
-            "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification.",
+            "evidence": "No-snap grasp verification, minimum-jerk tactile control, adaptive regrasp, jam recovery, tactile detent verification, and closed-loop reflex benchmark.",
             "score_estimate": 13,
         },
         {

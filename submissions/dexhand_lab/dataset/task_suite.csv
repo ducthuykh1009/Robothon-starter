@@ -30,3 +30,6 @@ gate,name,passed
 29,verified_motion_frame_rate_high,True
 30,judge_replay_index_available,True
 31,video_replay_coverage_high,True
+32,closed_loop_reflex_benchmark_available,True
+33,closed_loop_reflex_success,True
+34,reflex_latency_under_20ms,True

@@ -96,6 +96,21 @@
       "outputs/video_replay_scorecard.json"
     ]
   },
+  "closed_loop_reflex_evidence": {
+    "status": "pass",
+    "closed_loop_reflex_benchmark_available": true,
+    "closed_loop_reflex_success": true,
+    "reflex_response_latency_ms": 10.0,
+    "reflex_latency_threshold_ms": 20.0,
+    "reflex_pressure_boost_n": 0.4,
+    "reflex_final_slip_mm": 0.28,
+    "reflex_active_fingers": 5,
+    "checked_files": [
+      "dataset/closed_loop_reflex_report.json",
+      "dataset/closed_loop_reflex_trace.csv",
+      "outputs/closed_loop_reflex_scorecard.json"
+    ]
+  },
   "event_rules_alignment": {
     "status": "pass",
     "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",

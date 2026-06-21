@@ -27,6 +27,7 @@
     "combination_lock_controller.py",
     "contact_causality_audit.py",
     "judge_replay_index.py",
+    "closed_loop_reflex_benchmark.py",
     "quality_gate.py",
     "hardware_adaptation_audit.py",
     "validate_submission.py",
@@ -52,6 +53,7 @@
     "media/combination_lock_keyframes.png",
     "outputs/judge_summary.json",
     "outputs/video_replay_scorecard.json",
+    "outputs/closed_loop_reflex_scorecard.json",
     "outputs/event_rules_report.json",
     "outputs/submission_readiness_report.json",
     "outputs/rubric_readiness_report.json",
@@ -89,6 +91,8 @@
     "dataset/contact_causality_trace.csv",
     "dataset/judge_video_replay_index.json",
     "dataset/judge_video_replay_index.csv",
+    "dataset/closed_loop_reflex_report.json",
+    "dataset/closed_loop_reflex_trace.csv",
     "dataset/assembly_stress_eval.json",
     "dataset/assembly_baseline_comparison.json",
     "dataset/blind_tactile_stress_eval.json",
@@ -133,7 +137,9 @@
     "contact_causality_pass = true",
     "verified_motion_frame_rate >= 0.95",
     "judge_replay_index_available = true",
-    "video_replay_coverage_rate >= 0.90"
+    "video_replay_coverage_rate >= 0.90",
+    "closed_loop_reflex_success = true",
+    "reflex_response_latency_ms <= 20"
   ],
   "honest_limitations": [
     "simulation-native object pose perception",

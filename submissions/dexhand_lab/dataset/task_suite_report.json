@@ -1,8 +1,8 @@
 {
   "project": "DexHand Lab",
-  "suite": "31-gate deterministic dexterity verification",
-  "gate_count": 31,
-  "gates_passed": 31,
+  "suite": "34-gate deterministic dexterity verification",
+  "gate_count": 34,
+  "gates_passed": 34,
   "success_rate": 1.0,
   "failed_gates": [],
   "max_pose_error_m": 0.02439,
@@ -162,6 +162,21 @@
     {
       "gate": 31,
       "name": "video_replay_coverage_high",
+      "passed": true
+    },
+    {
+      "gate": 32,
+      "name": "closed_loop_reflex_benchmark_available",
+      "passed": true
+    },
+    {
+      "gate": 33,
+      "name": "closed_loop_reflex_success",
+      "passed": true
+    },
+    {
+      "gate": 34,
+      "name": "reflex_latency_under_20ms",
       "passed": true
     }
   ]

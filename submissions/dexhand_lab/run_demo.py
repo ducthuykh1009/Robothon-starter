@@ -2593,6 +2593,8 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "contact_causality_trace": "dataset/contact_causality_trace.csv",
             "judge_video_replay_index": "dataset/judge_video_replay_index.json",
             "judge_video_replay_index_csv": "dataset/judge_video_replay_index.csv",
+            "closed_loop_reflex_report": "dataset/closed_loop_reflex_report.json",
+            "closed_loop_reflex_trace": "dataset/closed_loop_reflex_trace.csv",
             "video_cameras": ["grasp_camera", "front_camera", "cap_camera", "assembly_camera", "lock_camera", "top_camera"],
         },
         "touch_sensor_count": 5,
@@ -2621,6 +2623,9 @@ def write_sensor_manifest(output_dir: Path) -> str:
             "verified_motion_frame_rate",
             "video_replay_coverage_rate",
             "rubric_replay_category_count",
+            "reflex_response_latency_ms",
+            "reflex_pressure_boost_n",
+            "closed_loop_reflex_success",
         ],
         "not_included": [
             "real camera images used for perception",
@@ -3164,6 +3169,9 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Contact-causality audit: {'pass' if bool(summary.get('contact_causality_pass')) else 'pending'}",
             f"Verified motion frame rate: {float(summary.get('verified_motion_frame_rate', 0.0) or 0.0):.2f}",
             f"Pre-verification motion events: {int(summary.get('pre_verification_motion_events', 0) or 0)}",
+            f"Closed-loop reflex benchmark: {'pass' if bool(summary.get('closed_loop_reflex_success')) else 'pending'}",
+            f"Reflex response latency: {float(summary.get('reflex_response_latency_ms', 0.0) or 0.0):.1f} ms",
+            f"Reflex pressure boost: {float(summary.get('reflex_pressure_boost_n', 0.0) or 0.0):.2f} N",
             f"Judge replay index: {'pass' if bool(summary.get('judge_replay_index_available')) else 'pending'}",
             f"Video replay milestones: {int(summary.get('video_replay_milestones_present', 0))}/{int(summary.get('video_replay_milestone_count', 0))}",
             f"Video replay coverage: {float(summary.get('video_replay_coverage_rate', 0.0)):.2f}",
@@ -3232,6 +3240,15 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "object_snap_events": summary.get("object_snap_events"),
             "contact_causality_pass": summary.get("contact_causality_pass"),
             "verified_motion_frame_rate": summary.get("verified_motion_frame_rate"),
+            "closed_loop_reflex": {
+                "available": summary.get("closed_loop_reflex_benchmark_available", False),
+                "success": summary.get("closed_loop_reflex_success", False),
+                "response_latency_ms": summary.get("reflex_response_latency_ms"),
+                "latency_threshold_ms": summary.get("reflex_latency_threshold_ms"),
+                "pressure_boost_n": summary.get("reflex_pressure_boost_n"),
+                "final_slip_mm": summary.get("reflex_final_slip_mm"),
+                "active_fingers": summary.get("reflex_active_fingers"),
+            },
             "dexterous_active_fingers": summary.get("average_active_fingers_dexterous_grasps"),
             "dexterous_multi_side_contact": summary.get("average_multi_side_contact_score_dexterous_grasps"),
             "minimum_jerk_controller_pass": summary.get("minimum_jerk_controller_pass"),
@@ -3301,6 +3318,8 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
             "submissions/dexhand_lab/dataset/judge_video_replay_index.json",
             "submissions/dexhand_lab/outputs/video_replay_scorecard.json",
+            "submissions/dexhand_lab/dataset/closed_loop_reflex_report.json",
+            "submissions/dexhand_lab/outputs/closed_loop_reflex_scorecard.json",
             "submissions/dexhand_lab/dataset/code_quality_report.json",
             "submissions/dexhand_lab/outputs/blind_tactile_summary.json",
             "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
@@ -3330,7 +3349,7 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "reproducibility": "Fixed seeds and validator outputs make the submission easy to reproduce.",
             "mujoco_depth": "MJCF has articulated hand joints, fingertip pad collision geoms, cap hinge, button joint, plug/socket assembly geoms, and five MuJoCo fingertip touch sensors.",
             "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, precision plug/socket assembly, and tactile combination lock.",
-            "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, and runs tactile detent verification before latch pull.",
+            "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, runs tactile detent verification before latch pull, and logs closed-loop slip reflex response.",
             "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
             "engineering_quality": "Compact evidence files, validator, manifest, judge brief, stress comparison, and hardware replay audit.",
             "presentation": "Generated demo, time-anchored judge replay index, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
@@ -3369,27 +3388,29 @@ def write_evidence_index(summary: dict) -> str:
         "5. `outputs/rubric_readiness_report.json` - local non-official scoring-readiness map across the public rubric categories.",
         "6. `dataset/judge_video_replay_index.json` - time-anchored map from demo moments to rubric evidence.",
         "7. `outputs/video_replay_scorecard.json` - compact replay scorecard for automated review.",
-        "8. `dataset/code_quality_report.json` - compile/source-health/validator quality gate.",
-        "9. `dataset/unit_test_report.json` - unit-test contract report.",
-        "10. `outputs/judge_summary.json` - compact quantitative evidence.",
-        "11. `outputs/summary.json` - full run metrics.",
-        "12. `outputs/contact_timeline.json` - per-finger contact timeline.",
-        "13. `dataset/task_suite_report.json` - 31-gate verification suite.",
-        "14. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
-        "15. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
-        "16. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
-        "17. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
-        "18. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
-        "19. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
-        "20. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
-        "21. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
-        "22. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
-        "23. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
-        "24. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
-        "25. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
-        "26. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
-        "27. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
-        "28. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
+        "8. `dataset/closed_loop_reflex_report.json` - closed-loop slip response, pressure correction, and load-hold evidence.",
+        "9. `outputs/closed_loop_reflex_scorecard.json` - compact reflex benchmark scorecard.",
+        "10. `dataset/code_quality_report.json` - compile/source-health/validator quality gate.",
+        "11. `dataset/unit_test_report.json` - unit-test contract report.",
+        "12. `outputs/judge_summary.json` - compact quantitative evidence.",
+        "13. `outputs/summary.json` - full run metrics.",
+        "14. `outputs/contact_timeline.json` - per-finger contact timeline.",
+        "15. `dataset/task_suite_report.json` - 34-gate verification suite.",
+        "16. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
+        "17. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
+        "18. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
+        "19. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
+        "20. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
+        "21. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
+        "22. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
+        "23. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
+        "24. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
+        "25. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
+        "26. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
+        "27. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
+        "28. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
+        "29. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
+        "30. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
         "",
         "## Current Metrics",
         "",
@@ -3416,6 +3437,8 @@ def write_evidence_index(summary: dict) -> str:
         f"- Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
         f"- Combination lock micro-door opened: {str(bool(summary.get('micro_door_opened', False))).lower()}",
         f"- Video replay coverage: {int(summary.get('video_replay_milestones_present', 0))}/{int(summary.get('video_replay_milestone_count', 0))} milestones",
+        f"- Closed-loop reflex latency: {float(summary.get('reflex_response_latency_ms', 0.0) or 0.0):.1f} ms",
+        f"- Closed-loop reflex success: {str(bool(summary.get('closed_loop_reflex_success', False))).lower()}",
         f"- Event rules alignment: {str(bool(summary.get('rules_alignment_pass', False))).lower()}",
         f"- Submission readiness audit: {summary.get('submission_readiness_report_path', 'outputs/submission_readiness_report.json')}",
         f"- Rubric readiness estimate: {summary.get('local_readiness_score_estimate_not_official', 'pending')}",
@@ -3726,6 +3749,19 @@ def run_demo(
         warnings.append(f"Contact-causality audit could not be refreshed: {exc}")
         summary["contact_causality_audit_warning"] = str(exc)
     try:
+        from closed_loop_reflex_benchmark import run_closed_loop_reflex_benchmark
+
+        summary.update(
+            run_closed_loop_reflex_benchmark(
+                output_dir=output_dir,
+                dataset_dir=PROJECT_DIR / "dataset",
+                summary=summary,
+            )
+        )
+    except Exception as exc:
+        warnings.append(f"Closed-loop reflex benchmark could not be refreshed: {exc}")
+        summary["closed_loop_reflex_warning"] = str(exc)
+    try:
         from judge_replay_index import build_judge_replay_index
 
         summary.update(
@@ -3746,14 +3782,14 @@ def run_demo(
         passed = sum(1 for gate in gates if gate["passed"])
         task_suite_report = {
             "project": "DexHand Lab",
-            "suite": "31-gate deterministic dexterity verification",
+            "suite": "34-gate deterministic dexterity verification",
             "gate_count": len(gates),
             "gates_passed": passed,
             "success_rate": round(passed / len(gates), 5),
             "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
             "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
             "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-            "final_task_success": passed >= 29,
+            "final_task_success": passed >= 32,
             "gates": gates,
         }
         dataset_dir = PROJECT_DIR / "dataset"

@@ -37,6 +37,7 @@ def main() -> int:
         PROJECT_DIR / "combination_lock_controller.py",
         PROJECT_DIR / "contact_causality_audit.py",
         PROJECT_DIR / "judge_replay_index.py",
+        PROJECT_DIR / "closed_loop_reflex_benchmark.py",
         PROJECT_DIR / "quality_gate.py",
         PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
@@ -59,6 +60,7 @@ def main() -> int:
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "video_replay_scorecard.json",
+        OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -97,6 +99,8 @@ def main() -> int:
         DATASET_DIR / "contact_causality_trace.csv",
         DATASET_DIR / "judge_video_replay_index.json",
         DATASET_DIR / "judge_video_replay_index.csv",
+        DATASET_DIR / "closed_loop_reflex_report.json",
+        DATASET_DIR / "closed_loop_reflex_trace.csv",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "minimum_jerk_trace.csv",
         DATASET_DIR / "stress_eval.json",
@@ -124,6 +128,7 @@ def main() -> int:
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "video_replay_scorecard.json",
+        OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -144,6 +149,7 @@ def main() -> int:
         DATASET_DIR / "combination_lock_report.json",
         DATASET_DIR / "contact_causality_report.json",
         DATASET_DIR / "judge_video_replay_index.json",
+        DATASET_DIR / "closed_loop_reflex_report.json",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
@@ -290,6 +296,17 @@ def main() -> int:
         "video_replay_coverage_rate",
         "rubric_replay_category_count",
         "rubric_replay_all_categories_present",
+        "closed_loop_reflex_benchmark_available",
+        "closed_loop_reflex_report_path",
+        "closed_loop_reflex_trace_path",
+        "closed_loop_reflex_scorecard_path",
+        "closed_loop_reflex_success",
+        "reflex_response_latency_ms",
+        "reflex_latency_pass",
+        "reflex_latency_threshold_ms",
+        "reflex_final_slip_mm",
+        "reflex_pressure_boost_n",
+        "reflex_active_fingers",
     ]
     missing_metrics = [metric for metric in required_metrics if metric not in summary]
     if missing_metrics:
@@ -332,6 +349,9 @@ def main() -> int:
         "combination_lock_visual_segment_present": True,
         "judge_replay_index_available": True,
         "rubric_replay_all_categories_present": True,
+        "closed_loop_reflex_benchmark_available": True,
+        "closed_loop_reflex_success": True,
+        "reflex_latency_pass": True,
     }
     bad_values = [
         f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
@@ -418,6 +438,12 @@ def main() -> int:
         bad_values.append("video_replay_coverage_rate expected >= 0.90")
     if int(summary.get("rubric_replay_category_count", 0)) < 8:
         bad_values.append("rubric_replay_category_count expected >= 8")
+    if float(summary.get("reflex_response_latency_ms", 999.0)) > float(summary.get("reflex_latency_threshold_ms", 20.0)):
+        bad_values.append("reflex_response_latency_ms expected <= threshold")
+    if float(summary.get("reflex_final_slip_mm", 999.0)) > 0.5:
+        bad_values.append("reflex_final_slip_mm expected <= 0.5")
+    if int(summary.get("reflex_active_fingers", 0)) < 4:
+        bad_values.append("reflex_active_fingers expected >= 4")
     if not bool(summary.get("demo_video_duration_rule_pass", False)):
         bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
     if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:
@@ -546,6 +572,21 @@ def main() -> int:
                 "dataset/judge_video_replay_index.json",
                 "dataset/judge_video_replay_index.csv",
                 "outputs/video_replay_scorecard.json",
+            ],
+        },
+        "closed_loop_reflex_evidence": {
+            "status": "pass",
+            "closed_loop_reflex_benchmark_available": bool(summary.get("closed_loop_reflex_benchmark_available")),
+            "closed_loop_reflex_success": bool(summary.get("closed_loop_reflex_success")),
+            "reflex_response_latency_ms": summary.get("reflex_response_latency_ms"),
+            "reflex_latency_threshold_ms": summary.get("reflex_latency_threshold_ms"),
+            "reflex_pressure_boost_n": summary.get("reflex_pressure_boost_n"),
+            "reflex_final_slip_mm": summary.get("reflex_final_slip_mm"),
+            "reflex_active_fingers": summary.get("reflex_active_fingers"),
+            "checked_files": [
+                "dataset/closed_loop_reflex_report.json",
+                "dataset/closed_loop_reflex_trace.csv",
+                "outputs/closed_loop_reflex_scorecard.json",
             ],
         },
         "event_rules_alignment": {

@@ -1,6 +1,6 @@
 ## DexHand Lab 95+ Evidence Report
 
-Task gates: 31/31
+Task gates: 34/34
 Hand skeleton valid: true
 All five fingers visible: true
 Thumb opposition visible: true
@@ -47,6 +47,9 @@ Combination lock visible in main demo: true
 Contact-causality audit: pass
 Verified motion frame rate: 1.00
 Pre-verification motion events: 0
+Closed-loop reflex benchmark: pass
+Reflex response latency: 10.0 ms
+Reflex pressure boost: 0.40 N
 Judge replay index: pass
 Video replay milestones: 12/12
 Video replay coverage: 1.00

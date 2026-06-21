@@ -63,6 +63,7 @@
         "blind tactile probing, confidence thresholding, and adaptive regrasp",
         "tactile pose estimation with exact pose hidden from controller",
         "compliant insertion with jam detection and withdraw/correct retry",
+        "closed-loop slip reflex benchmark with latency and pressure-boost evidence",
         "tactile detent verification before latch pull"
       ],
       "files": [
@@ -75,6 +76,7 @@
         "dataset/no_ground_truth_control_audit.json",
         "dataset/precision_assembly_trace.csv",
         "dataset/jam_recovery_report.json",
+        "dataset/closed_loop_reflex_report.json",
         "outputs/baseline_vs_feedback.json"
       ]
     },
@@ -104,6 +106,7 @@
         "separate tactile pose estimator and precision assembly controller",
         "contact-causality audit verifies no snap and contact-gated manipulation",
         "judge replay index maps generated video timestamps to rubric evidence",
+        "closed-loop reflex trace links slip detection, pressure correction, and load hold",
         "JSON/CSV evidence pack",
         "validator checks core files and metrics"
       ],
@@ -124,6 +127,7 @@
         "outputs/judge_summary.json",
         "dataset/judge_video_replay_index.json",
         "outputs/video_replay_scorecard.json",
+        "outputs/closed_loop_reflex_scorecard.json",
         "EVIDENCE_INDEX.md",
         "media/blind_tactile_keyframes.png",
         "media/tactile_classifier_panel.png",
