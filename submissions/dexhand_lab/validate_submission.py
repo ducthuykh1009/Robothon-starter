@@ -36,6 +36,7 @@ def main() -> int:
         PROJECT_DIR / "precision_assembly_controller.py",
         PROJECT_DIR / "combination_lock_controller.py",
         PROJECT_DIR / "contact_causality_audit.py",
+        PROJECT_DIR / "judge_replay_index.py",
         PROJECT_DIR / "quality_gate.py",
         PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
@@ -57,6 +58,7 @@ def main() -> int:
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
+        OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -93,6 +95,8 @@ def main() -> int:
         DATASET_DIR / "combination_lock_trace.csv",
         DATASET_DIR / "contact_causality_report.json",
         DATASET_DIR / "contact_causality_trace.csv",
+        DATASET_DIR / "judge_video_replay_index.json",
+        DATASET_DIR / "judge_video_replay_index.csv",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "minimum_jerk_trace.csv",
         DATASET_DIR / "stress_eval.json",
@@ -119,6 +123,7 @@ def main() -> int:
         OUTPUT_DIR / "policy_card.json",
         OUTPUT_DIR / "sensor_manifest.json",
         OUTPUT_DIR / "judge_summary.json",
+        OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -138,6 +143,7 @@ def main() -> int:
         DATASET_DIR / "no_ground_truth_control_audit.json",
         DATASET_DIR / "combination_lock_report.json",
         DATASET_DIR / "contact_causality_report.json",
+        DATASET_DIR / "judge_video_replay_index.json",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
@@ -276,6 +282,14 @@ def main() -> int:
         "video_render_mode",
         "runability_status",
         "rules_alignment_pass",
+        "judge_replay_index_available",
+        "judge_replay_index_path",
+        "video_replay_scorecard_path",
+        "video_replay_milestone_count",
+        "video_replay_milestones_present",
+        "video_replay_coverage_rate",
+        "rubric_replay_category_count",
+        "rubric_replay_all_categories_present",
     ]
     missing_metrics = [metric for metric in required_metrics if metric not in summary]
     if missing_metrics:
@@ -316,6 +330,8 @@ def main() -> int:
         "contact_causality_pass": True,
         "assembly_visual_segment_present": True,
         "combination_lock_visual_segment_present": True,
+        "judge_replay_index_available": True,
+        "rubric_replay_all_categories_present": True,
     }
     bad_values = [
         f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
@@ -396,6 +412,12 @@ def main() -> int:
         bad_values.append("verified_motion_frame_rate expected >= 0.95")
     if int(summary.get("pre_verification_motion_events", 1)) != 0:
         bad_values.append("pre_verification_motion_events expected 0")
+    if int(summary.get("video_replay_milestones_present", 0)) < 10:
+        bad_values.append("video_replay_milestones_present expected >= 10")
+    if float(summary.get("video_replay_coverage_rate", 0.0)) < 0.90:
+        bad_values.append("video_replay_coverage_rate expected >= 0.90")
+    if int(summary.get("rubric_replay_category_count", 0)) < 8:
+        bad_values.append("rubric_replay_category_count expected >= 8")
     if not bool(summary.get("demo_video_duration_rule_pass", False)):
         bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
     if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:
@@ -510,6 +532,20 @@ def main() -> int:
             "checked_files": [
                 "dataset/contact_causality_report.json",
                 "dataset/contact_causality_trace.csv",
+            ],
+        },
+        "judge_replay_evidence": {
+            "status": "pass",
+            "judge_replay_index_available": bool(summary.get("judge_replay_index_available")),
+            "video_replay_milestones_present": summary.get("video_replay_milestones_present"),
+            "video_replay_milestone_count": summary.get("video_replay_milestone_count"),
+            "video_replay_coverage_rate": summary.get("video_replay_coverage_rate"),
+            "rubric_replay_category_count": summary.get("rubric_replay_category_count"),
+            "rubric_replay_all_categories_present": bool(summary.get("rubric_replay_all_categories_present")),
+            "checked_files": [
+                "dataset/judge_video_replay_index.json",
+                "dataset/judge_video_replay_index.csv",
+                "outputs/video_replay_scorecard.json",
             ],
         },
         "event_rules_alignment": {

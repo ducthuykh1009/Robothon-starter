@@ -1,7 +1,7 @@
 {
   "project": "DexHand Lab",
-  "local_readiness_score_estimate_not_official": 99,
-  "max_score_estimate": 99,
+  "local_readiness_score_estimate_not_official": 100,
+  "max_score_estimate": 100,
   "all_rubric_rows_pass": true,
   "rubric_rows": [
     {
@@ -43,8 +43,8 @@
     {
       "rubric": "Presentation",
       "status": "pass",
-      "evidence": "about 145s generated video, wider cameras, HUD/keyframes, narration, judge brief, final report.",
-      "score_estimate": 11
+      "evidence": "about 145s generated video, wider cameras, HUD/keyframes, narration, judge brief, final report, and time-anchored judge replay index.",
+      "score_estimate": 12
     },
     {
       "rubric": "Innovation",

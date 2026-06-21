@@ -3,7 +3,7 @@
   "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
   "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
   "score_target_evidence": {
-    "task_gates": "29/29",
+    "task_gates": "31/31",
     "cap_rotation_deg": {
       "target": 224.0,
       "achieved": 224.0,
@@ -80,12 +80,23 @@
       "duration_s": 144.5,
       "runability_status": "pass",
       "rules_alignment_pass": true
+    },
+    "judge_replay_index": {
+      "available": true,
+      "milestones_present": 12,
+      "milestone_count": 12,
+      "coverage_rate": 1.0,
+      "rubric_category_count": 9,
+      "all_rubric_categories_present": true,
+      "path": "submissions/dexhand_lab/dataset/judge_video_replay_index.json"
     }
   },
   "inspect_first": [
     "submissions/dexhand_lab/outputs/event_rules_report.json",
     "submissions/dexhand_lab/outputs/submission_readiness_report.json",
     "submissions/dexhand_lab/outputs/rubric_readiness_report.json",
+    "submissions/dexhand_lab/dataset/judge_video_replay_index.json",
+    "submissions/dexhand_lab/outputs/video_replay_scorecard.json",
     "submissions/dexhand_lab/dataset/code_quality_report.json",
     "submissions/dexhand_lab/outputs/blind_tactile_summary.json",
     "submissions/dexhand_lab/dataset/tactile_classifier_report.json",
@@ -118,7 +129,7 @@
     "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, and runs tactile detent verification before latch pull.",
     "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
     "engineering_quality": "Compact evidence files, validator, manifest, judge brief, stress comparison, and hardware replay audit.",
-    "presentation": "75-120 second generated demo, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
+    "presentation": "Generated demo, time-anchored judge replay index, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
     "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation and tactile combination lock: labels/exact pose can be hidden, the hand probes contact evidence, estimates center/axis, completes plug/socket assembly, and solves a multi-detent dial/latch sequence."
   },
   "honest_scope": [

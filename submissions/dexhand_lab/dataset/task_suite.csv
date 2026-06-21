@@ -28,3 +28,5 @@ gate,name,passed
 27,precision_assembly_visible_in_main_demo,True
 28,contact_causality_pass,True
 29,verified_motion_frame_rate_high,True
+30,judge_replay_index_available,True
+31,video_replay_coverage_high,True

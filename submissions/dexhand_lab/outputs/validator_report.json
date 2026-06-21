@@ -82,6 +82,20 @@
       "dataset/contact_causality_trace.csv"
     ]
   },
+  "judge_replay_evidence": {
+    "status": "pass",
+    "judge_replay_index_available": true,
+    "video_replay_milestones_present": 12,
+    "video_replay_milestone_count": 12,
+    "video_replay_coverage_rate": 1.0,
+    "rubric_replay_category_count": 9,
+    "rubric_replay_all_categories_present": true,
+    "checked_files": [
+      "dataset/judge_video_replay_index.json",
+      "dataset/judge_video_replay_index.csv",
+      "outputs/video_replay_scorecard.json"
+    ]
+  },
   "event_rules_alignment": {
     "status": "pass",
     "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
@@ -106,7 +120,7 @@
     "code_quality_pass": true,
     "python_compile_pass": true,
     "source_health_pass": true,
-    "local_readiness_score_estimate_not_official": 99,
+    "local_readiness_score_estimate_not_official": 100,
     "all_rubric_rows_pass": true
   }
 }

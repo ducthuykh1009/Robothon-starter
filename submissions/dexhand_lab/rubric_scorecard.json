@@ -49,8 +49,7 @@
       ],
       "files": [
         "human_grasp_library.py",
-        "dataset/task_suite_report.json"
-        ,
+        "dataset/task_suite_report.json",
         "dataset/precision_assembly_report.json",
         "dataset/jam_recovery_report.json"
       ]
@@ -63,8 +62,7 @@
         "baseline vs feedback stress comparison",
         "blind tactile probing, confidence thresholding, and adaptive regrasp",
         "tactile pose estimation with exact pose hidden from controller",
-        "compliant insertion with jam detection and withdraw/correct retry"
-        ,
+        "compliant insertion with jam detection and withdraw/correct retry",
         "tactile detent verification before latch pull"
       ],
       "files": [
@@ -105,6 +103,7 @@
         "modular classifier, grasp library, controller, stress eval, audits",
         "separate tactile pose estimator and precision assembly controller",
         "contact-causality audit verifies no snap and contact-gated manipulation",
+        "judge replay index maps generated video timestamps to rubric evidence",
         "JSON/CSV evidence pack",
         "validator checks core files and metrics"
       ],
@@ -123,6 +122,8 @@
         "assembly keyframes and tactile pose estimation panel",
         "media/keyframes.png",
         "outputs/judge_summary.json",
+        "dataset/judge_video_replay_index.json",
+        "outputs/video_replay_scorecard.json",
         "EVIDENCE_INDEX.md",
         "media/blind_tactile_keyframes.png",
         "media/tactile_classifier_panel.png",
@@ -135,6 +136,7 @@
         "outputs/demo.mp4",
         "media/demo.mp4",
         "media/keyframes.png",
+        "dataset/judge_video_replay_index.json",
         "outputs/final_report.txt"
       ]
     },

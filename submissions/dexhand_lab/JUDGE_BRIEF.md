@@ -18,35 +18,37 @@ The submission focuses on dexterity evidence instead of a simple pick-and-place 
 6. `outputs/event_rules_report.json`
 7. `outputs/submission_readiness_report.json`
 8. `outputs/rubric_readiness_report.json`
-9. `dataset/code_quality_report.json`
-10. `dataset/unit_test_report.json`
-11. `outputs/blind_tactile_summary.json`
-12. `dataset/tactile_classifier_report.json`
-13. `dataset/tactile_confusion_matrix.json`
-14. `dataset/adaptive_regrasp_report.json`
-15. `dataset/unknown_arena_report.json`
-16. `media/blind_tactile_keyframes.png`
-17. `media/tactile_classifier_panel.png`
-18. `outputs/summary.json`
-19. `outputs/contact_timeline.json`
-20. `dataset/task_suite_report.json`
-21. `dataset/tactile_feedback_report.json`
-22. `dataset/tactile_taxels.csv`
-23. `dataset/minimum_jerk_report.json`
-24. `dataset/stress_eval.json`
-25. `outputs/baseline_vs_feedback.json`
-26. `dataset/hardware_adaptation_report.json`
-27. `dataset/tactile_pose_estimator_report.json`
-28. `dataset/precision_assembly_report.json`
-29. `dataset/jam_recovery_report.json`
-30. `dataset/no_ground_truth_control_audit.json`
-31. `media/assembly_keyframes.png`
-32. `media/tactile_pose_estimation_panel.png`
-33. `dataset/combination_lock_report.json`
-34. `dataset/combination_lock_trace.csv`
-35. `media/combination_lock_keyframes.png`
-36. `rubric_scorecard.json`
-37. `validate_submission.py`
+9. `dataset/judge_video_replay_index.json`
+10. `outputs/video_replay_scorecard.json`
+11. `dataset/code_quality_report.json`
+12. `dataset/unit_test_report.json`
+13. `outputs/blind_tactile_summary.json`
+14. `dataset/tactile_classifier_report.json`
+15. `dataset/tactile_confusion_matrix.json`
+16. `dataset/adaptive_regrasp_report.json`
+17. `dataset/unknown_arena_report.json`
+18. `media/blind_tactile_keyframes.png`
+19. `media/tactile_classifier_panel.png`
+20. `outputs/summary.json`
+21. `outputs/contact_timeline.json`
+22. `dataset/task_suite_report.json`
+23. `dataset/tactile_feedback_report.json`
+24. `dataset/tactile_taxels.csv`
+25. `dataset/minimum_jerk_report.json`
+26. `dataset/stress_eval.json`
+27. `outputs/baseline_vs_feedback.json`
+28. `dataset/hardware_adaptation_report.json`
+29. `dataset/tactile_pose_estimator_report.json`
+30. `dataset/precision_assembly_report.json`
+31. `dataset/jam_recovery_report.json`
+32. `dataset/no_ground_truth_control_audit.json`
+33. `media/assembly_keyframes.png`
+34. `media/tactile_pose_estimation_panel.png`
+35. `dataset/combination_lock_report.json`
+36. `dataset/combination_lock_trace.csv`
+37. `media/combination_lock_keyframes.png`
+38. `rubric_scorecard.json`
+39. `validate_submission.py`
 
 Runability note: `python submissions/dexhand_lab/run_demo.py` preserves the included generated demo video and refreshes JSON/CSV evidence quickly for judge reproducibility. Use `python submissions/dexhand_lab/run_demo.py --force-render-video` when a fresh MuJoCo frame render is desired.
 
@@ -72,7 +74,8 @@ The combination lock task adds a sequential manipulation challenge. The hand mus
 
 The main demo and evidence scripts report:
 
-- 29-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
+- 31-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
+- time-anchored judge replay coverage in `dataset/judge_video_replay_index.json` and `outputs/video_replay_scorecard.json`
 - cap rotation target: 224 degrees
 - cap rotation achieved: saved as `cap_rotation_achieved_deg`
 - main demo duration: saved as `duration_s`, currently about 145 seconds after adding the visible assembly highlight segment
@@ -107,7 +110,7 @@ The main demo and evidence scripts report:
 - Control: contact-aware verified grasp routine, minimum-jerk tactile-inspired segments, no-snap policy, blind tactile probing, confidence thresholding, tactile pose estimation, compliant insertion, jam detection, tactile detent verification, adaptive regrasp.
 - Dexterity: thumb opposition, independent finger roles, multi-side contact, cylinder rotation, cap twist, combination dial/latch manipulation, multi-finger active perception.
 - Engineering quality: JSON/CSV evidence pack, validator, manifest, final report, structured modules.
-- Presentation: long demo video, keyframes, narration SRT, final evidence report.
+- Presentation: long demo video, time-anchored replay index, keyframes, narration SRT, final evidence report.
 - Innovation: blind tactile active perception arena, no-ground-truth tactile pose estimation, precision assembly with jam recovery, tactile combination lock, cap/knob 224-degree marker task, tactile proxy audit, adaptive regrasp, hardware replay safety audit.
 
 ## Honest Scope
@@ -126,8 +129,9 @@ The tactile pose estimator is deterministic and contact/proxy based. In `--no-gr
 - `object_classifier.py`: simulation-native affordance classifier.
 - `minimum_jerk_controller.py`: tactile-inspired trajectory evidence.
 - `contact_feedback_audit.py`: five-fingertip tactile evidence.
-- `arena_task_suite.py`: 29-gate verification suite.
+- `arena_task_suite.py`: 31-gate verification suite.
 - `contact_causality_audit.py`: no-snap/contact-gated manipulation audit.
+- `judge_replay_index.py`: time-anchored video and rubric evidence replay index.
 - `run_stress_eval.py`: fixed-seed stress evaluation and baseline comparison.
 - `hardware_adaptation_audit.py`: simulated hardware replay audit.
 - `validate_submission.py`: final evidence and metric validator.

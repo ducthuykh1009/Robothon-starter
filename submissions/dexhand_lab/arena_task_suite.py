@@ -52,6 +52,8 @@ def build_gates(summary: dict) -> list[dict]:
         {"gate": 27, "name": "precision_assembly_visible_in_main_demo", "passed": bool_metric(summary, "assembly_visual_segment_present")},
         {"gate": 28, "name": "contact_causality_pass", "passed": bool_metric(summary, "contact_causality_pass")},
         {"gate": 29, "name": "verified_motion_frame_rate_high", "passed": float(summary.get("verified_motion_frame_rate", 0.0)) >= 0.95},
+        {"gate": 30, "name": "judge_replay_index_available", "passed": bool_metric(summary, "judge_replay_index_available")},
+        {"gate": 31, "name": "video_replay_coverage_high", "passed": float(summary.get("video_replay_coverage_rate", 0.0)) >= 0.90},
     ]
 
 
@@ -89,14 +91,14 @@ def main() -> int:
     passed = sum(1 for gate in gates if gate["passed"])
     report = {
         "project": "DexHand Lab",
-        "suite": "29-gate deterministic dexterity verification",
+        "suite": "31-gate deterministic dexterity verification",
         "gate_count": len(gates),
         "gates_passed": passed,
         "success_rate": round(passed / len(gates), 5),
         "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
         "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
         "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-        "final_task_success": passed >= 27,
+        "final_task_success": passed >= 29,
         "gates": gates,
     }
     (DATASET_DIR / "task_suite_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -110,7 +112,7 @@ def main() -> int:
     print(f"Gates passed: {passed}/{len(gates)}")
     if report["failed_gates"]:
         print("Failed gates: " + ", ".join(report["failed_gates"]))
-    return 0 if passed >= 27 else 1
+    return 0 if passed >= 29 else 1
 
 
 if __name__ == "__main__":

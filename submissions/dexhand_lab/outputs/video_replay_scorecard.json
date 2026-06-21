@@ -1,0 +1,396 @@
+{
+  "project": "DexHand Lab",
+  "report_type": "judge_video_replay_index",
+  "purpose": "Time-anchored evidence map for the generated demo and machine-readable judge review.",
+  "video_path": "submissions/dexhand_lab/outputs/demo.mp4",
+  "media_video_path": "submissions/dexhand_lab/media/demo.mp4",
+  "duration_s": 144.5,
+  "fps_assumed_for_frame_index": 10,
+  "milestone_count": 12,
+  "milestones_present": 12,
+  "coverage_rate": 1.0,
+  "rubric_categories_covered": [
+    "Control",
+    "Dexterous Manipulation",
+    "Embodiment",
+    "Engineering Quality",
+    "Innovation",
+    "MuJoCo Depth",
+    "Presentation",
+    "Runability",
+    "Task Design"
+  ],
+  "rubric_category_count": 9,
+  "all_rubric_categories_present": true,
+  "no_snap_evidence": {
+    "object_snap_events": 0,
+    "attach_before_verification_count": 0,
+    "contact_causality_pass": true,
+    "verified_motion_frame_rate": 1.0
+  },
+  "contact_summary": {
+    "average_active_fingers": 3.18159,
+    "max_active_fingers": 5,
+    "average_multi_side_contact_score": 0.73441
+  },
+  "milestones": [
+    {
+      "order": 1,
+      "milestone_id": "five_finger_skeleton",
+      "label": "Five-finger hand skeleton and thumb opposition",
+      "present_in_trajectory": true,
+      "video_time_start_s": 0.09,
+      "video_time_end_s": 1.1,
+      "video_frame_start": 1,
+      "video_frame_end": 11,
+      "rubric_categories": [
+        "Embodiment",
+        "Dexterous Manipulation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "SHOW_FINGER_SPREAD",
+        "SHOW_HAND_OPEN_CLOSE",
+        "SHOW_THUMB_OPPOSITION"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "five_fingers_present": true,
+        "thumb_opposition_visible": true,
+        "hand_skeleton_valid": true
+      }
+    },
+    {
+      "order": 2,
+      "milestone_id": "sphere_enclosure",
+      "label": "Sphere enclosure grasp with multi-side cage contact",
+      "present_in_trajectory": true,
+      "video_time_start_s": 1.11,
+      "video_time_end_s": 2.36,
+      "video_frame_start": 11,
+      "video_frame_end": 24,
+      "rubric_categories": [
+        "Task Design",
+        "Control",
+        "Dexterous Manipulation"
+      ],
+      "phase_names": [
+        "APPROACH_OBJECT",
+        "HAND_PRESHAPE",
+        "SECURE_OBJECT",
+        "STABLE_GRASP_VERIFY"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "sphere_enclosure_grasp_success": true,
+        "object_center_between_fingers_rate": 1.0
+      }
+    },
+    {
+      "order": 3,
+      "milestone_id": "cube_opposing_face",
+      "label": "Cube opposing-face grasp, not corner or one-face contact",
+      "present_in_trajectory": true,
+      "video_time_start_s": 2.72,
+      "video_time_end_s": 3.87,
+      "video_frame_start": 27,
+      "video_frame_end": 39,
+      "rubric_categories": [
+        "Task Design",
+        "Control",
+        "Dexterous Manipulation"
+      ],
+      "phase_names": [
+        "APPROACH_OBJECT",
+        "HAND_PRESHAPE",
+        "SECURE_OBJECT",
+        "STABLE_GRASP_VERIFY"
+      ],
+      "max_active_fingers": 4,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 0.95,
+      "evidence_values": {
+        "cube_opposing_face_grasp_success": true,
+        "average_multi_side_contact_score_dexterous_grasps": 0.93964
+      }
+    },
+    {
+      "order": 4,
+      "milestone_id": "cylinder_side_body_rotation",
+      "label": "Cylinder side-body grasp and in-hand rotation",
+      "present_in_trajectory": true,
+      "video_time_start_s": 5.35,
+      "video_time_end_s": 5.86,
+      "video_frame_start": 54,
+      "video_frame_end": 59,
+      "rubric_categories": [
+        "Task Design",
+        "Dexterous Manipulation",
+        "Control"
+      ],
+      "phase_names": [
+        "IN_HAND_ROTATION",
+        "IN_HAND_ROTATION_PREPARE",
+        "ROTATION_VERIFY"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "cylinder_side_body_grasp_success": true,
+        "in_hand_rotation_success": true,
+        "top_down_cylinder_grasp_count": 0
+      }
+    },
+    {
+      "order": 5,
+      "milestone_id": "blind_tactile_classification",
+      "label": "Blind tactile probing and shape classification",
+      "present_in_trajectory": true,
+      "video_time_start_s": 6.0,
+      "video_time_end_s": 7.4,
+      "video_frame_start": 60,
+      "video_frame_end": 74,
+      "rubric_categories": [
+        "Control",
+        "Innovation",
+        "MuJoCo Depth"
+      ],
+      "phase_names": [
+        "BLIND_TACTILE_ARENA_INTRO",
+        "CLASSIFICATION_CONFIDENCE_CHECK",
+        "EXPLORATION_START",
+        "INDEX_PROBE_FRONT",
+        "INDEX_PROBE_SIDE",
+        "MIDDLE_SUPPORT_PROBE",
+        "SHAPE_HYPOTHESIS_UPDATE",
+        "THUMB_COUNTER_PROBE"
+      ],
+      "max_active_fingers": 4,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 0.8,
+      "evidence_values": {
+        "blind_tactile_mode_available": true,
+        "tactile_classifier_accuracy": 1.0,
+        "average_probes_per_object": 5.33333
+      }
+    },
+    {
+      "order": 6,
+      "milestone_id": "cap_224_load_hold",
+      "label": "224-degree cap twist, slip recovery, and 9x load hold",
+      "present_in_trajectory": true,
+      "video_time_start_s": 7.7,
+      "video_time_end_s": 9.86,
+      "video_frame_start": 77,
+      "video_frame_end": 99,
+      "rubric_categories": [
+        "Task Design",
+        "Control",
+        "Dexterous Manipulation",
+        "Innovation"
+      ],
+      "phase_names": [
+        "CAP_ANGLE_VERIFY",
+        "CLASSIFY_CAP_OBJECT",
+        "FIVE_FINGER_CONTACT_VERIFY",
+        "LOAD_HOLD_9X",
+        "MINIMUM_JERK_CAP_TWIST",
+        "SLIP_MONITOR"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "cap_rotation_success": true,
+        "cap_rotation_achieved_deg": 224.0,
+        "load_hold_success": true,
+        "final_slip_mm": 0.28
+      }
+    },
+    {
+      "order": 7,
+      "milestone_id": "combination_lock",
+      "label": "Tactile combination lock detents, latch pull, and micro-door open",
+      "present_in_trajectory": true,
+      "video_time_start_s": 10.0,
+      "video_time_end_s": 11.11,
+      "video_frame_start": 100,
+      "video_frame_end": 111,
+      "rubric_categories": [
+        "Task Design",
+        "Control",
+        "Innovation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "LOCK_LATCH_PULL",
+        "LOCK_MICRO_DOOR_OPEN",
+        "LOCK_ROTATE_CODE_1",
+        "LOCK_ROTATE_CODE_2",
+        "LOCK_ROTATE_CODE_3",
+        "LOCK_TACTILE_PROBE",
+        "LOCK_THUMB_MIDDLE_COUNTERHOLD",
+        "LOCK_VERIFY"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "combination_lock_success": true,
+        "detent_detection_success": true,
+        "micro_door_opened": true
+      }
+    },
+    {
+      "order": 8,
+      "milestone_id": "precision_assembly",
+      "label": "No-ground-truth tactile pose estimate and compliant plug/socket insertion",
+      "present_in_trajectory": true,
+      "video_time_start_s": 11.12,
+      "video_time_end_s": 12.58,
+      "video_frame_start": 111,
+      "video_frame_end": 126,
+      "rubric_categories": [
+        "MuJoCo Depth",
+        "Task Design",
+        "Control",
+        "Innovation"
+      ],
+      "phase_names": [
+        "ASSEMBLY_ALIGN_TO_SOCKET",
+        "ASSEMBLY_COMPLIANT_INSERT",
+        "ASSEMBLY_INSERT_VERIFY",
+        "ASSEMBLY_IN_HAND_ORIENT",
+        "ASSEMBLY_JAM_CHECK_CORRECT",
+        "ASSEMBLY_PRECISION_GRASP",
+        "ASSEMBLY_RELEASE_RETRACT",
+        "ASSEMBLY_TACTILE_POSE_LOCK",
+        "ASSEMBLY_THUMB_MIDDLE_COUNTER_PROBE",
+        "ASSEMBLY_UNKNOWN_PROBE"
+      ],
+      "max_active_fingers": 4,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "assembly_success": true,
+        "pose_estimation_success": true,
+        "insertion_depth_ratio": 0.92,
+        "jam_detection_available": true
+      }
+    },
+    {
+      "order": 9,
+      "milestone_id": "stylus_tripod",
+      "label": "Stylus tripod grasp and checkpoint touch",
+      "present_in_trajectory": true,
+      "video_time_start_s": 12.59,
+      "video_time_end_s": 13.82,
+      "video_frame_start": 126,
+      "video_frame_end": 138,
+      "rubric_categories": [
+        "Task Design",
+        "Dexterous Manipulation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "CHECKPOINT_APPROACH",
+        "CHECKPOINT_TOUCH",
+        "TOOL_APPROACH",
+        "TOOL_PRESHAPE"
+      ],
+      "max_active_fingers": 3,
+      "max_contact_balance_score": 0.8,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "stylus_tripod_success": true,
+        "checkpoint_touch_success": true
+      }
+    },
+    {
+      "order": 10,
+      "milestone_id": "index_only_button",
+      "label": "Index-only button press with non-index contacts clear",
+      "present_in_trajectory": true,
+      "video_time_start_s": 13.83,
+      "video_time_end_s": 14.21,
+      "video_frame_start": 138,
+      "video_frame_end": 142,
+      "rubric_categories": [
+        "Control",
+        "Dexterous Manipulation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "BUTTON_APPROACH",
+        "BUTTON_PRESS",
+        "BUTTON_RETRACT"
+      ],
+      "max_active_fingers": 1,
+      "max_contact_balance_score": 0.4,
+      "max_multi_side_contact_score": 0.2,
+      "evidence_values": {
+        "index_only_button_press_success": true,
+        "non_index_button_contact_count": 0
+      }
+    },
+    {
+      "order": 11,
+      "milestone_id": "contact_causality_no_snap",
+      "label": "Contact-causal no-snap audit and verified motion",
+      "present_in_trajectory": true,
+      "video_time_start_s": 2.19,
+      "video_time_end_s": 13.47,
+      "video_frame_start": 22,
+      "video_frame_end": 135,
+      "rubric_categories": [
+        "Control",
+        "Engineering Quality",
+        "MuJoCo Depth"
+      ],
+      "phase_names": [
+        "FIVE_FINGER_CONTACT_VERIFY",
+        "SECURE_OBJECT",
+        "STABLE_GRASP_VERIFY"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "contact_causality_pass": true,
+        "verified_motion_frame_rate": 1.0,
+        "object_snap_events": 0
+      }
+    },
+    {
+      "order": 12,
+      "milestone_id": "final_evidence_banner",
+      "label": "Final generated report, task gates, and validator evidence",
+      "present_in_trajectory": true,
+      "video_time_start_s": 14.22,
+      "video_time_end_s": 14.45,
+      "video_frame_start": 142,
+      "video_frame_end": 144,
+      "rubric_categories": [
+        "Runability",
+        "Engineering Quality",
+        "Presentation"
+      ],
+      "phase_names": [
+        "FINAL_REPORT"
+      ],
+      "max_active_fingers": 0,
+      "max_contact_balance_score": 0.2,
+      "max_multi_side_contact_score": 0.0,
+      "evidence_values": {
+        "validation_passed": null,
+        "task_gates_passed": 31,
+        "task_gate_count": 31
+      }
+    }
+  ]
+}
