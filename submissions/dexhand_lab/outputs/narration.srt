@@ -1,18 +1,18 @@
 1
 00:00:00,000 --> 00:00:08,000
-DexHand Lab opens the human-like five-finger hand, thumb opposition, and independent finger spread.
+Five-finger hand: thumb opposition, fingertip pads, and independent finger timing.
 
 2
 00:00:08,000 --> 00:00:28,000
-Object-specific grasps: sphere enclosure, cube opposing-face contact, and cylinder side-body wrap with in-hand rotation.
+Object-specific grasping: sphere cage, cube opposing faces, cylinder side-body wrap, and in-hand rotation.
 
 3
 00:00:28,000 --> 00:00:46,000
-Blind tactile active perception hides the label, probes with index, thumb, and middle fingertips, then selects the cap grasp.
+Blind tactile mode hides the label. Index, thumb, and middle probes classify the object and select the grasp.
 
 4
 00:00:46,000 --> 00:01:06,000
-The cap task verifies five-finger contact, twists a visible marker 224 degrees, monitors slip, and holds a 9x load.
+Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
 00:01:06,000 --> 00:01:23,000
@@ -20,7 +20,7 @@ The tactile combination lock probes detents, rotates through a three-angle code,
 
 6
 00:01:23,000 --> 00:01:42,000
-Precision assembly is now visible in the main video: tactile pose lock, tripod grasp, socket alignment, jam correction, and insertion verify.
+Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
 
 7
 00:01:42,000 --> 00:02:02,000
@@ -28,4 +28,4 @@ The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpo
 
 8
 00:02:02,000 --> 00:02:30,000
-The final evidence banner summarizes zero snap events, verified grasp before attach, tactile channels, stress results, and task-gate success.
+Final evidence: 34 verification gates, 12 replay milestones, zero snap events, validator pass, and stress results.

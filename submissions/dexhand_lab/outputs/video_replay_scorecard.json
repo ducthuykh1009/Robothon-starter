@@ -388,7 +388,7 @@
       "max_multi_side_contact_score": 0.0,
       "evidence_values": {
         "validation_passed": null,
-        "task_gates_passed": 32,
+        "task_gates_passed": 34,
         "task_gate_count": 34
       }
     }

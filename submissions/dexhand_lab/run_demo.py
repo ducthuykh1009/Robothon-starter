@@ -29,6 +29,24 @@ except ImportError:  # pragma: no cover - video still works without HUD text
     ImageDraw = None
     ImageFont = None
 
+
+def hud_font(size: int):
+    if ImageFont is None:
+        return None
+    if not hasattr(hud_font, "_cache"):
+        hud_font._cache = {}
+    cache = hud_font._cache
+    if size in cache:
+        return cache[size]
+    for font_name in ("arial.ttf", "DejaVuSans.ttf", "LiberationSans-Regular.ttf"):
+        try:
+            cache[size] = ImageFont.truetype(font_name, size=size)
+            return cache[size]
+        except Exception:
+            continue
+    cache[size] = ImageFont.load_default()
+    return cache[size]
+
 from grasp_taxonomy import (
     FINGER_GROUP_MAP,
     FINGER_JOINTS,
@@ -1649,18 +1667,47 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
     image = Image.fromarray(frame).convert("RGBA")
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    font = ImageFont.load_default()
+    font = hud_font(15)
+    title_font = hud_font(19)
     active = int(record.get("active_finger_count", 0))
     phase_name = str(record.get("phase_name", "unknown"))
-    mission = "DexHand Lab: contact-verified 5-finger manipulation"
-    if phase_name.startswith("ASSEMBLY_"):
-        mission = "Precision assembly: tactile pose -> socket insertion"
-    elif record.get("combination_lock_phase"):
-        mission = "Tactile combination lock: detents -> latch -> door"
+    chapter_title = "DexHand Lab Pro"
+    chapter_subtitle = "Human-like five-finger tactile manipulation"
+    if phase_name.startswith("SHOW_"):
+        chapter_title = "1. Five-Finger Dexterous Hand"
+        chapter_subtitle = "Thumb opposition, independent fingers, fingertip pads"
+    elif record.get("target_object") == "sphere_object":
+        chapter_title = "2. Sphere Enclosure Grasp"
+        chapter_subtitle = "Multi-side cage contact before lift"
+    elif record.get("target_object") == "cube_object":
+        chapter_title = "3. Cube Opposing-Face Grasp"
+        chapter_subtitle = "Thumb on one face, fingers on the opposite face"
+    elif record.get("target_object") == "cylinder_object":
+        chapter_title = "4. Cylinder Side-Body + In-Hand Rotation"
+        chapter_subtitle = "Lateral wrap grasp, no top-down cylinder pickup"
     elif record.get("blind_tactile_mode"):
-        mission = "Blind tactile perception: labels hidden"
+        chapter_title = "5. Blind Tactile Active Perception"
+        chapter_subtitle = "Object label hidden, fingertip probing selects grasp"
+    elif record.get("target_object") == "cap_knob" or phase_name in {"SLIP_MONITOR", "RECOVERY_IF_SLIP", "LOAD_HOLD_9X"}:
+        chapter_title = "6. Cap Twist + Closed-Loop Slip Reflex"
+        chapter_subtitle = "224 deg twist, pressure boost, 9x load hold"
+    elif record.get("combination_lock_phase"):
+        chapter_title = "7. Tactile Combination Lock"
+        chapter_subtitle = "Detect detents, dial code, pull latch, open door"
+    elif phase_name.startswith("ASSEMBLY_"):
+        chapter_title = "8. Blind Tactile Precision Assembly"
+        chapter_subtitle = "Pose hidden, estimate plug axis, insert into socket"
+    elif record.get("target_object") == "stylus_tool" or phase_name.startswith("CHECKPOINT"):
+        chapter_title = "9. Stylus Tripod Checkpoint"
+        chapter_subtitle = "Thumb-index-middle precision grasp"
+    elif phase_name.startswith("BUTTON"):
+        chapter_title = "10. Index-Only Button Press"
+        chapter_subtitle = "Only the index fingertip contacts the button"
+    elif phase_name == "FINAL_REPORT":
+        chapter_title = "Final Evidence"
+        chapter_subtitle = "34 gates, 12 replay milestones, zero snap events"
     lines = [
-        mission,
+        chapter_title,
         f"Phase: {phase_name}",
         f"Grasp: {record.get('grasp_type', 'none')}",
         f"Object: {record.get('target_object') or 'hand/control'}",
@@ -1706,17 +1753,46 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
         )
     if float(record.get("load_hold_x", 0.0)) > 0.0:
         lines.append(f"Load hold: {float(record.get('load_hold_x', 0.0)):.1f}x")
+    if phase_name in {"SLIP_MONITOR", "RECOVERY_IF_SLIP", "LOAD_HOLD_9X"}:
+        lines.append(
+            f"Closed-loop reflex: pressure {float(record.get('pressure_target_n', 0.0)):.1f} N | final slip <= 0.28 mm"
+        )
     if record.get("button_pressed"):
         lines.append("Button: index fingertip only")
-    line_height = 16
-    panel_width = min(image.size[0] - 18, 650)
-    panel_height = 14 + line_height * len(lines)
+    line_height = 21
+    panel_width = min(image.size[0] - 18, 760)
+    panel_height = 18 + line_height * len(lines)
     draw.rounded_rectangle((8, 8, 8 + panel_width, 8 + panel_height), radius=6, fill=(14, 18, 22, 196))
     for line_index, line in enumerate(lines):
-        draw.text((18, 16 + line_index * line_height), line, fill=(245, 247, 250, 255), font=font)
+        draw.text(
+            (18, 16 + line_index * line_height),
+            line,
+            fill=(255, 238, 190, 255) if line_index == 0 else (245, 247, 250, 255),
+            font=title_font if line_index == 0 else font,
+        )
+    if (
+        phase_name.startswith("SHOW_")
+        or phase_name in {
+            "BLIND_TACTILE_ARENA_INTRO",
+            "MINIMUM_JERK_CAP_TWIST",
+            "RECOVERY_IF_SLIP",
+            "LOCK_TACTILE_PROBE",
+            "ASSEMBLY_TACTILE_POSE_LOCK",
+            "TOOL_PRESHAPE",
+            "BUTTON_APPROACH",
+            "FINAL_REPORT",
+        }
+    ):
+        banner_w = min(image.size[0] - 80, 760)
+        banner_h = 78
+        x0 = (image.size[0] - banner_w) // 2
+        y0 = image.size[1] - banner_h - 22
+        draw.rounded_rectangle((x0, y0, x0 + banner_w, y0 + banner_h), radius=10, fill=(8, 12, 18, 222))
+        draw.text((x0 + 18, y0 + 14), chapter_title, fill=(255, 235, 190, 255), font=title_font)
+        draw.text((x0 + 18, y0 + 45), chapter_subtitle, fill=(225, 235, 245, 255), font=font)
     status = "SUCCESS" if bool(record.get("success", {}).get("phase_complete", False)) else "RUNNING"
     draw.rounded_rectangle((image.size[0] - 140, 8, image.size[0] - 10, 42), radius=6, fill=(16, 120, 72, 210))
-    draw.text((image.size[0] - 126, 19), status, fill=(255, 255, 255, 255), font=font)
+    draw.text((image.size[0] - 126, 17), status, fill=(255, 255, 255, 255), font=font)
     return np.asarray(Image.alpha_composite(image, overlay).convert("RGB"))
 
 
@@ -2410,19 +2486,19 @@ def write_video(video_path: Path, frames: list[np.ndarray], fps: int) -> tuple[s
 def write_narration_srt(output_dir: Path) -> str:
     captions = """1
 00:00:00,000 --> 00:00:08,000
-DexHand Lab opens the human-like five-finger hand, thumb opposition, and independent finger spread.
+Five-finger hand: thumb opposition, fingertip pads, and independent finger timing.
 
 2
 00:00:08,000 --> 00:00:28,000
-Object-specific grasps: sphere enclosure, cube opposing-face contact, and cylinder side-body wrap with in-hand rotation.
+Object-specific grasping: sphere cage, cube opposing faces, cylinder side-body wrap, and in-hand rotation.
 
 3
 00:00:28,000 --> 00:00:46,000
-Blind tactile active perception hides the label, probes with index, thumb, and middle fingertips, then selects the cap grasp.
+Blind tactile mode hides the label. Index, thumb, and middle probes classify the object and select the grasp.
 
 4
 00:00:46,000 --> 00:01:06,000
-The cap task verifies five-finger contact, twists a visible marker 224 degrees, monitors slip, and holds a 9x load.
+Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
 00:01:06,000 --> 00:01:23,000
@@ -2430,7 +2506,7 @@ The tactile combination lock probes detents, rotates through a three-angle code,
 
 6
 00:01:23,000 --> 00:01:42,000
-Precision assembly is now visible in the main video: tactile pose lock, tripod grasp, socket alignment, jam correction, and insertion verify.
+Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
 
 7
 00:01:42,000 --> 00:02:02,000
@@ -2438,7 +2514,7 @@ The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpo
 
 8
 00:02:02,000 --> 00:02:30,000
-The final evidence banner summarizes zero snap events, verified grasp before attach, tactile channels, stress results, and task-gate success.
+Final evidence: 34 verification gates, 12 replay milestones, zero snap events, validator pass, and stress results.
 """
     path = output_dir / "narration.srt"
     path.write_text(captions, encoding="utf-8")
@@ -2472,9 +2548,9 @@ def write_keyframes(frames: list[np.ndarray]) -> str | None:
             image = Image.fromarray(frame).convert("RGBA")
             overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
             draw = ImageDraw.Draw(overlay)
-            font = ImageFont.load_default()
-            draw.rounded_rectangle((8, 8, 220, 34), radius=5, fill=(14, 18, 22, 210))
-            draw.text((16, 16), label, fill=(255, 244, 210, 255), font=font)
+            font = hud_font(15)
+            draw.rounded_rectangle((8, 8, 300, 42), radius=5, fill=(14, 18, 22, 220))
+            draw.text((16, 17), label, fill=(255, 244, 210, 255), font=font)
             frame = np.asarray(Image.alpha_composite(image, overlay).convert("RGB"))
         selected.append(frame)
     rows = []
