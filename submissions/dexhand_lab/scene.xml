@@ -37,6 +37,11 @@
     <material name="lock_dial_mat" rgba="0.86 0.89 0.90 1"/>
     <material name="lock_marker_mat" rgba="1.00 0.18 0.08 1"/>
     <material name="lock_latch_mat" rgba="0.95 0.72 0.18 1"/>
+    <material name="vial_glass_mat" rgba="0.50 0.82 1.00 0.58"/>
+    <material name="vial_cap_mat" rgba="0.95 0.44 0.12 1"/>
+    <material name="vial_marker_mat" rgba="1.00 0.95 0.18 1"/>
+    <material name="sample_mat" rgba="0.12 0.96 0.58 1"/>
+    <material name="delivery_tray_mat" rgba="0.10 0.12 0.15 1"/>
   </asset>
 
   <worldbody>
@@ -136,6 +141,36 @@
         <site name="combination_lock_door_site" pos="0 0.036 0" size="0.005" rgba="0.2 1 0.3 1"/>
       </body>
       <site name="combination_lock_center_site" pos="-0.026 -0.052 0.064" size="0.007" rgba="1 0.2 0.1 1"/>
+    </body>
+
+    <body name="vial_body" pos="-0.355 -0.145 0.462">
+      <freejoint name="vial_body_joint"/>
+      <geom name="vial_body_geom" type="cylinder" size="0.030 0.058" material="vial_glass_mat" mass="0.050"/>
+      <geom name="vial_body_label_geom" type="box" pos="0.000 -0.031 0.000" size="0.020 0.003 0.026" material="vial_marker_mat" contype="0" conaffinity="0"/>
+      <site name="vial_grasp_site" pos="0 -0.032 0.000" size="0.007" rgba="1 0.95 0.18 1"/>
+      <site name="vial_mouth_site" pos="0 0 0.064" size="0.007" rgba="0.6 0.9 1 1"/>
+    </body>
+
+    <body name="vial_cap" pos="-0.355 -0.145 0.538">
+      <freejoint name="vial_cap_joint"/>
+      <geom name="vial_cap_geom" type="cylinder" size="0.033 0.018" material="vial_cap_mat" mass="0.020"/>
+      <geom name="vial_cap_stripe_geom" type="box" pos="0.026 0 0.020" size="0.009 0.004 0.005" material="vial_marker_mat" contype="0" conaffinity="0"/>
+      <site name="vial_cap_marker_site" pos="0.034 0 0.020" size="0.006" rgba="1 0.95 0.18 1"/>
+      <site name="vial_cap_center_site" pos="0 0 0" size="0.006" rgba="1 0.45 0.12 1"/>
+    </body>
+
+    <body name="micro_sample" pos="-0.355 -0.145 0.585">
+      <freejoint name="micro_sample_joint"/>
+      <geom name="micro_sample_geom" type="sphere" size="0.012" material="sample_mat" mass="0.006"/>
+      <site name="micro_sample_site" pos="0 0 0" size="0.006" rgba="0.12 1 0.58 1"/>
+    </body>
+
+    <body name="delivery_tray" pos="-0.130 -0.205 0.405">
+      <geom name="delivery_tray_floor_geom" type="box" size="0.065 0.045 0.006" material="delivery_tray_mat"/>
+      <geom name="delivery_tray_back_geom" type="box" pos="0 0.045 0.018" size="0.065 0.005 0.018" material="delivery_tray_mat"/>
+      <geom name="delivery_tray_left_geom" type="box" pos="-0.065 0 0.018" size="0.005 0.045 0.018" material="delivery_tray_mat"/>
+      <geom name="delivery_tray_right_geom" type="box" pos="0.065 0 0.018" size="0.005 0.045 0.018" material="delivery_tray_mat"/>
+      <site name="delivery_tray_target_site" pos="0 0 0.030" size="0.008" rgba="0.12 1 0.58 1"/>
     </body>
 
     <body name="assembly_plug" pos="0.31 0.305 0.440">

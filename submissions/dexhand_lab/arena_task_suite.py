@@ -57,6 +57,11 @@ def build_gates(summary: dict) -> list[dict]:
         {"gate": 32, "name": "closed_loop_reflex_benchmark_available", "passed": bool_metric(summary, "closed_loop_reflex_benchmark_available")},
         {"gate": 33, "name": "closed_loop_reflex_success", "passed": bool_metric(summary, "closed_loop_reflex_success")},
         {"gate": 34, "name": "reflex_latency_under_20ms", "passed": float(summary.get("reflex_response_latency_ms", 999.0)) <= 20.0},
+        {"gate": 35, "name": "vial_uncap_deliver_task_available", "passed": bool_metric(summary, "vial_uncap_deliver_task_available")},
+        {"gate": 36, "name": "vial_uncap_deliver_success", "passed": bool_metric(summary, "vial_uncap_deliver_success")},
+        {"gate": 37, "name": "vial_cap_removed", "passed": bool_metric(summary, "vial_cap_removed") and float(summary.get("vial_cap_rotation_achieved_deg", 0.0)) >= 150.0},
+        {"gate": 38, "name": "pill_delivery_success", "passed": bool_metric(summary, "pill_delivery_success") and bool_metric(summary, "pill_in_tray")},
+        {"gate": 39, "name": "vial_no_crush_force_pass", "passed": bool_metric(summary, "vial_no_crush_force_pass") and float(summary.get("vial_max_force_n", 99.0)) <= float(summary.get("vial_no_crush_force_limit_n", 0.0))},
     ]
 
 
@@ -94,14 +99,14 @@ def main() -> int:
     passed = sum(1 for gate in gates if gate["passed"])
     report = {
         "project": "DexHand Lab",
-        "suite": "34-gate deterministic dexterity verification",
+        "suite": "39-gate deterministic dexterity verification",
         "gate_count": len(gates),
         "gates_passed": passed,
         "success_rate": round(passed / len(gates), 5),
         "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
         "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
         "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-        "final_task_success": passed >= 32,
+        "final_task_success": passed >= 37,
         "gates": gates,
     }
     (DATASET_DIR / "task_suite_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -115,7 +120,7 @@ def main() -> int:
     print(f"Gates passed: {passed}/{len(gates)}")
     if report["failed_gates"]:
         print("Failed gates: " + ", ".join(report["failed_gates"]))
-    return 0 if passed >= 32 else 1
+    return 0 if passed >= 37 else 1
 
 
 if __name__ == "__main__":

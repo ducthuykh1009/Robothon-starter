@@ -54,7 +54,7 @@
     }
   ],
   "uuid_consistency_pass": true,
-  "submission_readiness_pass": true,
+  "submission_readiness_pass": false,
   "validation_passed": true,
   "object_snap_events": 0,
   "cap_rotation_achieved_deg": 224.0,

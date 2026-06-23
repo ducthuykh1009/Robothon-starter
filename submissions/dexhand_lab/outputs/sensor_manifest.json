@@ -51,6 +51,9 @@
       "cube_object",
       "cylinder_object",
       "assembly_plug",
+      "vial_body",
+      "vial_cap",
+      "micro_sample",
       "stylus_tool"
     ],
     "cap_knob_pose": "body pose and hinge angle for cap_knob",

@@ -85,8 +85,8 @@
   "judge_replay_evidence": {
     "status": "pass",
     "judge_replay_index_available": true,
-    "video_replay_milestones_present": 12,
-    "video_replay_milestone_count": 12,
+    "video_replay_milestones_present": 13,
+    "video_replay_milestone_count": 13,
     "video_replay_coverage_rate": 1.0,
     "rubric_replay_category_count": 9,
     "rubric_replay_all_categories_present": true,
@@ -115,7 +115,7 @@
     "status": "pass",
     "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
     "demo_video_duration_rule_pass": true,
-    "duration_s": 144.5,
+    "duration_s": 79.25,
     "runability_status": "pass",
     "rules_alignment_pass": true
   },

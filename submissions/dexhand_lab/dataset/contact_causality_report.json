@@ -8,9 +8,9 @@
   "attach_before_verification_count": 0,
   "pre_verification_motion_events": 0,
   "verified_motion_frame_rate": 1.0,
-  "manipulation_frames_checked": 355,
-  "mean_active_fingers_during_manipulation": 4.12958,
-  "mean_contact_confidence_during_manipulation": 0.77068,
-  "checked_phase_count": 20,
+  "manipulation_frames_checked": 460,
+  "mean_active_fingers_during_manipulation": 4.13043,
+  "mean_contact_confidence_during_manipulation": 0.77189,
+  "checked_phase_count": 26,
   "trace_path": "submissions/dexhand_lab/dataset/contact_causality_trace.csv"
 }

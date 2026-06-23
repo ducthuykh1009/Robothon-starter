@@ -15,17 +15,21 @@ Blind tactile mode hides the label. Index, thumb, and middle probes classify the
 Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
-00:01:06,000 --> 00:01:23,000
-The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
+00:01:06,000 --> 00:01:20,000
+Vial task: the hand holds the vial without crushing it, twists the marked cap, lifts it clear, then delivers the sample bead into a tray.
 
 6
-00:01:23,000 --> 00:01:42,000
-Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
+00:01:20,000 --> 00:01:37,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 7
-00:01:42,000 --> 00:02:02,000
-The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+00:01:37,000 --> 00:01:56,000
+Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
 
 8
-00:02:02,000 --> 00:02:30,000
-Final evidence: 34 verification gates, 12 replay milestones, zero snap events, validator pass, and stress results.
+00:01:56,000 --> 00:02:16,000
+The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+
+9
+00:02:16,000 --> 00:02:40,000
+Final evidence: 39 verification gates, 13 replay milestones, zero snap events, validator pass, and stress results.

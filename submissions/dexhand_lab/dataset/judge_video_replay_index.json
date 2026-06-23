@@ -4,10 +4,10 @@
   "purpose": "Time-anchored evidence map for the generated demo and machine-readable judge review.",
   "video_path": "submissions/dexhand_lab/outputs/demo.mp4",
   "media_video_path": "submissions/dexhand_lab/media/demo.mp4",
-  "duration_s": 144.5,
-  "fps_assumed_for_frame_index": 10,
-  "milestone_count": 12,
-  "milestones_present": 12,
+  "duration_s": 79.25,
+  "fps_assumed_for_frame_index": 4,
+  "milestone_count": 13,
+  "milestones_present": 13,
   "coverage_rate": 1.0,
   "rubric_categories_covered": [
     "Control",
@@ -29,9 +29,9 @@
     "verified_motion_frame_rate": 1.0
   },
   "contact_summary": {
-    "average_active_fingers": 3.18159,
+    "average_active_fingers": 3.27421,
     "max_active_fingers": 5,
-    "average_multi_side_contact_score": 0.73441
+    "average_multi_side_contact_score": 0.76469
   },
   "milestones": [
     {
@@ -41,8 +41,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 0.09,
       "video_time_end_s": 1.1,
-      "video_frame_start": 1,
-      "video_frame_end": 11,
+      "video_frame_start": 0,
+      "video_frame_end": 4,
       "rubric_categories": [
         "Embodiment",
         "Dexterous Manipulation",
@@ -69,8 +69,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 1.11,
       "video_time_end_s": 2.36,
-      "video_frame_start": 11,
-      "video_frame_end": 24,
+      "video_frame_start": 4,
+      "video_frame_end": 9,
       "rubric_categories": [
         "Task Design",
         "Control",
@@ -97,8 +97,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 2.72,
       "video_time_end_s": 3.87,
-      "video_frame_start": 27,
-      "video_frame_end": 39,
+      "video_frame_start": 11,
+      "video_frame_end": 15,
       "rubric_categories": [
         "Task Design",
         "Control",
@@ -115,7 +115,7 @@
       "max_multi_side_contact_score": 0.95,
       "evidence_values": {
         "cube_opposing_face_grasp_success": true,
-        "average_multi_side_contact_score_dexterous_grasps": 0.93964
+        "average_multi_side_contact_score_dexterous_grasps": 0.95202
       }
     },
     {
@@ -125,8 +125,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 5.35,
       "video_time_end_s": 5.86,
-      "video_frame_start": 54,
-      "video_frame_end": 59,
+      "video_frame_start": 21,
+      "video_frame_end": 23,
       "rubric_categories": [
         "Task Design",
         "Dexterous Manipulation",
@@ -153,8 +153,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 6.0,
       "video_time_end_s": 7.4,
-      "video_frame_start": 60,
-      "video_frame_end": 74,
+      "video_frame_start": 24,
+      "video_frame_end": 30,
       "rubric_categories": [
         "Control",
         "Innovation",
@@ -186,8 +186,8 @@
       "present_in_trajectory": true,
       "video_time_start_s": 7.7,
       "video_time_end_s": 9.86,
-      "video_frame_start": 77,
-      "video_frame_end": 99,
+      "video_frame_start": 31,
+      "video_frame_end": 39,
       "rubric_categories": [
         "Task Design",
         "Control",
@@ -217,10 +217,10 @@
       "milestone_id": "combination_lock",
       "label": "Tactile combination lock detents, latch pull, and micro-door open",
       "present_in_trajectory": true,
-      "video_time_start_s": 10.0,
-      "video_time_end_s": 11.11,
-      "video_frame_start": 100,
-      "video_frame_end": 111,
+      "video_time_start_s": 11.36,
+      "video_time_end_s": 12.47,
+      "video_frame_start": 45,
+      "video_frame_end": 50,
       "rubric_categories": [
         "Task Design",
         "Control",
@@ -248,13 +248,49 @@
     },
     {
       "order": 8,
+      "milestone_id": "vial_uncap_deliver",
+      "label": "No-crush vial grasp, cap removal, and sample delivery into tray",
+      "present_in_trajectory": true,
+      "video_time_start_s": 10.0,
+      "video_time_end_s": 11.35,
+      "video_frame_start": 40,
+      "video_frame_end": 45,
+      "rubric_categories": [
+        "MuJoCo Depth",
+        "Task Design",
+        "Control",
+        "Dexterous Manipulation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "VIAL_BODY_POWER_GRASP",
+        "VIAL_CAP_COUNTER_TWIST",
+        "VIAL_CAP_LIFT_CLEAR",
+        "VIAL_DELIVERY_VERIFY",
+        "VIAL_FIVE_FINGER_FORCE_VERIFY",
+        "VIAL_SAMPLE_DELIVERY",
+        "VIAL_SCAN_ALIGN",
+        "VIAL_TILT_TO_TRAY"
+      ],
+      "max_active_fingers": 5,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 1.0,
+      "evidence_values": {
+        "vial_uncap_deliver_success": true,
+        "vial_cap_removed": true,
+        "pill_delivery_success": true,
+        "vial_no_crush_force_pass": true
+      }
+    },
+    {
+      "order": 9,
       "milestone_id": "precision_assembly",
       "label": "No-ground-truth tactile pose estimate and compliant plug/socket insertion",
       "present_in_trajectory": true,
-      "video_time_start_s": 11.12,
-      "video_time_end_s": 12.58,
-      "video_frame_start": 111,
-      "video_frame_end": 126,
+      "video_time_start_s": 12.48,
+      "video_time_end_s": 13.94,
+      "video_frame_start": 50,
+      "video_frame_end": 56,
       "rubric_categories": [
         "MuJoCo Depth",
         "Task Design",
@@ -284,14 +320,14 @@
       }
     },
     {
-      "order": 9,
+      "order": 10,
       "milestone_id": "stylus_tripod",
       "label": "Stylus tripod grasp and checkpoint touch",
       "present_in_trajectory": true,
-      "video_time_start_s": 12.59,
-      "video_time_end_s": 13.82,
-      "video_frame_start": 126,
-      "video_frame_end": 138,
+      "video_time_start_s": 13.95,
+      "video_time_end_s": 15.18,
+      "video_frame_start": 56,
+      "video_frame_end": 61,
       "rubric_categories": [
         "Task Design",
         "Dexterous Manipulation",
@@ -312,14 +348,14 @@
       }
     },
     {
-      "order": 10,
+      "order": 11,
       "milestone_id": "index_only_button",
       "label": "Index-only button press with non-index contacts clear",
       "present_in_trajectory": true,
-      "video_time_start_s": 13.83,
-      "video_time_end_s": 14.21,
-      "video_frame_start": 138,
-      "video_frame_end": 142,
+      "video_time_start_s": 15.19,
+      "video_time_end_s": 15.57,
+      "video_frame_start": 61,
+      "video_frame_end": 62,
       "rubric_categories": [
         "Control",
         "Dexterous Manipulation",
@@ -339,14 +375,14 @@
       }
     },
     {
-      "order": 11,
+      "order": 12,
       "milestone_id": "contact_causality_no_snap",
       "label": "Contact-causal no-snap audit and verified motion",
       "present_in_trajectory": true,
       "video_time_start_s": 2.19,
-      "video_time_end_s": 13.47,
-      "video_frame_start": 22,
-      "video_frame_end": 135,
+      "video_time_end_s": 14.83,
+      "video_frame_start": 9,
+      "video_frame_end": 59,
       "rubric_categories": [
         "Control",
         "Engineering Quality",
@@ -367,14 +403,14 @@
       }
     },
     {
-      "order": 12,
+      "order": 13,
       "milestone_id": "final_evidence_banner",
       "label": "Final generated report, task gates, and validator evidence",
       "present_in_trajectory": true,
-      "video_time_start_s": 14.22,
-      "video_time_end_s": 14.45,
-      "video_frame_start": 142,
-      "video_frame_end": 144,
+      "video_time_start_s": 15.58,
+      "video_time_end_s": 15.81,
+      "video_frame_start": 62,
+      "video_frame_end": 63,
       "rubric_categories": [
         "Runability",
         "Engineering Quality",
@@ -388,8 +424,8 @@
       "max_multi_side_contact_score": 0.0,
       "evidence_values": {
         "validation_passed": null,
-        "task_gates_passed": 34,
-        "task_gate_count": 34
+        "task_gates_passed": 39,
+        "task_gate_count": 39
       }
     }
   ]

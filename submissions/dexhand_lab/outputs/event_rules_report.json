@@ -20,7 +20,7 @@
   "demo_video_rule": {
     "required_duration_s_min": 60.0,
     "required_duration_s_max": 180.0,
-    "actual_duration_s": 144.5,
+    "actual_duration_s": 79.25,
     "pass": true,
     "path": "submissions/dexhand_lab/outputs/demo.mp4"
   },
@@ -45,7 +45,7 @@
     "mujoco_depth": {
       "status": "pass",
       "evidence": [
-        "scene.xml contains articulated hand joints, collision geoms, touch sensors, cap hinge, button slide joint, and assembly plug/socket geoms",
+        "scene.xml contains articulated hand joints, collision geoms, touch sensors, cap hinge, button slide joint, assembly plug/socket geoms, and vial/cap/sample/tray primitives",
         "outputs/contact_timeline.json and dataset/tactile_taxels.csv expose contact/tactile evidence"
       ]
     },
@@ -53,10 +53,11 @@
       "status": "pass",
       "evidence": [
         "multi-stage dexterity benchmark",
-        "sphere/cube/cylinder/stylus/button/cap tasks",
+        "sphere/cube/cylinder/stylus/button/cap/vial tasks",
         "blind tactile unknown arena",
         "tactile precision assembly arena",
-        "tactile combination lock with multi-detent dial and latch pull"
+        "tactile combination lock with multi-detent dial and latch pull",
+        "vial uncap and sample delivery with no-crush force verification"
       ]
     },
     "control": {
@@ -67,7 +68,8 @@
         "blind tactile classifier",
         "adaptive regrasp",
         "tactile pose estimation and compliant insertion with jam recovery",
-        "detent detection before latch pull in combination lock task"
+        "detent detection before latch pull in combination lock task",
+        "vial cap removal and sample delivery only after contact verification"
       ]
     },
     "dexterous_manipulation": {
@@ -80,7 +82,8 @@
         "in-hand rotation",
         "tripod/stylus and index-only button press",
         "precision assembly grasp",
-        "multi-stage dial/latch manipulation"
+        "multi-stage dial/latch manipulation",
+        "vial body stabilization while the cap is twisted and removed"
       ]
     },
     "engineering_quality": {
@@ -112,6 +115,7 @@
         "no-ground-truth tactile pose estimation",
         "precision plug/socket assembly with jam recovery",
         "tactile combination lock sequence",
+        "no-crush vial uncap-and-deliver task",
         "224-degree cap/knob rotation",
         "hardware replay audit"
       ]

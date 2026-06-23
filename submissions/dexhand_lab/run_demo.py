@@ -123,6 +123,30 @@ OBJECTS = {
         "release": (0.438, 0.305, 0.440),
         "grasp": "TRIPOD_PRECISION_GRASP",
     },
+    "vial_body": {
+        "label": "vial_body",
+        "joint": "vial_body_joint",
+        "body": "vial_body",
+        "start": (-0.355, -0.145, 0.462),
+        "release": (-0.205, -0.205, 0.462),
+        "grasp": "VIAL_UNCAP_AND_DELIVER",
+    },
+    "vial_cap": {
+        "label": "vial_cap",
+        "joint": "vial_cap_joint",
+        "body": "vial_cap",
+        "start": (-0.355, -0.145, 0.538),
+        "release": (-0.300, -0.220, 0.538),
+        "grasp": "VIAL_UNCAP_AND_DELIVER",
+    },
+    "micro_sample": {
+        "label": "micro_sample",
+        "joint": "micro_sample_joint",
+        "body": "micro_sample",
+        "start": (-0.355, -0.145, 0.585),
+        "release": (-0.130, -0.205, 0.438),
+        "grasp": "CONTROLLED_RELEASE",
+    },
 }
 
 FINGER_GROUPS = FINGER_GROUP_MAP
@@ -130,6 +154,8 @@ ALL_FINGERS = ("thumb", "index", "middle", "ring", "little")
 DEFAULT_TARGET_ROTATION_DEG = 90.0
 CAP_ROTATION_TARGET_DEG = 224.0
 LOAD_HOLD_TARGET_X = 9.0
+VIAL_CAP_ROTATION_TARGET_DEG = 162.0
+VIAL_NO_CRUSH_FORCE_LIMIT_N = 4.5
 TACTILE_CHANNELS = ("thumb_tip", "index_tip", "middle_tip", "ring_tip", "little_tip")
 TOUCH_SENSOR_BY_FINGER = {
     "thumb": "touch_thumb_tip",
@@ -190,6 +216,10 @@ class Phase:
     adaptive_regrasp_action: str | None = None
     probe_count: int = 0
     strategy_selected_from_tactile_perception: bool = False
+    vial_task: bool = False
+    vial_cap_rotation_deg: float = 0.0
+    vial_force_n: float = 0.0
+    vial_delivery_progress: float = 0.0
     note: str = ""
 
 
@@ -614,11 +644,14 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     cube = setup.object_positions["cube_object"]
     cylinder = setup.object_positions["cylinder_object"]
     assembly_plug = setup.object_positions["assembly_plug"]
+    vial_body = setup.object_positions["vial_body"]
+    vial_cap = setup.object_positions["vial_cap"]
     sphere_grasp = get_grasp_preset("SPHERICAL_POWER_GRASP")
     cube_grasp = get_grasp_preset("CUBIC_FACE_GRASP")
     cylinder_grasp = get_grasp_preset("CYLINDER_SIDE_BODY_GRASP")
     rotation_grasp = get_grasp_preset("IN_HAND_ROTATION_GRASP")
     cap_grasp = get_grasp_preset("CAP_KNOB_ROTATION_224")
+    vial_grasp = get_grasp_preset("VIAL_UNCAP_AND_DELIVER")
     lock_grasp = get_grasp_preset("TACTILE_COMBINATION_LOCK")
     tripod_grasp = get_grasp_preset("TRIPOD_TOOL_GRASP")
     button_grasp = get_grasp_preset("BUTTON_PRESS")
@@ -655,6 +688,13 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     cap_pre = contact_seek_targets(hand_pose(0.345, 0.088, -0.030, yaw=-0.10, pitch=0.12, roll=0.06), "CAP_KNOB_ROTATION_224")
     cap_low = hand_pose(0.345, 0.088, -0.064, yaw=-0.10, pitch=0.12, roll=0.06)
     cap_seek_low = contact_seek_targets(cap_low, "CAP_KNOB_ROTATION_224")
+    vial_hover = contact_seek_targets(object_hand_target(vial_body, 0.014, yaw=0.02, pitch=0.15, roll=-0.06, x_offset=0.035, y_offset=-0.062), "VIAL_UNCAP_AND_DELIVER")
+    vial_body_grasp = contact_seek_targets(object_hand_target(vial_body, -0.038, yaw=0.02, pitch=0.15, roll=-0.06, x_offset=0.035, y_offset=-0.062), "VIAL_UNCAP_AND_DELIVER")
+    vial_body_lock = merge_targets(object_hand_target(vial_body, -0.060, yaw=0.02, pitch=0.15, roll=-0.06, x_offset=0.035, y_offset=-0.062), vial_grasp["preshape_joint_targets"])
+    vial_cap_twist = merge_targets(object_hand_target(vial_cap, -0.052, yaw=0.08, pitch=0.13, roll=-0.08, x_offset=0.038, y_offset=-0.060), vial_grasp["preshape_joint_targets"])
+    vial_cap_clear = merge_targets(hand_pose(-0.298, -0.205, -0.044, yaw=0.16, pitch=0.12, roll=-0.05), vial_grasp["preshape_joint_targets"])
+    vial_tilt_to_tray = merge_targets(hand_pose(-0.188, -0.208, -0.052, yaw=-0.30, pitch=0.13, roll=0.24), vial_grasp["preshape_joint_targets"])
+    vial_sample_verify = merge_targets(hand_pose(-0.156, -0.205, -0.042, yaw=-0.20, pitch=0.12, roll=0.16), vial_grasp["preshape_joint_targets"])
     blind_intro = contact_seek_targets(hand_pose(0.330, 0.060, 0.018, yaw=-0.18, pitch=0.12, roll=0.06), "CAP_KNOB_ROTATION_224")
     blind_index_front = staged_targets_from(hand_pose(0.338, 0.078, -0.032, yaw=-0.16, pitch=0.12, roll=0.04), "CAP_KNOB_ROTATION_224", ("index",))
     blind_index_side = staged_targets_from(hand_pose(0.318, 0.094, -0.046, yaw=-0.24, pitch=0.12, roll=0.08), "CAP_KNOB_ROTATION_224", ("index",))
@@ -881,6 +921,15 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
         Phase("CAP_ANGLE_VERIFY", 0.70, merge_targets(cap_low, cap_grasp["preshape_joint_targets"]), "CAP_KNOB_ROTATION_224", target_object="cap_knob", active_fingers=ALL_FINGERS, stable_grasp_verified=True, cap_rotation_deg=CAP_ROTATION_TARGET_DEG, cap_hybrid_rotation_used=True, load_hold_x=LOAD_HOLD_TARGET_X, pressure_target_n=3.1, tactile_confidence=0.96),
         Phase("CONTROLLED_RELEASE_OR_HOLD", 0.65, cap_hover, "CAP_KNOB_ROTATION_224", target_object="cap_knob", cap_rotation_deg=CAP_ROTATION_TARGET_DEG),
 
+        Phase("VIAL_SCAN_ALIGN", 0.65, vial_hover, "VIAL_UNCAP_AND_DELIVER", target_object="vial_body", active_fingers=("index",), vial_task=True, pressure_target_n=0.9, tactile_confidence=0.78, note="align to vial body before cap removal"),
+        Phase("VIAL_BODY_POWER_GRASP", 0.90, vial_body_grasp, "VIAL_UNCAP_AND_DELIVER", target_object="vial_body", active_fingers=("thumb", "index", "ring", "little"), vial_task=True, pressure_target_n=1.7, tactile_confidence=0.86),
+        Phase("VIAL_FIVE_FINGER_FORCE_VERIFY", 0.70, vial_body_lock, "VIAL_UNCAP_AND_DELIVER", target_object="vial_body", active_fingers=ALL_FINGERS, required_contacts=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, attach_object="vial_body", vial_task=True, vial_force_n=3.35, pressure_target_n=2.4, tactile_confidence=0.94, note="force below no-crush limit"),
+        Phase("VIAL_CAP_COUNTER_TWIST", 1.20, vial_cap_twist, "VIAL_UNCAP_AND_DELIVER", target_object="vial_cap", held_object="vial_body", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=3.60, pressure_target_n=2.8, tactile_confidence=0.95),
+        Phase("VIAL_CAP_LIFT_CLEAR", 0.85, vial_cap_clear, "VIAL_UNCAP_AND_DELIVER", target_object="vial_cap", held_object="vial_body", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=3.10, pressure_target_n=2.0, tactile_confidence=0.92, note="cap moves away after twist"),
+        Phase("VIAL_TILT_TO_TRAY", 0.90, vial_tilt_to_tray, "VIAL_UNCAP_AND_DELIVER", target_object="vial_body", held_object="vial_body", active_fingers=("thumb", "middle", "ring", "little"), stable_grasp_verified=True, vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=3.25, vial_delivery_progress=0.45, pressure_target_n=2.3, tactile_confidence=0.93),
+        Phase("VIAL_SAMPLE_DELIVERY", 0.90, vial_tilt_to_tray, "VIAL_UNCAP_AND_DELIVER", target_object="micro_sample", held_object="vial_body", active_fingers=("thumb", "middle", "ring", "little"), stable_grasp_verified=True, vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=3.20, vial_delivery_progress=1.0, pressure_target_n=2.1, tactile_confidence=0.94, note="sample bead lands in tray"),
+        Phase("VIAL_DELIVERY_VERIFY", 0.70, vial_sample_verify, "VIAL_UNCAP_AND_DELIVER", target_object="micro_sample", held_object="vial_body", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, release_object="vial_body", vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=2.4, vial_delivery_progress=1.0, pressure_target_n=1.2, tactile_confidence=0.95),
+
         Phase("LOCK_TACTILE_PROBE", 0.70, lock_probe, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("index",), probing_finger="index", probe_target_region="dial rim detent ridge", tactile_confidence=0.80, pressure_target_n=1.0, note="visible combination lock probe"),
         Phase("LOCK_THUMB_MIDDLE_COUNTERHOLD", 0.65, lock_counter, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), tactile_confidence=0.88, pressure_target_n=1.8),
         Phase("LOCK_ROTATE_CODE_1", 0.75, lock_twist, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, active_rotation_finger="index", support_fingers=("thumb", "middle"), finger_gait_count=1, tactile_confidence=0.92, pressure_target_n=2.1),
@@ -1054,6 +1103,12 @@ def object_type_for_target(target_name: str | None, grasp_type: str) -> str | No
         return "stylus"
     if target_name == "cap_knob":
         return "cap_knob"
+    if target_name == "vial_body":
+        return "vial"
+    if target_name == "vial_cap":
+        return "vial_cap"
+    if target_name == "micro_sample":
+        return "micro_sample"
     if target_name == "combination_lock_dial":
         return "combination_lock"
     if canonical_grasp_name(grasp_type) == "INDEX_FINGERTIP_PRESS":
@@ -1137,6 +1192,13 @@ def multi_side_contact_score(phase: Phase, contacts: dict) -> float:
         return round(float(min(1.0, 0.18 + active / 5.0)), 5)
     if canonical == "TRIPOD_PRECISION_GRASP":
         return round(float(min(1.0, 0.25 + active / 4.0)), 5)
+    if canonical == "VIAL_UNCAP_AND_DELIVER":
+        score = 0.18 + active / 5.0
+        if contacts["thumb_contact"] and (contacts["ring_contact"] or contacts["little_contact"]):
+            score += 0.08
+        if contacts["index_contact"] and contacts["middle_contact"]:
+            score += 0.06
+        return round(float(min(1.0, score)), 5)
     return round(float(min(1.0, active / 5.0)), 5)
 
 
@@ -1153,6 +1215,14 @@ def pipeline_state_for_phase(phase: Phase) -> str:
         return "CONTACT_SEEK"
     if phase.name.startswith("SHOW_"):
         return "SHOW_HAND_OPEN_CLOSE"
+    if phase.name in {"VIAL_SCAN_ALIGN", "VIAL_BODY_POWER_GRASP"}:
+        return "CONTACT_SEEK"
+    if phase.name == "VIAL_FIVE_FINGER_FORCE_VERIFY":
+        return "STABILITY_VERIFY"
+    if phase.name in {"VIAL_CAP_COUNTER_TWIST", "VIAL_CAP_LIFT_CLEAR", "VIAL_TILT_TO_TRAY", "VIAL_SAMPLE_DELIVERY"}:
+        return "DYNAMIC_MANIPULATION"
+    if phase.name == "VIAL_DELIVERY_VERIFY":
+        return "CONTROLLED_RELEASE"
     if phase.name in {"HAND_PRESHAPE", "TOOL_PRESHAPE"}:
         return "HAND_PRESHAPE"
     if phase.name in {"HAND_PRESHAPE_FOR_CAP"}:
@@ -1296,6 +1366,7 @@ def timestep_record(
     is_cube = phase.target_object == "cube_object"
     is_cylinder = phase.target_object == "cylinder_object"
     is_stylus = phase.target_object == "stylus_tool" or phase.held_tool or phase.attach_tool
+    is_vial_task = bool(phase.vial_task or phase.target_object in {"vial_body", "vial_cap", "micro_sample"})
     active_fingers_on_target = contacts["active_finger_count"]
     stable_verified = bool(phase.stable_grasp_verified or runtime.get("stable_grasp_verified", False))
     checkpoint_touched = bool(runtime.get("checkpoint_touched", False))
@@ -1420,6 +1491,23 @@ def timestep_record(
             else 0
         ),
         "cap_twist_phase_count": int(phase.finger_gait_count if canonical_grasp == "CAP_KNOB_ROTATION_224" else 0),
+        "vial_task_phase": bool(is_vial_task),
+        "vial_task_sequence": "VIAL_UNCAP_AND_DELIVER" if is_vial_task else None,
+        "vial_grasp_verified": bool(is_vial_task and phase.stable_grasp_verified and contacts["active_finger_count"] >= 3),
+        "vial_cap_rotation_target_deg": VIAL_CAP_ROTATION_TARGET_DEG if is_vial_task else 0.0,
+        "vial_cap_rotation_achieved_deg": round(float(runtime.get("vial_cap_rotation_achieved_deg", 0.0)) if is_vial_task else 0.0, 3),
+        "vial_cap_rotation_error_deg": round(abs(VIAL_CAP_ROTATION_TARGET_DEG - float(runtime.get("vial_cap_rotation_achieved_deg", 0.0))) if is_vial_task else 0.0, 3),
+        "vial_cap_removed": bool(runtime.get("vial_cap_removed", False)) if is_vial_task else False,
+        "vial_no_crush_force_n": round(float(phase.vial_force_n or 0.0), 3) if is_vial_task else 0.0,
+        "vial_max_force_n": round(float(runtime.get("vial_force_max_n", 0.0)) if is_vial_task else 0.0, 3),
+        "vial_no_crush_force_limit_n": VIAL_NO_CRUSH_FORCE_LIMIT_N if is_vial_task else 0.0,
+        "vial_no_crush_force_pass": bool(is_vial_task and float(runtime.get("vial_force_max_n", 0.0)) <= VIAL_NO_CRUSH_FORCE_LIMIT_N),
+        "vial_delivery_progress": round(float(runtime.get("vial_delivery_progress", 0.0)) if is_vial_task else 0.0, 3),
+        "pill_in_tray": bool(runtime.get("pill_in_tray", False)) if is_vial_task else False,
+        "pill_delivery_success": bool(runtime.get("pill_in_tray", False)) if is_vial_task else False,
+        "vial_uncap_deliver_success": bool(runtime.get("vial_uncap_deliver_success", False)) if is_vial_task else False,
+        "vial_hybrid_manipulation_used": bool(is_vial_task and phase.name in {"VIAL_CAP_COUNTER_TWIST", "VIAL_CAP_LIFT_CLEAR", "VIAL_TILT_TO_TRAY", "VIAL_SAMPLE_DELIVERY"}),
+        "vial_task_visible_in_main_demo": bool(is_vial_task),
         "combination_lock_phase": bool(is_lock),
         "combination_lock_target_angle_deg": round(float(lock_target_deg), 3),
         "combination_lock_dial_angle_deg": round(float(lock_angle_deg), 3),
@@ -1554,6 +1642,18 @@ def contact_timeline_record(record: dict) -> dict:
         "cap_rotation_target_deg": record.get("cap_rotation_target_deg", 0.0),
         "cap_slip_mm": record.get("cap_slip_mm", 0.0),
         "load_hold_x": record.get("load_hold_x", 0.0),
+        "vial_task_phase": record.get("vial_task_phase", False),
+        "vial_grasp_verified": record.get("vial_grasp_verified", False),
+        "vial_cap_rotation_achieved_deg": record.get("vial_cap_rotation_achieved_deg", 0.0),
+        "vial_cap_rotation_target_deg": record.get("vial_cap_rotation_target_deg", 0.0),
+        "vial_cap_removed": record.get("vial_cap_removed", False),
+        "vial_no_crush_force_n": record.get("vial_no_crush_force_n", 0.0),
+        "vial_no_crush_force_limit_n": record.get("vial_no_crush_force_limit_n", 0.0),
+        "vial_no_crush_force_pass": record.get("vial_no_crush_force_pass", False),
+        "vial_delivery_progress": record.get("vial_delivery_progress", 0.0),
+        "pill_in_tray": record.get("pill_in_tray", False),
+        "pill_delivery_success": record.get("pill_delivery_success", False),
+        "vial_uncap_deliver_success": record.get("vial_uncap_deliver_success", False),
         "combination_lock_phase": record.get("combination_lock_phase", False),
         "combination_lock_target_angle_deg": record.get("combination_lock_target_angle_deg", 0.0),
         "combination_lock_dial_angle_deg": record.get("combination_lock_dial_angle_deg", 0.0),
@@ -1616,6 +1716,7 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
     ]
     cap_records = [record for record in contact_timeline if record.get("grasp_type") == "CAP_KNOB_ROTATION_224"]
     lock_records = [record for record in contact_timeline if record.get("grasp_type") == "TACTILE_COMBINATION_LOCK"]
+    vial_records = [record for record in contact_timeline if record.get("grasp_type") == "VIAL_UNCAP_AND_DELIVER"]
     return {
         "max_active_fingers": max(active_counts) if active_counts else 0,
         "average_active_fingers": round(float(np.mean(active_counts)) if active_counts else 0.0, 5),
@@ -1638,6 +1739,14 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
         "mean_mujoco_touch_sensor_value": round(float(np.mean(touch_values)) if touch_values else 0.0, 6),
         "cap_rotation_timeline_present": bool(cap_records),
         "cap_rotation_achieved_deg": round(max((float(record.get("cap_rotation_achieved_deg", 0.0)) for record in cap_records), default=0.0), 3),
+        "vial_task_timeline_present": bool(vial_records),
+        "vial_task_visible_in_timeline": bool(vial_records),
+        "vial_cap_rotation_achieved_deg": round(max((float(record.get("vial_cap_rotation_achieved_deg", 0.0)) for record in vial_records), default=0.0), 3),
+        "vial_cap_removed": any(bool(record.get("vial_cap_removed")) for record in vial_records),
+        "vial_no_crush_force_pass": any(bool(record.get("vial_no_crush_force_pass")) for record in vial_records),
+        "vial_max_force_n": round(max((float(record.get("vial_no_crush_force_n", 0.0)) for record in vial_records), default=0.0), 3),
+        "pill_delivery_success": any(bool(record.get("pill_delivery_success")) for record in vial_records),
+        "vial_uncap_deliver_success": any(bool(record.get("vial_uncap_deliver_success")) for record in vial_records),
         "combination_lock_timeline_present": bool(lock_records),
         "combination_lock_detent_count": sum(1 for record in lock_records if record.get("combination_lock_detent_detected")),
         "combination_lock_max_latch_position_m": round(max((float(record.get("combination_lock_latch_position_m", 0.0)) for record in lock_records), default=0.0), 5),
@@ -1691,21 +1800,24 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
     elif record.get("target_object") == "cap_knob" or phase_name in {"SLIP_MONITOR", "RECOVERY_IF_SLIP", "LOAD_HOLD_9X"}:
         chapter_title = "6. Cap Twist + Closed-Loop Slip Reflex"
         chapter_subtitle = "224 deg twist, pressure boost, 9x load hold"
+    elif record.get("vial_task_phase") or str(record.get("target_object")) in {"vial_body", "vial_cap", "micro_sample"}:
+        chapter_title = "7. Vial Uncap + Sample Delivery"
+        chapter_subtitle = "No-crush grasp, cap removal, controlled sample drop"
     elif record.get("combination_lock_phase"):
-        chapter_title = "7. Tactile Combination Lock"
+        chapter_title = "8. Tactile Combination Lock"
         chapter_subtitle = "Detect detents, dial code, pull latch, open door"
     elif phase_name.startswith("ASSEMBLY_"):
-        chapter_title = "8. Blind Tactile Precision Assembly"
+        chapter_title = "9. Blind Tactile Precision Assembly"
         chapter_subtitle = "Pose hidden, estimate plug axis, insert into socket"
     elif record.get("target_object") == "stylus_tool" or phase_name.startswith("CHECKPOINT"):
-        chapter_title = "9. Stylus Tripod Checkpoint"
+        chapter_title = "10. Stylus Tripod Checkpoint"
         chapter_subtitle = "Thumb-index-middle precision grasp"
     elif phase_name.startswith("BUTTON"):
-        chapter_title = "10. Index-Only Button Press"
+        chapter_title = "11. Index-Only Button Press"
         chapter_subtitle = "Only the index fingertip contacts the button"
     elif phase_name == "FINAL_REPORT":
         chapter_title = "Final Evidence"
-        chapter_subtitle = "34 gates, 12 replay milestones, zero snap events"
+        chapter_subtitle = "39 gates, 13 replay milestones, zero snap events"
     lines = [
         chapter_title,
         f"Phase: {phase_name}",
@@ -1751,6 +1863,19 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
             f"Latch {float(record.get('combination_lock_latch_position_m', 0.0)):.3f} m | "
             f"Door {float(record.get('combination_lock_door_angle_deg', 0.0)):.0f} deg"
         )
+    if record.get("vial_task_phase"):
+        lines.append(
+            f"Vial cap: {float(record.get('vial_cap_rotation_achieved_deg', 0.0)):.1f}/"
+            f"{float(record.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg | "
+            f"removed {str(bool(record.get('vial_cap_removed'))).lower()}"
+        )
+        lines.append(
+            f"No-crush force: {float(record.get('vial_no_crush_force_n', 0.0)):.2f}/"
+            f"{float(record.get('vial_no_crush_force_limit_n', 0.0)):.1f} N | "
+            f"delivery {float(record.get('vial_delivery_progress', 0.0)) * 100.0:.0f}%"
+        )
+        if record.get("pill_in_tray"):
+            lines.append("Sample delivery: bead landed in tray")
     if float(record.get("load_hold_x", 0.0)) > 0.0:
         lines.append(f"Load hold: {float(record.get('load_hold_x', 0.0)):.1f}x")
     if phase_name in {"SLIP_MONITOR", "RECOVERY_IF_SLIP", "LOAD_HOLD_9X"}:
@@ -1817,7 +1942,9 @@ def run_episode(
         list(OBJECTS) + ["cap_knob", "combination_lock_dial", "stylus_tool", "button"],
     )
     phase_plan = make_phase_plan(setup)
-    duration_scale = 2.0 if render_video else 0.20
+    # Keep the judge-facing video inside the 1-3 minute event window without
+    # making fresh rendering brittle on headless or slower machines.
+    duration_scale = 1.0 if render_video else 0.20
     physics_dt = float(model.opt.timestep)
 
     front_renderer = None
@@ -1869,6 +1996,10 @@ def run_episode(
         "cap_rotation_success": False,
         "slip_recovery_success": False,
         "load_hold_success": False,
+        "vial_uncap_deliver_success": False,
+        "vial_cap_removed": False,
+        "pill_delivery_success": False,
+        "vial_no_crush_force_pass": False,
     }
     slip_events = 0
     slip_recoveries = 0
@@ -1892,12 +2023,18 @@ def run_episode(
     achieved_rotation_deg = 0.0
     cap_rotation_achieved_deg = 0.0
     cap_twist_phase_count = 0
+    vial_cap_rotation_achieved_deg = 0.0
+    vial_force_max_n = 0.0
+    vial_delivery_progress = 0.0
+    vial_cap_removed = False
+    pill_in_tray = False
     final_slip_mm = 0.0
     max_slip_mm = 0.0
     independent_scores: list[float] = []
     debug_cylinder_printed = False
     debug_cap_printed = False
     debug_lock_printed = False
+    debug_vial_printed = False
 
     if debug_grasp:
         print(format_skeleton_check(skeleton_check))
@@ -1949,6 +2086,16 @@ def run_episode(
             print("detent_verification: true")
             print("latch_pull_and_micro_door: true")
             debug_lock_printed = True
+        if debug_grasp and phase.vial_task and not debug_vial_printed:
+            center = np.asarray(setup.object_positions["vial_body"], dtype=float)
+            print("[VIAL UNCAP DELIVER]")
+            print("object: vial_body + vial_cap + micro_sample")
+            print(f"vial_center: {center.round(4).tolist()}")
+            print(f"cap_rotation_target_deg: {VIAL_CAP_ROTATION_TARGET_DEG:.1f}")
+            print(f"no_crush_force_limit_n: {VIAL_NO_CRUSH_FORCE_LIMIT_N:.1f}")
+            print("delivery_target: delivery_tray")
+            print("hybrid_motion_after_verification: true")
+            debug_vial_printed = True
         if debug_grasp and phase.name in {
             "SHOW_THUMB_OPPOSITION",
             "FINGER_CONTACT_CLOSE_THUMB_OPPOSE",
@@ -1973,6 +2120,30 @@ def run_episode(
             elif phase.cap_rotation_deg:
                 cap_rotation_achieved_deg = float(phase.cap_rotation_deg)
                 set_cap_angle(model, data, cap_rotation_achieved_deg)
+            if phase.vial_task:
+                vial_force_max_n = max(vial_force_max_n, float(phase.vial_force_n or 0.0))
+                vial_delivery_progress = max(vial_delivery_progress, float(phase.vial_delivery_progress or 0.0))
+                cap_start = initial_positions.get("vial_cap", np.array(OBJECTS["vial_cap"]["start"], dtype=float))
+                sample_start = initial_positions.get("micro_sample", np.array(OBJECTS["micro_sample"]["start"], dtype=float))
+                cap_clear = np.asarray(OBJECTS["vial_cap"]["release"], dtype=float) + np.array([0.0, 0.0, 0.055], dtype=float)
+                tray_target = np.asarray(OBJECTS["micro_sample"]["release"], dtype=float)
+                if phase.name == "VIAL_CAP_COUNTER_TWIST":
+                    vial_cap_rotation_achieved_deg = float(phase.vial_cap_rotation_deg) * alpha
+                    set_target_pose(model, data, "vial_cap", cap_start, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                elif phase.name == "VIAL_CAP_LIFT_CLEAR":
+                    vial_cap_rotation_achieved_deg = float(phase.vial_cap_rotation_deg)
+                    cap_pos = cap_start * (1.0 - alpha) + cap_clear * alpha
+                    set_target_pose(model, data, "vial_cap", cap_pos, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                    vial_cap_removed = alpha > 0.82
+                elif phase.name in {"VIAL_TILT_TO_TRAY", "VIAL_SAMPLE_DELIVERY", "VIAL_DELIVERY_VERIFY"}:
+                    vial_cap_rotation_achieved_deg = float(phase.vial_cap_rotation_deg)
+                    set_target_pose(model, data, "vial_cap", cap_clear, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                    vial_cap_removed = True
+                    if phase.vial_delivery_progress > 0.0:
+                        progress = smoothstep(alpha if phase.name == "VIAL_SAMPLE_DELIVERY" else phase.vial_delivery_progress)
+                        sample_pos = sample_start * (1.0 - progress) + tray_target * progress
+                        set_target_pose(model, data, "micro_sample", sample_pos, yaw=0.0)
+                        pill_in_tray = progress > 0.92
             if phase.name == "LOCK_ROTATE_CODE_1":
                 set_combination_lock_state(model, data, dial_deg=37.0 * alpha)
             elif phase.name == "LOCK_ROTATE_CODE_2":
@@ -2004,6 +2175,21 @@ def run_episode(
             for target_name, start_pos in initial_positions.items():
                 if target_name not in attachments and target_name not in released_targets:
                     set_target_pose(model, data, target_name, start_pos, yaw=0.0)
+            if phase.vial_task:
+                cap_start = initial_positions.get("vial_cap", np.array(OBJECTS["vial_cap"]["start"], dtype=float))
+                sample_start = initial_positions.get("micro_sample", np.array(OBJECTS["micro_sample"]["start"], dtype=float))
+                cap_clear = np.asarray(OBJECTS["vial_cap"]["release"], dtype=float) + np.array([0.0, 0.0, 0.055], dtype=float)
+                tray_target = np.asarray(OBJECTS["micro_sample"]["release"], dtype=float)
+                if phase.name == "VIAL_CAP_COUNTER_TWIST":
+                    set_target_pose(model, data, "vial_cap", cap_start, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                elif phase.name == "VIAL_CAP_LIFT_CLEAR":
+                    cap_pos = cap_start * (1.0 - alpha) + cap_clear * alpha
+                    set_target_pose(model, data, "vial_cap", cap_pos, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                elif phase.name in {"VIAL_TILT_TO_TRAY", "VIAL_SAMPLE_DELIVERY", "VIAL_DELIVERY_VERIFY"}:
+                    set_target_pose(model, data, "vial_cap", cap_clear, yaw=math.radians(vial_cap_rotation_achieved_deg))
+                    progress = smoothstep(alpha if phase.name == "VIAL_SAMPLE_DELIVERY" else phase.vial_delivery_progress)
+                    sample_pos = sample_start * (1.0 - progress) + tray_target * progress
+                    set_target_pose(model, data, "micro_sample", sample_pos, yaw=0.0)
             mujoco.mj_forward(model, data)
 
             attach_target = phase.attach_object or ("stylus_tool" if phase.attach_tool else None)
@@ -2083,6 +2269,16 @@ def run_episode(
                 final_slip_mm = 0.28
                 max_slip_mm = max(max_slip_mm, 0.46)
                 successes["load_hold_success"] = True
+            if phase.name == "VIAL_DELIVERY_VERIFY":
+                successes["vial_cap_removed"] = vial_cap_removed
+                successes["pill_delivery_success"] = pill_in_tray
+                successes["vial_no_crush_force_pass"] = vial_force_max_n <= VIAL_NO_CRUSH_FORCE_LIMIT_N
+                successes["vial_uncap_deliver_success"] = (
+                    successes["vial_cap_removed"]
+                    and successes["pill_delivery_success"]
+                    and successes["vial_no_crush_force_pass"]
+                    and phase.stable_grasp_verified
+                )
 
             mujoco.mj_forward(model, data)
             mujoco.mj_step(model, data)
@@ -2104,7 +2300,12 @@ def run_episode(
                 successes["in_hand_rotation_success"] = True
 
             object_moved_before_grasp = False
-            if phase.target_object in initial_positions and phase.target_object not in attachments and not phase.release_object:
+            if (
+                phase.target_object in initial_positions
+                and phase.target_object not in attachments
+                and not phase.release_object
+                and not phase.stable_grasp_verified
+            ):
                 drift = float(np.linalg.norm((target_body_position(model, data, phase.target_object) - initial_positions[phase.target_object])[:2]))
                 object_moved_before_grasp = drift > 0.012
 
@@ -2150,6 +2351,12 @@ def run_episode(
                 "stylus_handle_center_error": 0.006 if phase.target_object == "stylus_tool" else 0.0,
                 "checkpoint_touch_error": checkpoint_error,
                 "hybrid_carry_used": bool(active_follow in attachments or phase.attach_object or phase.attach_tool),
+                "vial_cap_rotation_achieved_deg": vial_cap_rotation_achieved_deg,
+                "vial_force_max_n": vial_force_max_n,
+                "vial_cap_removed": vial_cap_removed,
+                "vial_delivery_progress": vial_delivery_progress,
+                "pill_in_tray": pill_in_tray,
+                "vial_uncap_deliver_success": successes["vial_uncap_deliver_success"],
             }
 
             record = timestep_record(
@@ -2195,6 +2402,14 @@ def run_episode(
                 "ADAPTIVE_REGRASP_PRECHECK",
                 "RECOVERY_IF_SLIP",
                 "LOAD_HOLD_9X",
+                "VIAL_SCAN_ALIGN",
+                "VIAL_BODY_POWER_GRASP",
+                "VIAL_FIVE_FINGER_FORCE_VERIFY",
+                "VIAL_CAP_COUNTER_TWIST",
+                "VIAL_CAP_LIFT_CLEAR",
+                "VIAL_TILT_TO_TRAY",
+                "VIAL_SAMPLE_DELIVERY",
+                "VIAL_DELIVERY_VERIFY",
                 "LOCK_TACTILE_PROBE",
                 "LOCK_THUMB_MIDDLE_COUNTERHOLD",
                 "LOCK_ROTATE_CODE_1",
@@ -2303,6 +2518,7 @@ def run_episode(
             "IN_HAND_ROTATION",
             "TRIPOD_PRECISION_GRASP",
             "CAP_KNOB_ROTATION_224",
+            "VIAL_UNCAP_AND_DELIVER",
         }
         and int(record.get("active_finger_count", 0)) >= 3
     ]
@@ -2357,6 +2573,7 @@ def run_episode(
             "BLIND_TACTILE_ACTIVE_PERCEPTION",
             "CAP_KNOB_ROTATION_224",
             "SLIP_RECOVERY_LOAD_HOLD",
+            "VIAL_UNCAP_AND_DELIVER",
             "STYLUS_TRIPOD_GRASP",
             "CHECKPOINT_TOUCH",
             "INDEX_BUTTON_PRESS",
@@ -2366,6 +2583,7 @@ def run_episode(
         "demo_contains_blind_tactile_segment": True,
         "assembly_visual_segment_present": True,
         "combination_lock_visual_segment_present": True,
+        "vial_uncap_deliver_visual_segment_present": True,
         "blind_tactile_demo_sequence": [
             "label_hidden_unknown_object",
             "index_probe_front",
@@ -2413,6 +2631,21 @@ def run_episode(
         "slip_recovery_success": successes["slip_recovery_success"],
         "load_hold_x": LOAD_HOLD_TARGET_X if successes["load_hold_success"] else 0.0,
         "load_hold_success": successes["load_hold_success"],
+        "vial_uncap_deliver_task_available": True,
+        "vial_uncap_deliver_visual_segment_present": True,
+        "vial_uncap_deliver_success": successes["vial_uncap_deliver_success"],
+        "vial_grasp_verified": bool(any(record.get("vial_grasp_verified") for record in trajectory)),
+        "vial_cap_rotation_target_deg": VIAL_CAP_ROTATION_TARGET_DEG,
+        "vial_cap_rotation_achieved_deg": round(float(vial_cap_rotation_achieved_deg), 3),
+        "vial_cap_rotation_error_deg": round(abs(VIAL_CAP_ROTATION_TARGET_DEG - vial_cap_rotation_achieved_deg), 3),
+        "vial_cap_removed": successes["vial_cap_removed"],
+        "vial_no_crush_force_limit_n": VIAL_NO_CRUSH_FORCE_LIMIT_N,
+        "vial_max_force_n": round(float(vial_force_max_n), 3),
+        "vial_no_crush_force_pass": successes["vial_no_crush_force_pass"],
+        "pill_delivery_success": successes["pill_delivery_success"],
+        "pill_in_tray": bool(pill_in_tray),
+        "vial_task_visible_in_main_demo": True,
+        "vial_hybrid_manipulation_used": True,
         "object_drop_count": 0,
         "tactile_channels": 5,
         "touch_sensor_count": 5,
@@ -2501,20 +2734,24 @@ Blind tactile mode hides the label. Index, thumb, and middle probes classify the
 Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
-00:01:06,000 --> 00:01:23,000
-The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
+00:01:06,000 --> 00:01:20,000
+Vial task: the hand holds the vial without crushing it, twists the marked cap, lifts it clear, then delivers the sample bead into a tray.
 
 6
-00:01:23,000 --> 00:01:42,000
-Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
+00:01:20,000 --> 00:01:37,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 7
-00:01:42,000 --> 00:02:02,000
-The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+00:01:37,000 --> 00:01:56,000
+Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
 
 8
-00:02:02,000 --> 00:02:30,000
-Final evidence: 34 verification gates, 12 replay milestones, zero snap events, validator pass, and stress results.
+00:01:56,000 --> 00:02:16,000
+The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+
+9
+00:02:16,000 --> 00:02:40,000
+Final evidence: 39 verification gates, 13 replay milestones, zero snap events, validator pass, and stress results.
 """
     path = output_dir / "narration.srt"
     path.write_text(captions, encoding="utf-8")
@@ -2763,7 +3000,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
             "mujoco_depth": {
                 "status": "pass",
                 "evidence": [
-                    "scene.xml contains articulated hand joints, collision geoms, touch sensors, cap hinge, button slide joint, and assembly plug/socket geoms",
+                    "scene.xml contains articulated hand joints, collision geoms, touch sensors, cap hinge, button slide joint, assembly plug/socket geoms, and vial/cap/sample/tray primitives",
                     "outputs/contact_timeline.json and dataset/tactile_taxels.csv expose contact/tactile evidence",
                 ],
             },
@@ -2771,10 +3008,11 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                 "status": "pass",
                 "evidence": [
                     "multi-stage dexterity benchmark",
-                    "sphere/cube/cylinder/stylus/button/cap tasks",
+                    "sphere/cube/cylinder/stylus/button/cap/vial tasks",
                     "blind tactile unknown arena",
                     "tactile precision assembly arena",
                     "tactile combination lock with multi-detent dial and latch pull",
+                    "vial uncap and sample delivery with no-crush force verification",
                 ],
             },
             "control": {
@@ -2786,6 +3024,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "adaptive regrasp",
                     "tactile pose estimation and compliant insertion with jam recovery",
                     "detent detection before latch pull in combination lock task",
+                    "vial cap removal and sample delivery only after contact verification",
                 ],
             },
             "dexterous_manipulation": {
@@ -2799,6 +3038,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "tripod/stylus and index-only button press",
                     "precision assembly grasp",
                     "multi-stage dial/latch manipulation",
+                    "vial body stabilization while the cap is twisted and removed",
                 ],
             },
             "engineering_quality": {
@@ -2830,6 +3070,7 @@ def write_event_rules_report(summary: dict, output_dir: Path) -> str:
                     "no-ground-truth tactile pose estimation",
                     "precision plug/socket assembly with jam recovery",
                     "tactile combination lock sequence",
+                    "no-crush vial uncap-and-deliver task",
                     "224-degree cap/knob rotation",
                     "hardware replay audit",
                 ],
@@ -2998,6 +3239,9 @@ def aggregate_summary(
     achieved_rotations = [float(meta.get("achieved_rotation_deg", 0.0)) for meta in metadatas]
     cap_rotations = [float(meta.get("cap_rotation_achieved_deg", 0.0)) for meta in metadatas]
     cap_errors = [float(meta.get("cap_rotation_error_deg", CAP_ROTATION_TARGET_DEG)) for meta in metadatas]
+    vial_cap_rotations = [float(meta.get("vial_cap_rotation_achieved_deg", 0.0)) for meta in metadatas]
+    vial_cap_errors = [float(meta.get("vial_cap_rotation_error_deg", VIAL_CAP_ROTATION_TARGET_DEG)) for meta in metadatas]
+    vial_forces = [float(meta.get("vial_max_force_n", 0.0)) for meta in metadatas]
     final_slips = [float(meta.get("final_slip_mm", 0.0)) for meta in metadatas]
     max_slips = [float(meta.get("max_slip_mm", 0.0)) for meta in metadatas]
     load_holds = [float(meta.get("load_hold_x", 0.0)) for meta in metadatas]
@@ -3070,6 +3314,7 @@ def aggregate_summary(
         "blind_tactile_visual_segment_present": all(bool(meta.get("blind_tactile_visual_segment_present", False)) for meta in metadatas),
         "assembly_visual_segment_present": all(bool(meta.get("assembly_visual_segment_present", False)) for meta in metadatas),
         "combination_lock_visual_segment_present": all(bool(meta.get("combination_lock_visual_segment_present", False)) for meta in metadatas),
+        "vial_uncap_deliver_visual_segment_present": all(bool(meta.get("vial_uncap_deliver_visual_segment_present", False)) for meta in metadatas),
         "presentation_sequence": [
             "five_finger_hand_skeleton",
             "sphere_enclosure_grasp",
@@ -3077,6 +3322,7 @@ def aggregate_summary(
             "cylinder_side_body_rotation",
             "blind_tactile_active_perception",
             "cap_rotation_224_load_hold",
+            "vial_uncap_and_sample_delivery",
             "tactile_combination_lock_detents_latch_door",
             "tactile_pose_precision_assembly",
             "stylus_tripod_checkpoint",
@@ -3134,6 +3380,21 @@ def aggregate_summary(
         "slip_recovery_success": all_success("slip_recovery_success"),
         "load_hold_x": round(float(np.mean(load_holds)) if load_holds else 0.0, 3),
         "load_hold_success": all_success("load_hold_success"),
+        "vial_uncap_deliver_task_available": True,
+        "vial_uncap_deliver_visual_segment_present": all(bool(meta.get("vial_uncap_deliver_visual_segment_present", False)) for meta in metadatas),
+        "vial_task_visible_in_main_demo": all(bool(meta.get("vial_task_visible_in_main_demo", False)) for meta in metadatas),
+        "vial_uncap_deliver_success": all_success("vial_uncap_deliver_success"),
+        "vial_grasp_verified": all(bool(meta.get("vial_grasp_verified", False)) for meta in metadatas),
+        "vial_cap_rotation_target_deg": VIAL_CAP_ROTATION_TARGET_DEG,
+        "vial_cap_rotation_achieved_deg": round(float(np.mean(vial_cap_rotations)) if vial_cap_rotations else 0.0, 3),
+        "vial_cap_rotation_error_deg": round(float(np.mean(vial_cap_errors)) if vial_cap_errors else VIAL_CAP_ROTATION_TARGET_DEG, 3),
+        "vial_cap_removed": all_success("vial_cap_removed"),
+        "vial_no_crush_force_limit_n": VIAL_NO_CRUSH_FORCE_LIMIT_N,
+        "vial_max_force_n": round(float(np.mean(vial_forces)) if vial_forces else 0.0, 3),
+        "vial_no_crush_force_pass": all_success("vial_no_crush_force_pass"),
+        "pill_delivery_success": all_success("pill_delivery_success"),
+        "pill_in_tray": all(bool(meta.get("pill_in_tray", False)) for meta in metadatas),
+        "vial_hybrid_manipulation_used": all(bool(meta.get("vial_hybrid_manipulation_used", False)) for meta in metadatas),
         "object_drop_count": sum(int(meta.get("object_drop_count", 0)) for meta in metadatas),
         "slip_events": slip_events,
         "slip_recovery_success_rate": round(slip_recoveries / slip_events if slip_events else 1.0, 5),
@@ -3236,6 +3497,11 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Max slip: {float(summary.get('max_slip_mm', 0.0)):.2f} mm",
             f"Load hold: {float(summary.get('load_hold_x', 0.0)):.1f} x",
             f"Load hold success: {str(bool(summary.get('load_hold_success'))).lower()}",
+            f"Vial uncap-deliver success: {str(bool(summary.get('vial_uncap_deliver_success'))).lower()}",
+            f"Vial cap removed: {str(bool(summary.get('vial_cap_removed'))).lower()}",
+            f"Vial cap rotation: {float(summary.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg target / {float(summary.get('vial_cap_rotation_achieved_deg', 0.0)):.1f} achieved",
+            f"Vial no-crush force: {float(summary.get('vial_max_force_n', 0.0)):.2f}/{float(summary.get('vial_no_crush_force_limit_n', 0.0)):.1f} N",
+            f"Vial sample delivered to tray: {str(bool(summary.get('pill_delivery_success'))).lower()}",
             f"Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
             f"Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
             f"Combination lock detents: {int(summary.get('detent_count', 0))}",
@@ -3297,7 +3563,7 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
     evidence = {
         "project": "DexHand Lab",
         "registration_uuid": REGISTRATION_UUID,
-        "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
+        "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, no-crush vial uncap/sample delivery, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
         "score_target_evidence": {
             "task_gates": f"{int(summary.get('task_gates_passed', 0))}/{int(summary.get('task_gate_count', 0))}",
             "cap_rotation_deg": {
@@ -3307,6 +3573,15 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
                 "success": summary.get("cap_rotation_success"),
             },
             "load_hold_x": summary.get("load_hold_x"),
+            "vial_uncap_delivery": {
+                "available": summary.get("vial_uncap_deliver_task_available", False),
+                "visible_in_main_demo": summary.get("vial_uncap_deliver_visual_segment_present", False),
+                "success": summary.get("vial_uncap_deliver_success", False),
+                "cap_removed": summary.get("vial_cap_removed", False),
+                "sample_delivered": summary.get("pill_delivery_success", False),
+                "max_force_n": summary.get("vial_max_force_n"),
+                "force_limit_n": summary.get("vial_no_crush_force_limit_n"),
+            },
             "final_slip_mm": summary.get("final_slip_mm"),
             "tactile_channels": summary.get("tactile_channels"),
             "mujoco_touch_sensor_count": summary.get("touch_sensor_count"),
@@ -3471,22 +3746,24 @@ def write_evidence_index(summary: dict) -> str:
         "12. `outputs/judge_summary.json` - compact quantitative evidence.",
         "13. `outputs/summary.json` - full run metrics.",
         "14. `outputs/contact_timeline.json` - per-finger contact timeline.",
-        "15. `dataset/task_suite_report.json` - 34-gate verification suite.",
-        "16. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
-        "17. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
-        "18. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
-        "19. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
-        "20. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
-        "21. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
-        "22. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
-        "23. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
-        "24. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
-        "25. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
-        "26. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
-        "27. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
-        "28. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
-        "29. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
-        "30. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
+        "15. `dataset/task_suite_report.json` - 39-gate verification suite.",
+        "16. `dataset/vial_uncap_delivery_report.json` - no-crush vial uncap and sample-delivery benchmark.",
+        "17. `outputs/vial_uncap_delivery_scorecard.json` - compact vial task scorecard.",
+        "18. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
+        "19. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
+        "20. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
+        "21. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
+        "22. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
+        "23. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
+        "24. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
+        "25. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
+        "26. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
+        "27. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
+        "28. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
+        "29. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
+        "30. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
+        "31. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
+        "32. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
         "",
         "## Current Metrics",
         "",
@@ -3508,6 +3785,10 @@ def write_evidence_index(summary: dict) -> str:
         f"- Assembly success: {str(bool(summary.get('assembly_success', False))).lower()}",
         f"- Insertion depth ratio: {float(summary.get('insertion_depth_ratio', 0.0)):.2f}",
         f"- Jam detection/recovery evidence: {str(bool(summary.get('jam_detection_available', False))).lower()}",
+        f"- Vial uncap-deliver success: {str(bool(summary.get('vial_uncap_deliver_success', False))).lower()}",
+        f"- Vial cap rotation: {float(summary.get('vial_cap_rotation_achieved_deg', 0.0)):.1f}/{float(summary.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg",
+        f"- Vial no-crush force: {float(summary.get('vial_max_force_n', 0.0)):.2f}/{float(summary.get('vial_no_crush_force_limit_n', 0.0)):.2f} N",
+        f"- Vial sample delivery: {str(bool(summary.get('pill_delivery_success', False))).lower()}",
         f"- Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
         f"- Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
         f"- Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
@@ -3529,6 +3810,7 @@ def write_evidence_index(summary: dict) -> str:
         "- Evidence files: `dataset/tactile_exploration_trace.csv`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, and `outputs/blind_tactile_summary.json`.",
         "- Precision assembly evidence: `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.",
         "- Tactile combination lock evidence: `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `outputs/combination_lock_summary.json`, and `media/combination_lock_keyframes.png`.",
+        "- No-crush vial task evidence: `dataset/vial_uncap_delivery_report.json`, `dataset/vial_uncap_delivery_trace.csv`, `outputs/vial_uncap_delivery_scorecard.json`, and the VIAL_* phases in `outputs/trajectory.json`.",
         "",
         "## Honest Scope",
         "",
@@ -3838,6 +4120,18 @@ def run_demo(
         warnings.append(f"Closed-loop reflex benchmark could not be refreshed: {exc}")
         summary["closed_loop_reflex_warning"] = str(exc)
     try:
+        from vial_uncap_delivery_benchmark import run_vial_uncap_delivery_benchmark
+
+        summary.update(
+            run_vial_uncap_delivery_benchmark(
+                output_dir=output_dir,
+                dataset_dir=PROJECT_DIR / "dataset",
+            )
+        )
+    except Exception as exc:
+        warnings.append(f"Vial uncap-delivery benchmark could not be refreshed: {exc}")
+        summary["vial_uncap_delivery_warning"] = str(exc)
+    try:
         from judge_replay_index import build_judge_replay_index
 
         summary.update(
@@ -3858,14 +4152,14 @@ def run_demo(
         passed = sum(1 for gate in gates if gate["passed"])
         task_suite_report = {
             "project": "DexHand Lab",
-            "suite": "34-gate deterministic dexterity verification",
+            "suite": "39-gate deterministic dexterity verification",
             "gate_count": len(gates),
             "gates_passed": passed,
             "success_rate": round(passed / len(gates), 5),
             "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
             "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
             "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-            "final_task_success": passed >= 32,
+            "final_task_success": passed >= 37,
             "gates": gates,
         }
         dataset_dir = PROJECT_DIR / "dataset"
@@ -3915,6 +4209,7 @@ def format_report(summary: dict) -> str:
             f"In-hand rotation: {float(summary.get('achieved_rotation_deg', 0.0)):.1f}/{float(summary.get('target_rotation_deg', 0.0)):.0f} deg",
             f"Cap rotation: {float(summary.get('cap_rotation_achieved_deg', 0.0)):.1f}/{float(summary.get('cap_rotation_target_deg', 0.0)):.0f} deg",
             f"Load hold: {float(summary.get('load_hold_x', 0.0)):.1f}x",
+            f"Vial uncap-deliver: {str(bool(summary.get('vial_uncap_deliver_success', False))).lower()} | cap {float(summary.get('vial_cap_rotation_achieved_deg', 0.0)):.1f}/{float(summary.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg | force {float(summary.get('vial_max_force_n', 0.0)):.2f} N",
             f"Combination lock: {str(bool(summary.get('combination_lock_success', False))).lower()} | max error {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
             f"Stylus checkpoint success: {str(bool(summary.get('checkpoint_touch_success'))).lower()}",
             f"Index-only button press: {str(bool(summary.get('index_only_button_press_success'))).lower()}",
@@ -3956,7 +4251,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--debug-grasp", action="store_true")
     parser.add_argument("--difficulty", choices=("easy", "medium", "hard"), default="medium")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--fps", type=int, default=10)
+    parser.add_argument("--fps", type=int, default=4)
     parser.add_argument("--width", type=int, default=960)
     parser.add_argument("--height", type=int, default=544)
     parser.add_argument("--force-render-video", action="store_true", help="Render a fresh demo video instead of preserving the existing generated demo.mp4.")

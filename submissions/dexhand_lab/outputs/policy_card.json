@@ -50,7 +50,8 @@
     "SLIP_RECOVERY_REGRASP",
     "SPHERICAL_ENCLOSURE_GRASP",
     "TACTILE_COMBINATION_LOCK",
-    "TRIPOD_PRECISION_GRASP"
+    "TRIPOD_PRECISION_GRASP",
+    "VIAL_UNCAP_AND_DELIVER"
   ],
   "active_tactile_perception_policy": {
     "policy_type": "deterministic tactile classifier + adaptive heuristic controller",

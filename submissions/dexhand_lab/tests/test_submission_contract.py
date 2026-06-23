@@ -67,6 +67,15 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "reflex_latency_pass",
             "minimum_jerk_controller_pass",
             "hardware_audit_pass",
+            "vial_uncap_deliver_task_available",
+            "vial_uncap_deliver_visual_segment_present",
+            "vial_uncap_delivery_benchmark_available",
+            "vial_uncap_deliver_success",
+            "vial_grasp_verified",
+            "vial_cap_removed",
+            "vial_no_crush_force_pass",
+            "pill_delivery_success",
+            "pill_in_tray",
         ]
         for metric in required_true:
             with self.subTest(metric=metric):
@@ -80,6 +89,8 @@ class DexHandSubmissionContractTest(unittest.TestCase):
         self.assertLessEqual(float(summary["reflex_response_latency_ms"]), float(summary["reflex_latency_threshold_ms"]))
         self.assertLessEqual(float(summary["reflex_final_slip_mm"]), 0.5)
         self.assertEqual(int(summary["pre_verification_motion_events"]), 0)
+        self.assertGreaterEqual(float(summary["vial_cap_rotation_achieved_deg"]), 150.0)
+        self.assertLessEqual(float(summary["vial_max_force_n"]), float(summary["vial_no_crush_force_limit_n"]))
 
     def test_required_media_and_reports_exist(self) -> None:
         required_paths = [
@@ -110,6 +121,9 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "dataset/closed_loop_reflex_trace.csv",
             "outputs/closed_loop_reflex_scorecard.json",
             "dataset/hardware_adaptation_report.json",
+            "dataset/vial_uncap_delivery_report.json",
+            "dataset/vial_uncap_delivery_trace.csv",
+            "outputs/vial_uncap_delivery_scorecard.json",
         ]
         for relative_path in required_paths:
             with self.subTest(path=relative_path):

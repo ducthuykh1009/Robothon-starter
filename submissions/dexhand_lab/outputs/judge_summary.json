@@ -1,9 +1,9 @@
 {
   "project": "DexHand Lab",
   "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
-  "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
+  "headline": "Human-like five-finger MuJoCo dexterous hand with blind tactile active perception, no-ground-truth tactile pose estimation, precision assembly, tactile combination lock, no-crush vial uncap/sample delivery, 224-degree cap rotation, tactile audit, load hold, stress evaluation, and no-snap verification.",
   "score_target_evidence": {
-    "task_gates": "34/34",
+    "task_gates": "39/39",
     "cap_rotation_deg": {
       "target": 224.0,
       "achieved": 224.0,
@@ -11,6 +11,15 @@
       "success": true
     },
     "load_hold_x": 9.0,
+    "vial_uncap_delivery": {
+      "available": true,
+      "visible_in_main_demo": true,
+      "success": true,
+      "cap_removed": true,
+      "sample_delivered": true,
+      "max_force_n": 3.6,
+      "force_limit_n": 4.5
+    },
     "final_slip_mm": 0.28,
     "tactile_channels": 5,
     "mujoco_touch_sensor_count": 5,
@@ -29,8 +38,8 @@
       "final_slip_mm": 0.28,
       "active_fingers": 5
     },
-    "dexterous_active_fingers": 4.02096,
-    "dexterous_multi_side_contact": 0.93964,
+    "dexterous_active_fingers": 4.04,
+    "dexterous_multi_side_contact": 0.95202,
     "minimum_jerk_controller_pass": true,
     "hardware_replay_audit_pass": true,
     "blind_tactile_mode_available": true,
@@ -86,14 +95,14 @@
     "event_rules_alignment": {
       "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
       "demo_video_duration_rule_pass": true,
-      "duration_s": 144.5,
+      "duration_s": 79.25,
       "runability_status": "pass",
       "rules_alignment_pass": true
     },
     "judge_replay_index": {
       "available": true,
-      "milestones_present": 12,
-      "milestone_count": 12,
+      "milestones_present": 13,
+      "milestone_count": 13,
       "coverage_rate": 1.0,
       "rubric_category_count": 9,
       "all_rubric_categories_present": true,

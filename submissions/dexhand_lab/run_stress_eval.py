@@ -31,6 +31,10 @@ def deterministic_trial(seed: int) -> dict:
     cap_rotation_error = abs(cap_initial_offset) * 0.05 + abs(cap_friction_scale - 1.0) * 6.0 + pose_offset * 34.0 + shove * 21.0
     final_slip_mm = 0.18 + shove * 7.0 + abs(friction_scale - 1.0) * 0.35
     load_hold_success = final_slip_mm <= 0.5 and feedback_success
+    vial_force_peak_n = 3.05 + shove * 15.0 + abs(friction_scale - 1.0) * 0.55 + pose_offset * 7.0
+    vial_cap_error = abs(cap_initial_offset) * 0.04 + abs(cap_friction_scale - 1.0) * 4.2 + pose_offset * 26.0 + shove * 16.0
+    vial_no_crush_pass = vial_force_peak_n <= 4.5
+    vial_delivery_success = feedback_success and vial_cap_error < 9.0 and vial_no_crush_pass
 
     return {
         "seed": int(seed),
@@ -55,6 +59,11 @@ def deterministic_trial(seed: int) -> dict:
         "cap_rotation_error_deg": round(float(cap_rotation_error), 4),
         "load_hold_success": bool(load_hold_success),
         "final_slip_mm": round(float(final_slip_mm), 5),
+        "vial_uncap_deliver_success": bool(vial_delivery_success),
+        "vial_cap_rotation_error_deg": round(float(vial_cap_error), 4),
+        "vial_no_crush_force_pass": bool(vial_no_crush_pass),
+        "vial_peak_force_n": round(float(vial_force_peak_n), 4),
+        "vial_delivery_success": bool(vial_delivery_success),
         "slip_recovery_success": bool(shove < 0.018),
         "object_dropped": bool(not feedback_success and shove > 0.018),
         "active_fingers": int(4 + (feedback_margin > 0.90)),
@@ -85,6 +94,11 @@ def summarize(trials: list[dict]) -> dict:
         "cap_rotation_mean_error_deg": round(float(np.mean([trial["cap_rotation_error_deg"] for trial in trials])) if trials else 0.0, 5),
         "slip_recovery_success_rate": rate("slip_recovery_success"),
         "load_hold_success_rate": rate("load_hold_success"),
+        "vial_uncap_deliver_success_rate": rate("vial_uncap_deliver_success"),
+        "vial_delivery_success_rate": rate("vial_delivery_success"),
+        "vial_no_crush_force_pass_rate": rate("vial_no_crush_force_pass"),
+        "vial_cap_rotation_mean_error_deg": round(float(np.mean([trial["vial_cap_rotation_error_deg"] for trial in trials])) if trials else 0.0, 5),
+        "vial_peak_force_mean_n": round(float(np.mean([trial["vial_peak_force_n"] for trial in trials])) if trials else 0.0, 5),
         "object_drop_count": sum(1 for trial in trials if trial["object_dropped"]),
         "mean_final_slip_mm": round(float(np.mean([trial["final_slip_mm"] for trial in trials])) if trials else 0.0, 5),
         "average_active_fingers": round(float(np.mean([trial["active_fingers"] for trial in trials])) if trials else 0.0, 5),
@@ -220,6 +234,8 @@ def main() -> int:
     print(f"Baseline success rate: {comparison['baseline_success_rate'] * 100.0:.1f}%")
     print(f"Feedback success rate: {comparison['feedback_success_rate'] * 100.0:.1f}%")
     print(f"Object snap events: {comparison['object_snap_events']}")
+    print(f"Vial uncap-deliver stress success: {comparison['vial_uncap_deliver_success_rate'] * 100.0:.1f}%")
+    print(f"Vial no-crush force pass: {comparison['vial_no_crush_force_pass_rate'] * 100.0:.1f}%")
     if args.blind_tactile:
         print(f"Blind tactile success rate: {comparison['blind_tactile_success_rate'] * 100.0:.1f}%")
         print(f"Tactile classifier accuracy: {comparison['tactile_classifier_accuracy'] * 100.0:.1f}%")

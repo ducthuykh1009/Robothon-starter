@@ -74,6 +74,14 @@ MILESTONES = [
         "evidence": ["combination_lock_success", "detent_detection_success", "micro_door_opened"],
     },
     {
+        "id": "vial_uncap_deliver",
+        "label": "No-crush vial grasp, cap removal, and sample delivery into tray",
+        "phase_prefixes": ["VIAL_"],
+        "target_objects": ["vial_body", "vial_cap", "micro_sample"],
+        "rubric": ["MuJoCo Depth", "Task Design", "Control", "Dexterous Manipulation", "Presentation"],
+        "evidence": ["vial_uncap_deliver_success", "vial_cap_removed", "pill_delivery_success", "vial_no_crush_force_pass"],
+    },
+    {
         "id": "precision_assembly",
         "label": "No-ground-truth tactile pose estimate and compliant plug/socket insertion",
         "phase_prefixes": ["ASSEMBLY_"],

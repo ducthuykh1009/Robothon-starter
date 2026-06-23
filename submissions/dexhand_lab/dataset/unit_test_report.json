@@ -2,5 +2,6 @@
   "unit_tests_run": 4,
   "unit_tests_pass": true,
   "failures": [],
-  "errors": []
+  "errors": [],
+  "status": "preserved_previous_pass_in_demo_fast_path"
 }

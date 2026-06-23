@@ -38,6 +38,7 @@ def main() -> int:
         PROJECT_DIR / "contact_causality_audit.py",
         PROJECT_DIR / "judge_replay_index.py",
         PROJECT_DIR / "closed_loop_reflex_benchmark.py",
+        PROJECT_DIR / "vial_uncap_delivery_benchmark.py",
         PROJECT_DIR / "quality_gate.py",
         PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
@@ -61,6 +62,7 @@ def main() -> int:
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
+        OUTPUT_DIR / "vial_uncap_delivery_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -101,6 +103,8 @@ def main() -> int:
         DATASET_DIR / "judge_video_replay_index.csv",
         DATASET_DIR / "closed_loop_reflex_report.json",
         DATASET_DIR / "closed_loop_reflex_trace.csv",
+        DATASET_DIR / "vial_uncap_delivery_report.json",
+        DATASET_DIR / "vial_uncap_delivery_trace.csv",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "minimum_jerk_trace.csv",
         DATASET_DIR / "stress_eval.json",
@@ -129,6 +133,7 @@ def main() -> int:
         OUTPUT_DIR / "judge_summary.json",
         OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
+        OUTPUT_DIR / "vial_uncap_delivery_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -150,6 +155,7 @@ def main() -> int:
         DATASET_DIR / "contact_causality_report.json",
         DATASET_DIR / "judge_video_replay_index.json",
         DATASET_DIR / "closed_loop_reflex_report.json",
+        DATASET_DIR / "vial_uncap_delivery_report.json",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
@@ -307,6 +313,22 @@ def main() -> int:
         "reflex_final_slip_mm",
         "reflex_pressure_boost_n",
         "reflex_active_fingers",
+        "vial_uncap_deliver_task_available",
+        "vial_uncap_deliver_visual_segment_present",
+        "vial_uncap_delivery_benchmark_available",
+        "vial_uncap_delivery_report_path",
+        "vial_uncap_delivery_trace_path",
+        "vial_uncap_delivery_scorecard_path",
+        "vial_uncap_deliver_success",
+        "vial_grasp_verified",
+        "vial_cap_rotation_target_deg",
+        "vial_cap_rotation_achieved_deg",
+        "vial_cap_removed",
+        "vial_max_force_n",
+        "vial_no_crush_force_limit_n",
+        "vial_no_crush_force_pass",
+        "pill_delivery_success",
+        "pill_in_tray",
     ]
     missing_metrics = [metric for metric in required_metrics if metric not in summary]
     if missing_metrics:
@@ -352,6 +374,15 @@ def main() -> int:
         "closed_loop_reflex_benchmark_available": True,
         "closed_loop_reflex_success": True,
         "reflex_latency_pass": True,
+        "vial_uncap_deliver_task_available": True,
+        "vial_uncap_deliver_visual_segment_present": True,
+        "vial_uncap_delivery_benchmark_available": True,
+        "vial_uncap_deliver_success": True,
+        "vial_grasp_verified": True,
+        "vial_cap_removed": True,
+        "vial_no_crush_force_pass": True,
+        "pill_delivery_success": True,
+        "pill_in_tray": True,
     }
     bad_values = [
         f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
@@ -444,6 +475,10 @@ def main() -> int:
         bad_values.append("reflex_final_slip_mm expected <= 0.5")
     if int(summary.get("reflex_active_fingers", 0)) < 4:
         bad_values.append("reflex_active_fingers expected >= 4")
+    if float(summary.get("vial_cap_rotation_achieved_deg", 0.0)) < 150.0:
+        bad_values.append("vial_cap_rotation_achieved_deg expected >= 150")
+    if float(summary.get("vial_max_force_n", 99.0)) > float(summary.get("vial_no_crush_force_limit_n", 0.0)):
+        bad_values.append("vial_max_force_n expected <= vial_no_crush_force_limit_n")
     if not bool(summary.get("demo_video_duration_rule_pass", False)):
         bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
     if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:

@@ -23,26 +23,28 @@ This is the shortest path through the submission evidence for judges and automat
 12. `outputs/judge_summary.json` - compact quantitative evidence.
 13. `outputs/summary.json` - full run metrics.
 14. `outputs/contact_timeline.json` - per-finger contact timeline.
-15. `dataset/task_suite_report.json` - 34-gate verification suite.
-16. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.
-17. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.
-18. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.
-19. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.
-20. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.
-21. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.
-22. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.
-23. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.
-24. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.
-25. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.
-26. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.
-27. `media/assembly_keyframes.png` - visual proof of assembly sequence.
-28. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.
-29. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.
-30. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.
+15. `dataset/task_suite_report.json` - 39-gate verification suite.
+16. `dataset/vial_uncap_delivery_report.json` - no-crush vial uncap and sample-delivery benchmark.
+17. `outputs/vial_uncap_delivery_scorecard.json` - compact vial task scorecard.
+18. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.
+19. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.
+20. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.
+21. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.
+22. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.
+23. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.
+24. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.
+25. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.
+26. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.
+27. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.
+28. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.
+29. `media/assembly_keyframes.png` - visual proof of assembly sequence.
+30. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.
+31. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.
+32. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.
 
 ## Current Metrics
 
-- Task gates: 34/34
+- Task gates: 39/39
 - Cap rotation: 224 deg target / 224.0 deg achieved
 - Final slip: 0.28 mm
 - Load hold: 9.0x
@@ -60,11 +62,15 @@ This is the shortest path through the submission evidence for judges and automat
 - Assembly success: true
 - Insertion depth ratio: 0.92
 - Jam detection/recovery evidence: true
+- Vial uncap-deliver success: true
+- Vial cap rotation: 162.0/162 deg
+- Vial no-crush force: 3.60/4.50 N
+- Vial sample delivery: true
 - Combination lock success: true
 - Combination lock max error: 1.0 deg
 - Combination lock latch pull: true
 - Combination lock micro-door opened: true
-- Video replay coverage: 12/12 milestones
+- Video replay coverage: 13/13 milestones
 - Closed-loop reflex latency: 10.0 ms
 - Closed-loop reflex success: true
 - Event rules alignment: true
@@ -81,6 +87,7 @@ This is the shortest path through the submission evidence for judges and automat
 - Evidence files: `dataset/tactile_exploration_trace.csv`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, and `outputs/blind_tactile_summary.json`.
 - Precision assembly evidence: `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.
 - Tactile combination lock evidence: `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `outputs/combination_lock_summary.json`, and `media/combination_lock_keyframes.png`.
+- No-crush vial task evidence: `dataset/vial_uncap_delivery_report.json`, `dataset/vial_uncap_delivery_trace.csv`, `outputs/vial_uncap_delivery_scorecard.json`, and the VIAL_* phases in `outputs/trajectory.json`.
 
 ## Honest Scope
 

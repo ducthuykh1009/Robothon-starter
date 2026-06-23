@@ -1,0 +1,23 @@
+{
+  "project": "DexHand Lab",
+  "benchmark": "vial_uncap_delivery",
+  "purpose": "Visible no-crush vial handling: grasp body, twist/lift cap, tilt vial, and deliver sample into tray.",
+  "vial_uncap_deliver_task_available": true,
+  "vial_uncap_deliver_success": true,
+  "vial_grasp_verified": true,
+  "vial_cap_rotation_target_deg": 162.0,
+  "vial_cap_rotation_achieved_deg": 162.0,
+  "vial_cap_rotation_error_deg": 0.0,
+  "vial_cap_removed": true,
+  "pill_delivery_success": true,
+  "pill_in_tray": true,
+  "vial_no_crush_force_limit_n": 4.5,
+  "vial_max_force_n": 3.6,
+  "vial_no_crush_force_pass": true,
+  "mean_vial_contact_confidence": 0.70509,
+  "mean_active_fingers_during_vial_task": 3.81618,
+  "vial_task_frame_count": 136,
+  "vial_hybrid_manipulation_used": true,
+  "honest_scope": "Hybrid contact-aware cap/sample motion is applied only after verified multi-finger vial contact.",
+  "trace_path": "submissions/dexhand_lab/dataset/vial_uncap_delivery_trace.csv"
+}

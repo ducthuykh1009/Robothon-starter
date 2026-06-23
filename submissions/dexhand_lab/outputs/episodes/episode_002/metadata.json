@@ -251,6 +251,120 @@
       "recommended_grasp_type": "TACTILE_PRECISION_ASSEMBLY"
     },
     {
+      "object_name": "vial_body",
+      "object_type": "vial",
+      "object_center": [
+        -0.36742,
+        -0.14278,
+        0.462
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.03,
+        0.058
+      ],
+      "face_normals": [],
+      "radius": 0.03,
+      "long_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "centerline": [
+        [
+          -0.36742,
+          -0.14278,
+          0.404
+        ],
+        [
+          -0.36742,
+          -0.14278,
+          0.52
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "vial body side no-crush counterhold",
+        "ring_little": "lower body stabilizers",
+        "index_middle": "cap twist and mouth clearance support"
+      },
+      "recommended_grasp_type": "VIAL_UNCAP_AND_DELIVER"
+    },
+    {
+      "object_name": "vial_cap",
+      "object_type": "vial_cap",
+      "object_center": [
+        -0.34314,
+        -0.15014,
+        0.538
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.033,
+        0.018
+      ],
+      "face_normals": [],
+      "radius": 0.033,
+      "long_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "centerline": [
+        [
+          -0.34314,
+          -0.15014,
+          0.52
+        ],
+        [
+          -0.34314,
+          -0.15014,
+          0.556
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "cap side counterhold",
+        "index": "cap stripe tangential twist region",
+        "middle": "opposite cap side support"
+      },
+      "recommended_grasp_type": "VIAL_UNCAP_AND_DELIVER"
+    },
+    {
+      "object_name": "micro_sample",
+      "object_type": "micro_sample",
+      "object_center": [
+        -0.35961,
+        -0.15556,
+        0.585
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.012
+      ],
+      "face_normals": [],
+      "radius": 0.012,
+      "long_axis": null,
+      "centerline": null,
+      "grasp_affordance_regions": {
+        "delivery": "sample should land inside delivery tray after vial tilt"
+      },
+      "recommended_grasp_type": "CONTROLLED_RELEASE"
+    },
+    {
       "object_name": "cap_knob",
       "object_type": "cap_knob",
       "object_center": [
@@ -459,6 +573,33 @@
         0.29797,
         0.44
       ]
+    },
+    {
+      "name": "vial_body",
+      "type": "vial_body",
+      "start_position": [
+        -0.36742,
+        -0.14278,
+        0.462
+      ]
+    },
+    {
+      "name": "vial_cap",
+      "type": "vial_cap",
+      "start_position": [
+        -0.34314,
+        -0.15014,
+        0.538
+      ]
+    },
+    {
+      "name": "micro_sample",
+      "type": "micro_sample",
+      "start_position": [
+        -0.35961,
+        -0.15556,
+        0.585
+      ]
     }
   ],
   "grasp_types": [
@@ -473,7 +614,8 @@
     "SLIP_RECOVERY_REGRASP",
     "SPHERICAL_ENCLOSURE_GRASP",
     "TACTILE_COMBINATION_LOCK",
-    "TRIPOD_PRECISION_GRASP"
+    "TRIPOD_PRECISION_GRASP",
+    "VIAL_UNCAP_AND_DELIVER"
   ],
   "task_sequence": [
     "SHOW_HAND_OPEN_CLOSE",
@@ -484,6 +626,7 @@
     "BLIND_TACTILE_ACTIVE_PERCEPTION",
     "CAP_KNOB_ROTATION_224",
     "SLIP_RECOVERY_LOAD_HOLD",
+    "VIAL_UNCAP_AND_DELIVER",
     "STYLUS_TRIPOD_GRASP",
     "CHECKPOINT_TOUCH",
     "INDEX_BUTTON_PRESS"
@@ -500,12 +643,17 @@
     "index_only_button_press_success": true,
     "cap_rotation_success": true,
     "slip_recovery_success": true,
-    "load_hold_success": true
+    "load_hold_success": true,
+    "vial_uncap_deliver_success": true,
+    "vial_cap_removed": true,
+    "pill_delivery_success": true,
+    "vial_no_crush_force_pass": true
   },
   "blind_tactile_visual_segment_present": true,
   "demo_contains_blind_tactile_segment": true,
   "assembly_visual_segment_present": true,
   "combination_lock_visual_segment_present": true,
+  "vial_uncap_deliver_visual_segment_present": true,
   "blind_tactile_demo_sequence": [
     "label_hidden_unknown_object",
     "index_probe_front",
@@ -517,13 +665,13 @@
     "adaptive_regrasp_precheck"
   ],
   "overall_task_success": true,
-  "average_active_fingers": 2.98443,
-  "average_grasp_stability_score": 0.76314,
-  "average_multi_side_contact_score": 0.69607,
+  "average_active_fingers": 3.09266,
+  "average_grasp_stability_score": 0.78681,
+  "average_multi_side_contact_score": 0.728,
   "object_center_between_fingers_rate": 1.0,
   "average_grasp_centroid_error_m": 0.02439,
   "one_face_only_contact_count": 0,
-  "independent_finger_motion_score": 0.75551,
+  "independent_finger_motion_score": 0.74793,
   "thumb_opposition_score": 0.92,
   "object_snap_events": 0,
   "average_snap_distance_m": 0.0,
@@ -562,18 +710,32 @@
   "slip_recovery_success": true,
   "load_hold_x": 9.0,
   "load_hold_success": true,
+  "vial_uncap_deliver_task_available": true,
+  "vial_uncap_deliver_success": true,
+  "vial_grasp_verified": true,
+  "vial_cap_rotation_target_deg": 162.0,
+  "vial_cap_rotation_achieved_deg": 162.0,
+  "vial_cap_rotation_error_deg": 0.0,
+  "vial_cap_removed": true,
+  "vial_no_crush_force_limit_n": 4.5,
+  "vial_max_force_n": 3.6,
+  "vial_no_crush_force_pass": true,
+  "pill_delivery_success": true,
+  "pill_in_tray": true,
+  "vial_task_visible_in_main_demo": true,
+  "vial_hybrid_manipulation_used": true,
   "object_drop_count": 0,
   "tactile_channels": 5,
   "touch_sensor_count": 5,
   "mujoco_touch_sensors_present": true,
   "sensorized_fingertip_count": 5,
-  "mean_contact_confidence": 0.54053,
-  "active_contact_confidence": 0.65756,
-  "dexterous_contact_confidence": 0.73488,
-  "mean_friction_margin": 0.93155,
-  "mean_mujoco_touch_sensor_value": 44.35851,
-  "average_active_fingers_dexterous_grasps": 4.02096,
-  "average_multi_side_contact_score_dexterous_grasps": 0.93964,
+  "mean_contact_confidence": 0.56187,
+  "active_contact_confidence": 0.66449,
+  "dexterous_contact_confidence": 0.74067,
+  "mean_friction_margin": 0.91349,
+  "mean_mujoco_touch_sensor_value": 44.2691,
+  "average_active_fingers_dexterous_grasps": 4.04,
+  "average_multi_side_contact_score_dexterous_grasps": 0.95202,
   "tripod_tool_success": true,
   "checkpoint_touch_success": true,
   "index_only_button_press_success": true,
@@ -585,6 +747,6 @@
     "Hybrid carry and rotation are used only after stable grasp verification to keep the demo reproducible.",
     "Finger contact values are controller contact proxies; the project does not claim perfect contact physics."
   ],
-  "trajectory_steps": 899,
+  "trajectory_steps": 1036,
   "frames_saved": 0
 }

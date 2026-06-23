@@ -1,13 +1,14 @@
 order,milestone_id,label,present_in_trajectory,video_time_start_s,video_time_end_s,video_frame_start,video_frame_end,rubric_categories,max_active_fingers,max_contact_balance_score,max_multi_side_contact_score
-1,five_finger_skeleton,Five-finger hand skeleton and thumb opposition,True,0.09,1.1,1,11,Embodiment;Dexterous Manipulation;Presentation,5,1.0,1.0
-2,sphere_enclosure,Sphere enclosure grasp with multi-side cage contact,True,1.11,2.36,11,24,Task Design;Control;Dexterous Manipulation,5,1.0,1.0
-3,cube_opposing_face,"Cube opposing-face grasp, not corner or one-face contact",True,2.72,3.87,27,39,Task Design;Control;Dexterous Manipulation,4,1.0,0.95
-4,cylinder_side_body_rotation,Cylinder side-body grasp and in-hand rotation,True,5.35,5.86,54,59,Task Design;Dexterous Manipulation;Control,5,1.0,1.0
-5,blind_tactile_classification,Blind tactile probing and shape classification,True,6.0,7.4,60,74,Control;Innovation;MuJoCo Depth,4,1.0,0.8
-6,cap_224_load_hold,"224-degree cap twist, slip recovery, and 9x load hold",True,7.7,9.86,77,99,Task Design;Control;Dexterous Manipulation;Innovation,5,1.0,1.0
-7,combination_lock,"Tactile combination lock detents, latch pull, and micro-door open",True,10.0,11.11,100,111,Task Design;Control;Innovation;Presentation,5,1.0,1.0
-8,precision_assembly,No-ground-truth tactile pose estimate and compliant plug/socket insertion,True,11.12,12.58,111,126,MuJoCo Depth;Task Design;Control;Innovation,4,1.0,1.0
-9,stylus_tripod,Stylus tripod grasp and checkpoint touch,True,12.59,13.82,126,138,Task Design;Dexterous Manipulation;Presentation,3,0.8,1.0
-10,index_only_button,Index-only button press with non-index contacts clear,True,13.83,14.21,138,142,Control;Dexterous Manipulation;Presentation,1,0.4,0.2
-11,contact_causality_no_snap,Contact-causal no-snap audit and verified motion,True,2.19,13.47,22,135,Control;Engineering Quality;MuJoCo Depth,5,1.0,1.0
-12,final_evidence_banner,"Final generated report, task gates, and validator evidence",True,14.22,14.45,142,144,Runability;Engineering Quality;Presentation,0,0.2,0.0
+1,five_finger_skeleton,Five-finger hand skeleton and thumb opposition,True,0.09,1.1,0,4,Embodiment;Dexterous Manipulation;Presentation,5,1.0,1.0
+2,sphere_enclosure,Sphere enclosure grasp with multi-side cage contact,True,1.11,2.36,4,9,Task Design;Control;Dexterous Manipulation,5,1.0,1.0
+3,cube_opposing_face,"Cube opposing-face grasp, not corner or one-face contact",True,2.72,3.87,11,15,Task Design;Control;Dexterous Manipulation,4,1.0,0.95
+4,cylinder_side_body_rotation,Cylinder side-body grasp and in-hand rotation,True,5.35,5.86,21,23,Task Design;Dexterous Manipulation;Control,5,1.0,1.0
+5,blind_tactile_classification,Blind tactile probing and shape classification,True,6.0,7.4,24,30,Control;Innovation;MuJoCo Depth,4,1.0,0.8
+6,cap_224_load_hold,"224-degree cap twist, slip recovery, and 9x load hold",True,7.7,9.86,31,39,Task Design;Control;Dexterous Manipulation;Innovation,5,1.0,1.0
+7,combination_lock,"Tactile combination lock detents, latch pull, and micro-door open",True,11.36,12.47,45,50,Task Design;Control;Innovation;Presentation,5,1.0,1.0
+8,vial_uncap_deliver,"No-crush vial grasp, cap removal, and sample delivery into tray",True,10.0,11.35,40,45,MuJoCo Depth;Task Design;Control;Dexterous Manipulation;Presentation,5,1.0,1.0
+9,precision_assembly,No-ground-truth tactile pose estimate and compliant plug/socket insertion,True,12.48,13.94,50,56,MuJoCo Depth;Task Design;Control;Innovation,4,1.0,1.0
+10,stylus_tripod,Stylus tripod grasp and checkpoint touch,True,13.95,15.18,56,61,Task Design;Dexterous Manipulation;Presentation,3,0.8,1.0
+11,index_only_button,Index-only button press with non-index contacts clear,True,15.19,15.57,61,62,Control;Dexterous Manipulation;Presentation,1,0.4,0.2
+12,contact_causality_no_snap,Contact-causal no-snap audit and verified motion,True,2.19,14.83,9,59,Control;Engineering Quality;MuJoCo Depth,5,1.0,1.0
+13,final_evidence_banner,"Final generated report, task gates, and validator evidence",True,15.58,15.81,62,63,Runability;Engineering Quality;Presentation,0,0.2,0.0

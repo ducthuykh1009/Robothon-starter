@@ -14,6 +14,11 @@ cap_rotation_success_rate,1.0
 cap_rotation_mean_error_deg,1.82127
 slip_recovery_success_rate,0.8125
 load_hold_success_rate,1.0
+vial_uncap_deliver_success_rate,1.0
+vial_delivery_success_rate,1.0
+vial_no_crush_force_pass_rate,1.0
+vial_cap_rotation_mean_error_deg,1.37236
+vial_peak_force_mean_n,3.37842
 object_drop_count,0
 mean_final_slip_mm,0.29962
 average_active_fingers,5.0

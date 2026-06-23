@@ -35,6 +35,9 @@ OBJECT_TYPE_BY_NAME = {
     "combination_lock_dial": "combination_lock",
     "combination_lock_station": "combination_lock",
     "assembly_plug": "assembly_plug",
+    "vial_body": "vial",
+    "vial_cap": "vial_cap",
+    "micro_sample": "micro_sample",
 }
 
 RECOMMENDED_GRASP = {
@@ -49,6 +52,9 @@ RECOMMENDED_GRASP = {
     "cap_knob": "CAP_KNOB_ROTATION_224",
     "combination_lock": "TACTILE_COMBINATION_LOCK",
     "assembly_plug": "TACTILE_PRECISION_ASSEMBLY",
+    "vial": "VIAL_UNCAP_AND_DELIVER",
+    "vial_cap": "VIAL_UNCAP_AND_DELIVER",
+    "micro_sample": "CONTROLLED_RELEASE",
 }
 
 
@@ -180,6 +186,43 @@ def classify_object(model, data, mujoco, object_name: str) -> ObjectAffordance:
             "middle": "opposing lower side support",
             "ring": "anti-roll stabilizer during socket alignment",
         }
+    elif object_type == "vial":
+        radius = 0.030
+        half_height = 0.058
+        size = [radius, half_height]
+        long_axis = [0.0, 0.0, 1.0]
+        centerline = [
+            (center - np.array([0.0, 0.0, half_height])).round(5).tolist(),
+            (center + np.array([0.0, 0.0, half_height])).round(5).tolist(),
+        ]
+        face_normals = []
+        regions = {
+            "thumb": "vial body side no-crush counterhold",
+            "ring_little": "lower body stabilizers",
+            "index_middle": "cap twist and mouth clearance support",
+        }
+    elif object_type == "vial_cap":
+        radius = 0.033
+        half_height = 0.018
+        size = [radius, half_height]
+        long_axis = [0.0, 0.0, 1.0]
+        centerline = [
+            (center - np.array([0.0, 0.0, half_height])).round(5).tolist(),
+            (center + np.array([0.0, 0.0, half_height])).round(5).tolist(),
+        ]
+        face_normals = []
+        regions = {
+            "thumb": "cap side counterhold",
+            "index": "cap stripe tangential twist region",
+            "middle": "opposite cap side support",
+        }
+    elif object_type == "micro_sample":
+        radius = 0.012
+        size = [radius]
+        long_axis = None
+        centerline = None
+        face_normals = []
+        regions = {"delivery": "sample should land inside delivery tray after vial tilt"}
     else:
         radius = None
         size = []

@@ -1,8 +1,8 @@
 {
   "project": "DexHand Lab",
-  "suite": "34-gate deterministic dexterity verification",
-  "gate_count": 34,
-  "gates_passed": 34,
+  "suite": "39-gate deterministic dexterity verification",
+  "gate_count": 39,
+  "gates_passed": 39,
   "success_rate": 1.0,
   "failed_gates": [],
   "max_pose_error_m": 0.02439,
@@ -177,6 +177,31 @@
     {
       "gate": 34,
       "name": "reflex_latency_under_20ms",
+      "passed": true
+    },
+    {
+      "gate": 35,
+      "name": "vial_uncap_deliver_task_available",
+      "passed": true
+    },
+    {
+      "gate": 36,
+      "name": "vial_uncap_deliver_success",
+      "passed": true
+    },
+    {
+      "gate": 37,
+      "name": "vial_cap_removed",
+      "passed": true
+    },
+    {
+      "gate": 38,
+      "name": "pill_delivery_success",
+      "passed": true
+    },
+    {
+      "gate": 39,
+      "name": "vial_no_crush_force_pass",
       "passed": true
     }
   ]

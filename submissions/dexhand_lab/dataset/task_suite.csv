@@ -33,3 +33,8 @@ gate,name,passed
 32,closed_loop_reflex_benchmark_available,True
 33,closed_loop_reflex_success,True
 34,reflex_latency_under_20ms,True
+35,vial_uncap_deliver_task_available,True
+36,vial_uncap_deliver_success,True
+37,vial_cap_removed,True
+38,pill_delivery_success,True
+39,vial_no_crush_force_pass,True

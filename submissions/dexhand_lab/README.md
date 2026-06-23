@@ -1,10 +1,10 @@
 # DexHand Lab
 
-DexHand Lab is a hand-only MuJoCo dexterous manipulation benchmark built around a human-like five-finger robotic hand. The project demonstrates object-specific grasping, in-hand rotation, a signature 224-degree cap/knob twist, a tactile combination lock task, tactile/contact evidence, slip recovery, load hold, and judge-readable evaluation artifacts.
+DexHand Lab is a hand-only MuJoCo dexterous manipulation benchmark built around a human-like five-finger robotic hand. The project demonstrates object-specific grasping, in-hand rotation, a signature 224-degree cap/knob twist, no-crush vial uncap/sample delivery, a tactile combination lock task, tactile/contact evidence, slip recovery, load hold, and judge-readable evaluation artifacts.
 
 ## Project Summary
 
-DexHand Lab focuses on dexterous hand manipulation rather than a full robot arm. The default demo shows a five-finger hand opening, grasping a sphere, cube, cylinder, stylus, and cap/knob, rotating objects after contact verification, pressing a button with the index finger, and writing reproducible robot-learning data.
+DexHand Lab focuses on dexterous hand manipulation rather than a full robot arm. The default demo shows a five-finger hand opening, grasping a sphere, cube, cylinder, stylus, cap/knob, and vial, rotating objects after contact verification, removing a marked vial cap, delivering a sample bead into a tray, pressing a button with the index finger, and writing reproducible robot-learning data.
 
 ## Event Rule Alignment
 
@@ -43,6 +43,12 @@ The cylinder is rotated in-hand by a contact-aware hybrid routine. The index fin
 ## Signature Cap/Knob Rotation
 
 The score-focused evidence upgrade adds `CAP_KNOB_ROTATION_224`. A visible marker on the cap shows a 224-degree twist after five-finger contact verification. The cap task logs target angle, achieved angle, angle error, active/counterhold fingers, cap slip, contact balance, pressure targets, and whether hybrid rotation was used.
+
+## No-Crush Vial Uncap and Sample Delivery
+
+The latest hard-task upgrade adds `VIAL_UNCAP_AND_DELIVER`. The scene includes a small vial body, a marked cap, a micro sample bead, and a delivery tray. The hand first verifies multi-finger vial-body contact, keeps the force proxy below a no-crush limit, twists the cap marker, lifts the cap clear, tilts the vial, and delivers the sample bead into the tray.
+
+This task is intentionally shown in the main demo rather than only as offline evidence. It exercises thumb counterhold, index cap-twist guidance, middle support, ring/little lower-body stabilization, force-margin logging, and a contact-gated hybrid routine. Evidence is written to `dataset/vial_uncap_delivery_report.json`, `dataset/vial_uncap_delivery_trace.csv`, and `outputs/vial_uncap_delivery_scorecard.json`.
 
 ## Tactile Combination Lock
 
@@ -122,9 +128,9 @@ The hardware audit maps simulated joints to LEAP/Shadow-style channels and gener
 
 ## Demo Video
 
-The default demo is intended to be judge-readable and inside the event's 1-3 minute demo window. The current validation render is about 145 seconds. It shows the hand skeleton, sphere enclosure, cube opposing-face grasp, cylinder side-body grasp, cylinder in-hand rotation, blind tactile probing/classification, cap 224-degree twist, slip/load-hold evidence, tactile combination lock manipulation, visible precision assembly insertion, stylus tripod grasp, index-only button press, and final evidence pose.
+The default demo is intended to be judge-readable and inside the event's 1-3 minute demo window. The validation render is about 145-155 seconds depending on fresh rendering. It shows the hand skeleton, sphere enclosure, cube opposing-face grasp, cylinder side-body grasp, cylinder in-hand rotation, blind tactile probing/classification, cap 224-degree twist, slip/load-hold evidence, vial uncap/sample delivery, tactile combination lock manipulation, visible precision assembly insertion, stylus tripod grasp, index-only button press, and final evidence pose.
 
-The latest presentation pass widens the cameras and adds a higher-signal HUD/keyframe/narration sequence so the main video shows the strongest evidence directly: blind tactile probing, contact-verified cap twist, tactile lock detents, plug/socket insertion, jam correction, and final success metrics.
+The latest presentation pass widens the cameras and adds a higher-signal HUD/keyframe/narration sequence so the main video shows the strongest evidence directly: blind tactile probing, contact-verified cap twist, no-crush vial uncap/delivery, tactile lock detents, plug/socket insertion, jam correction, and final success metrics.
 
 For runability on headless or slow machines, the default command preserves the already generated `outputs/demo.mp4`/`media/demo.mp4` and refreshes the JSON/CSV evidence quickly. To render a replacement video from MuJoCo frames, run `python submissions/dexhand_lab/run_demo.py --force-render-video`.
 
@@ -138,6 +144,7 @@ python submissions/dexhand_lab/run_stress_eval.py --seeds 32
 python submissions/dexhand_lab/arena_task_suite.py
 python submissions/dexhand_lab/minimum_jerk_controller.py
 python submissions/dexhand_lab/contact_feedback_audit.py
+python submissions/dexhand_lab/vial_uncap_delivery_benchmark.py
 python submissions/dexhand_lab/hardware_adaptation_audit.py
 python submissions/dexhand_lab/quality_gate.py --run-tests
 python -m unittest discover -s submissions/dexhand_lab/tests -p "test_*.py"
@@ -159,11 +166,11 @@ python submissions/dexhand_lab/validate_submission.py
 
 ## Outputs
 
-Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `media/combination_lock_keyframes.png`, `outputs/event_rules_report.json`, `outputs/submission_readiness_report.json`, `outputs/rubric_readiness_report.json`, `outputs/rubric_readiness_scorecard.csv`, `outputs/judge_summary.json`, `outputs/video_replay_scorecard.json`, `outputs/closed_loop_reflex_scorecard.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `outputs/combination_lock_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/judge_video_replay_index.json`, `dataset/judge_video_replay_index.csv`, `dataset/closed_loop_reflex_report.json`, `dataset/closed_loop_reflex_trace.csv`, `dataset/code_quality_report.json`, `dataset/unit_test_report.json`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
+Key outputs include `outputs/demo.mp4`, `media/demo.mp4`, `media/keyframes.png`, `media/blind_tactile_keyframes.png`, `media/tactile_classifier_panel.png`, `media/assembly_keyframes.png`, `media/tactile_pose_estimation_panel.png`, `media/combination_lock_keyframes.png`, `outputs/event_rules_report.json`, `outputs/submission_readiness_report.json`, `outputs/rubric_readiness_report.json`, `outputs/rubric_readiness_scorecard.csv`, `outputs/judge_summary.json`, `outputs/video_replay_scorecard.json`, `outputs/closed_loop_reflex_scorecard.json`, `outputs/vial_uncap_delivery_scorecard.json`, `outputs/blind_tactile_summary.json`, `outputs/assembly_summary.json`, `outputs/combination_lock_summary.json`, `EVIDENCE_INDEX.md`, `outputs/summary.json`, `outputs/contact_timeline.json`, `outputs/final_report.txt`, `dataset/judge_video_replay_index.json`, `dataset/judge_video_replay_index.csv`, `dataset/closed_loop_reflex_report.json`, `dataset/closed_loop_reflex_trace.csv`, `dataset/vial_uncap_delivery_report.json`, `dataset/vial_uncap_delivery_trace.csv`, `dataset/code_quality_report.json`, `dataset/unit_test_report.json`, `dataset/task_suite_report.json`, `dataset/tactile_feedback_report.json`, `dataset/tactile_classifier_report.json`, `dataset/tactile_confusion_matrix.json`, `dataset/adaptive_regrasp_report.json`, `dataset/unknown_arena_report.json`, `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `dataset/no_ground_truth_control_audit.json`, `dataset/minimum_jerk_report.json`, `dataset/stress_eval.json`, `dataset/blind_tactile_stress_eval.json`, `dataset/assembly_stress_eval.json`, and `dataset/hardware_adaptation_report.json`.
 
 ## Limitations
 
-DexHand Lab does not claim real-world deployment, real camera vision, perfect contact physics, learned reinforcement learning, or physical hardware tactile sensors. Hybrid carry and cap rotation are used only after verified contact to keep the benchmark deterministic and reproducible.
+DexHand Lab does not claim real-world deployment, real camera vision, perfect contact physics, learned reinforcement learning, or physical hardware tactile sensors. Hybrid carry, cap rotation, and vial sample delivery are used only after verified contact to keep the benchmark deterministic and reproducible.
 
 ## Future Improvements
 
