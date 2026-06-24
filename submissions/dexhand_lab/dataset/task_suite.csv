@@ -38,3 +38,9 @@ gate,name,passed
 37,vial_cap_removed,True
 38,pill_delivery_success,True
 39,vial_no_crush_force_pass,True
+40,microsuture_task_available,True
+41,microsuture_visible_in_main_demo,True
+42,microsuture_threading_success,True
+43,microsuture_two_pass_success,True
+44,microsuture_no_tear_tension_pass,True
+45,microsuture_precision_error_pass,True

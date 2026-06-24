@@ -32,4 +32,4 @@ The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpo
 
 9
 00:02:16,000 --> 00:02:40,000
-Final evidence: 39 verification gates, 13 replay milestones, zero snap events, validator pass, and stress results.
+Final evidence: 45 verification gates, 14 replay milestones, zero snap events, validator pass, microsuture threading, and stress results.

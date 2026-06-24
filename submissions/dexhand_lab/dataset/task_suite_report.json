@@ -1,8 +1,8 @@
 {
   "project": "DexHand Lab",
-  "suite": "39-gate deterministic dexterity verification",
-  "gate_count": 39,
-  "gates_passed": 39,
+  "suite": "45-gate deterministic dexterity verification",
+  "gate_count": 45,
+  "gates_passed": 45,
   "success_rate": 1.0,
   "failed_gates": [],
   "max_pose_error_m": 0.02439,
@@ -202,6 +202,36 @@
     {
       "gate": 39,
       "name": "vial_no_crush_force_pass",
+      "passed": true
+    },
+    {
+      "gate": 40,
+      "name": "microsuture_task_available",
+      "passed": true
+    },
+    {
+      "gate": 41,
+      "name": "microsuture_visible_in_main_demo",
+      "passed": true
+    },
+    {
+      "gate": 42,
+      "name": "microsuture_threading_success",
+      "passed": true
+    },
+    {
+      "gate": 43,
+      "name": "microsuture_two_pass_success",
+      "passed": true
+    },
+    {
+      "gate": 44,
+      "name": "microsuture_no_tear_tension_pass",
+      "passed": true
+    },
+    {
+      "gate": 45,
+      "name": "microsuture_precision_error_pass",
       "passed": true
     }
   ]

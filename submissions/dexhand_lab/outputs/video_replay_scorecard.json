@@ -4,10 +4,10 @@
   "purpose": "Time-anchored evidence map for the generated demo and machine-readable judge review.",
   "video_path": "submissions/dexhand_lab/outputs/demo.mp4",
   "media_video_path": "submissions/dexhand_lab/media/demo.mp4",
-  "duration_s": 79.25,
+  "duration_s": 85.25,
   "fps_assumed_for_frame_index": 4,
-  "milestone_count": 13,
-  "milestones_present": 13,
+  "milestone_count": 14,
+  "milestones_present": 14,
   "coverage_rate": 1.0,
   "rubric_categories_covered": [
     "Control",
@@ -29,9 +29,9 @@
     "verified_motion_frame_rate": 1.0
   },
   "contact_summary": {
-    "average_active_fingers": 3.27421,
+    "average_active_fingers": 3.41578,
     "max_active_fingers": 5,
-    "average_multi_side_contact_score": 0.76469
+    "average_multi_side_contact_score": 0.76068
   },
   "milestones": [
     {
@@ -115,7 +115,7 @@
       "max_multi_side_contact_score": 0.95,
       "evidence_values": {
         "cube_opposing_face_grasp_success": true,
-        "average_multi_side_contact_score_dexterous_grasps": 0.95202
+        "average_multi_side_contact_score_dexterous_grasps": 0.92919
       }
     },
     {
@@ -217,10 +217,10 @@
       "milestone_id": "combination_lock",
       "label": "Tactile combination lock detents, latch pull, and micro-door open",
       "present_in_trajectory": true,
-      "video_time_start_s": 11.36,
-      "video_time_end_s": 12.47,
-      "video_frame_start": 45,
-      "video_frame_end": 50,
+      "video_time_start_s": 12.56,
+      "video_time_end_s": 13.67,
+      "video_frame_start": 50,
+      "video_frame_end": 55,
       "rubric_categories": [
         "Task Design",
         "Control",
@@ -284,13 +284,49 @@
     },
     {
       "order": 9,
+      "milestone_id": "microsuture_threading",
+      "label": "Tactile microsuture threading with two needle passes and tension-limited closure",
+      "present_in_trajectory": true,
+      "video_time_start_s": 11.36,
+      "video_time_end_s": 12.55,
+      "video_frame_start": 45,
+      "video_frame_end": 50,
+      "rubric_categories": [
+        "MuJoCo Depth",
+        "Task Design",
+        "Control",
+        "Dexterous Manipulation",
+        "Innovation",
+        "Presentation"
+      ],
+      "phase_names": [
+        "SUTURE_ENTRY_ALIGN",
+        "SUTURE_FIRST_PASS",
+        "SUTURE_LOOP_PULL",
+        "SUTURE_NEEDLE_PROBE",
+        "SUTURE_RELEASE_RETRACT",
+        "SUTURE_SECOND_PASS",
+        "SUTURE_TENSION_VERIFY",
+        "SUTURE_TRIPOD_PINCH_VERIFY"
+      ],
+      "max_active_fingers": 4,
+      "max_contact_balance_score": 1.0,
+      "max_multi_side_contact_score": 0.8,
+      "evidence_values": {
+        "microsuture_threading_success": true,
+        "microsuture_pass_count": 2,
+        "microsuture_no_tear_pass": true
+      }
+    },
+    {
+      "order": 10,
       "milestone_id": "precision_assembly",
       "label": "No-ground-truth tactile pose estimate and compliant plug/socket insertion",
       "present_in_trajectory": true,
-      "video_time_start_s": 12.48,
-      "video_time_end_s": 13.94,
-      "video_frame_start": 50,
-      "video_frame_end": 56,
+      "video_time_start_s": 13.68,
+      "video_time_end_s": 15.14,
+      "video_frame_start": 55,
+      "video_frame_end": 61,
       "rubric_categories": [
         "MuJoCo Depth",
         "Task Design",
@@ -320,14 +356,14 @@
       }
     },
     {
-      "order": 10,
+      "order": 11,
       "milestone_id": "stylus_tripod",
       "label": "Stylus tripod grasp and checkpoint touch",
       "present_in_trajectory": true,
-      "video_time_start_s": 13.95,
-      "video_time_end_s": 15.18,
-      "video_frame_start": 56,
-      "video_frame_end": 61,
+      "video_time_start_s": 15.15,
+      "video_time_end_s": 16.38,
+      "video_frame_start": 61,
+      "video_frame_end": 66,
       "rubric_categories": [
         "Task Design",
         "Dexterous Manipulation",
@@ -339,8 +375,8 @@
         "TOOL_APPROACH",
         "TOOL_PRESHAPE"
       ],
-      "max_active_fingers": 3,
-      "max_contact_balance_score": 0.8,
+      "max_active_fingers": 4,
+      "max_contact_balance_score": 1.0,
       "max_multi_side_contact_score": 1.0,
       "evidence_values": {
         "stylus_tripod_success": true,
@@ -348,14 +384,14 @@
       }
     },
     {
-      "order": 11,
+      "order": 12,
       "milestone_id": "index_only_button",
       "label": "Index-only button press with non-index contacts clear",
       "present_in_trajectory": true,
-      "video_time_start_s": 15.19,
-      "video_time_end_s": 15.57,
-      "video_frame_start": 61,
-      "video_frame_end": 62,
+      "video_time_start_s": 16.39,
+      "video_time_end_s": 16.77,
+      "video_frame_start": 66,
+      "video_frame_end": 67,
       "rubric_categories": [
         "Control",
         "Dexterous Manipulation",
@@ -375,14 +411,14 @@
       }
     },
     {
-      "order": 12,
+      "order": 13,
       "milestone_id": "contact_causality_no_snap",
       "label": "Contact-causal no-snap audit and verified motion",
       "present_in_trajectory": true,
       "video_time_start_s": 2.19,
-      "video_time_end_s": 14.83,
+      "video_time_end_s": 16.03,
       "video_frame_start": 9,
-      "video_frame_end": 59,
+      "video_frame_end": 64,
       "rubric_categories": [
         "Control",
         "Engineering Quality",
@@ -403,14 +439,14 @@
       }
     },
     {
-      "order": 13,
+      "order": 14,
       "milestone_id": "final_evidence_banner",
       "label": "Final generated report, task gates, and validator evidence",
       "present_in_trajectory": true,
-      "video_time_start_s": 15.58,
-      "video_time_end_s": 15.81,
-      "video_frame_start": 62,
-      "video_frame_end": 63,
+      "video_time_start_s": 16.78,
+      "video_time_end_s": 17.01,
+      "video_frame_start": 67,
+      "video_frame_end": 68,
       "rubric_categories": [
         "Runability",
         "Engineering Quality",
@@ -424,8 +460,8 @@
       "max_multi_side_contact_score": 0.0,
       "evidence_values": {
         "validation_passed": null,
-        "task_gates_passed": 39,
-        "task_gate_count": 39
+        "task_gates_passed": 45,
+        "task_gate_count": 45
       }
     }
   ]

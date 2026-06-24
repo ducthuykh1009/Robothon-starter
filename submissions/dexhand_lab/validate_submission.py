@@ -39,6 +39,7 @@ def main() -> int:
         PROJECT_DIR / "judge_replay_index.py",
         PROJECT_DIR / "closed_loop_reflex_benchmark.py",
         PROJECT_DIR / "vial_uncap_delivery_benchmark.py",
+        PROJECT_DIR / "microsuture_benchmark.py",
         PROJECT_DIR / "quality_gate.py",
         PROJECT_DIR / "tests" / "test_submission_contract.py",
         PROJECT_DIR / "scene.xml",
@@ -63,6 +64,7 @@ def main() -> int:
         OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
         OUTPUT_DIR / "vial_uncap_delivery_scorecard.json",
+        OUTPUT_DIR / "microsuture_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -105,6 +107,8 @@ def main() -> int:
         DATASET_DIR / "closed_loop_reflex_trace.csv",
         DATASET_DIR / "vial_uncap_delivery_report.json",
         DATASET_DIR / "vial_uncap_delivery_trace.csv",
+        DATASET_DIR / "microsuture_threading_report.json",
+        DATASET_DIR / "microsuture_threading_trace.csv",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "minimum_jerk_trace.csv",
         DATASET_DIR / "stress_eval.json",
@@ -134,6 +138,7 @@ def main() -> int:
         OUTPUT_DIR / "video_replay_scorecard.json",
         OUTPUT_DIR / "closed_loop_reflex_scorecard.json",
         OUTPUT_DIR / "vial_uncap_delivery_scorecard.json",
+        OUTPUT_DIR / "microsuture_scorecard.json",
         OUTPUT_DIR / "blind_tactile_summary.json",
         OUTPUT_DIR / "assembly_summary.json",
         OUTPUT_DIR / "combination_lock_summary.json",
@@ -156,6 +161,7 @@ def main() -> int:
         DATASET_DIR / "judge_video_replay_index.json",
         DATASET_DIR / "closed_loop_reflex_report.json",
         DATASET_DIR / "vial_uncap_delivery_report.json",
+        DATASET_DIR / "microsuture_threading_report.json",
         DATASET_DIR / "minimum_jerk_report.json",
         DATASET_DIR / "stress_eval.json",
         DATASET_DIR / "hardware_adaptation_report.json",
@@ -329,6 +335,20 @@ def main() -> int:
         "vial_no_crush_force_pass",
         "pill_delivery_success",
         "pill_in_tray",
+        "microsuture_task_available",
+        "microsuture_visual_segment_present",
+        "microsuture_threading_success",
+        "microsuture_target_passes",
+        "microsuture_pass_count",
+        "microsuture_entry_error_m",
+        "microsuture_exit_error_m",
+        "microsuture_max_tension_n",
+        "microsuture_tension_limit_n",
+        "microsuture_no_tear_pass",
+        "microsuture_knot_tension_success",
+        "microsuture_benchmark_report_path",
+        "microsuture_threading_trace_path",
+        "microsuture_scorecard_path",
     ]
     missing_metrics = [metric for metric in required_metrics if metric not in summary]
     if missing_metrics:
@@ -383,6 +403,11 @@ def main() -> int:
         "vial_no_crush_force_pass": True,
         "pill_delivery_success": True,
         "pill_in_tray": True,
+        "microsuture_task_available": True,
+        "microsuture_visual_segment_present": True,
+        "microsuture_threading_success": True,
+        "microsuture_no_tear_pass": True,
+        "microsuture_knot_tension_success": True,
     }
     bad_values = [
         f"{metric} expected {expected!r}, got {summary.get(metric)!r}"
@@ -479,6 +504,14 @@ def main() -> int:
         bad_values.append("vial_cap_rotation_achieved_deg expected >= 150")
     if float(summary.get("vial_max_force_n", 99.0)) > float(summary.get("vial_no_crush_force_limit_n", 0.0)):
         bad_values.append("vial_max_force_n expected <= vial_no_crush_force_limit_n")
+    if int(summary.get("microsuture_pass_count", 0)) < int(summary.get("microsuture_target_passes", 2)):
+        bad_values.append("microsuture_pass_count expected >= microsuture_target_passes")
+    if float(summary.get("microsuture_entry_error_m", 99.0)) > 0.004:
+        bad_values.append("microsuture_entry_error_m expected <= 0.004")
+    if float(summary.get("microsuture_exit_error_m", 99.0)) > 0.004:
+        bad_values.append("microsuture_exit_error_m expected <= 0.004")
+    if float(summary.get("microsuture_max_tension_n", 99.0)) > float(summary.get("microsuture_tension_limit_n", 0.0)):
+        bad_values.append("microsuture_max_tension_n expected <= microsuture_tension_limit_n")
     if not bool(summary.get("demo_video_duration_rule_pass", False)):
         bad_values.append("demo_video_duration_rule_pass expected true for 1-3 minute event video")
     if float(summary.get("duration_s", 0.0)) < 60.0 or float(summary.get("duration_s", 0.0)) > 180.0:
@@ -538,6 +571,23 @@ def main() -> int:
             "task_gate_success_rate": summary.get("task_gate_success_rate"),
             "feedback_success_rate": summary.get("feedback_success_rate"),
             "baseline_success_rate": summary.get("baseline_success_rate"),
+        },
+        "microsuture_evidence": {
+            "status": "pass",
+            "microsuture_task_available": bool(summary.get("microsuture_task_available")),
+            "microsuture_visual_segment_present": bool(summary.get("microsuture_visual_segment_present")),
+            "microsuture_threading_success": bool(summary.get("microsuture_threading_success")),
+            "microsuture_pass_count": summary.get("microsuture_pass_count"),
+            "microsuture_target_passes": summary.get("microsuture_target_passes"),
+            "microsuture_entry_error_m": summary.get("microsuture_entry_error_m"),
+            "microsuture_exit_error_m": summary.get("microsuture_exit_error_m"),
+            "microsuture_max_tension_n": summary.get("microsuture_max_tension_n"),
+            "microsuture_tension_limit_n": summary.get("microsuture_tension_limit_n"),
+            "checked_files": [
+                "dataset/microsuture_threading_report.json",
+                "dataset/microsuture_threading_trace.csv",
+                "outputs/microsuture_scorecard.json",
+            ],
         },
         "precision_assembly_evidence": {
             "status": "pass",

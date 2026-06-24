@@ -18,6 +18,23 @@
     "feedback_success_rate": 1.0,
     "baseline_success_rate": 0.59375
   },
+  "microsuture_evidence": {
+    "status": "pass",
+    "microsuture_task_available": true,
+    "microsuture_visual_segment_present": true,
+    "microsuture_threading_success": true,
+    "microsuture_pass_count": 2,
+    "microsuture_target_passes": 2,
+    "microsuture_entry_error_m": 0.0024,
+    "microsuture_exit_error_m": 0.0028,
+    "microsuture_max_tension_n": 0.42,
+    "microsuture_tension_limit_n": 0.65,
+    "checked_files": [
+      "dataset/microsuture_threading_report.json",
+      "dataset/microsuture_threading_trace.csv",
+      "outputs/microsuture_scorecard.json"
+    ]
+  },
   "precision_assembly_evidence": {
     "status": "pass",
     "no_ground_truth_pose_mode_available": true,
@@ -85,8 +102,8 @@
   "judge_replay_evidence": {
     "status": "pass",
     "judge_replay_index_available": true,
-    "video_replay_milestones_present": 13,
-    "video_replay_milestone_count": 13,
+    "video_replay_milestones_present": 14,
+    "video_replay_milestone_count": 14,
     "video_replay_coverage_rate": 1.0,
     "rubric_replay_category_count": 9,
     "rubric_replay_all_categories_present": true,
@@ -115,7 +132,7 @@
     "status": "pass",
     "event_rules_report_path": "submissions/dexhand_lab/outputs/event_rules_report.json",
     "demo_video_duration_rule_pass": true,
-    "duration_s": 79.25,
+    "duration_s": 85.25,
     "runability_status": "pass",
     "rules_alignment_pass": true
   },

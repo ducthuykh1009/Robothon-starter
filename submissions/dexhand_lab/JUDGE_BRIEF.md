@@ -2,11 +2,11 @@
 
 ## One-Sentence Summary
 
-DexHand Lab is a human-like five-finger MuJoCo hand benchmark for object-specific grasping, blind tactile active perception, adaptive regrasp, cylinder in-hand rotation, a 224-degree cap/knob twist, no-crush vial uncap/sample delivery, tactile combination lock manipulation, tactile/contact evidence, slip recovery, load hold, stylus interaction, and index-only button pressing.
+DexHand Lab is a human-like five-finger MuJoCo hand benchmark for object-specific grasping, blind tactile active perception, adaptive regrasp, cylinder in-hand rotation, a 224-degree cap/knob twist, no-crush vial uncap/sample delivery, tactile microsuture threading, tactile combination lock manipulation, tactile/contact evidence, slip recovery, load hold, stylus interaction, and index-only button pressing.
 
 ## Why This Targets 95+
 
-The submission focuses on dexterity evidence instead of a simple pick-and-place animation: five independent fingers, thumb opposition, object-specific grasp strategies, blind tactile probing/classification, adaptive regrasp, no-snap verification before object motion, MuJoCo fingertip touch sensors plus tactile proxy streams, signature cap rotation, no-crush vial uncap/sample delivery, tactile combination lock manipulation, load-hold recovery, stress evaluation, and a multi-gate judge checklist.
+The submission focuses on dexterity evidence instead of a simple pick-and-place animation: five independent fingers, thumb opposition, object-specific grasp strategies, blind tactile probing/classification, adaptive regrasp, no-snap verification before object motion, MuJoCo fingertip touch sensors plus tactile proxy streams, signature cap rotation, no-crush vial uncap/sample delivery, tactile microsuture needle/thread manipulation, tactile combination lock manipulation, load-hold recovery, stress evaluation, and a multi-gate judge checklist.
 
 ## Inspect First
 
@@ -24,35 +24,37 @@ The submission focuses on dexterity evidence instead of a simple pick-and-place 
 12. `outputs/closed_loop_reflex_scorecard.json`
 13. `dataset/vial_uncap_delivery_report.json`
 14. `outputs/vial_uncap_delivery_scorecard.json`
-15. `dataset/code_quality_report.json`
-16. `dataset/unit_test_report.json`
-17. `outputs/blind_tactile_summary.json`
-18. `dataset/tactile_classifier_report.json`
-19. `dataset/tactile_confusion_matrix.json`
-20. `dataset/adaptive_regrasp_report.json`
-21. `dataset/unknown_arena_report.json`
-22. `media/blind_tactile_keyframes.png`
-23. `media/tactile_classifier_panel.png`
-24. `outputs/summary.json`
-25. `outputs/contact_timeline.json`
-26. `dataset/task_suite_report.json`
-27. `dataset/tactile_feedback_report.json`
-28. `dataset/tactile_taxels.csv`
-29. `dataset/minimum_jerk_report.json`
-30. `dataset/stress_eval.json`
-31. `outputs/baseline_vs_feedback.json`
-32. `dataset/hardware_adaptation_report.json`
-33. `dataset/tactile_pose_estimator_report.json`
-34. `dataset/precision_assembly_report.json`
-35. `dataset/jam_recovery_report.json`
-36. `dataset/no_ground_truth_control_audit.json`
-37. `media/assembly_keyframes.png`
-38. `media/tactile_pose_estimation_panel.png`
-39. `dataset/combination_lock_report.json`
-40. `dataset/combination_lock_trace.csv`
-41. `media/combination_lock_keyframes.png`
-42. `rubric_scorecard.json`
-43. `validate_submission.py`
+15. `dataset/microsuture_threading_report.json`
+16. `outputs/microsuture_scorecard.json`
+17. `dataset/code_quality_report.json`
+18. `dataset/unit_test_report.json`
+19. `outputs/blind_tactile_summary.json`
+20. `dataset/tactile_classifier_report.json`
+21. `dataset/tactile_confusion_matrix.json`
+22. `dataset/adaptive_regrasp_report.json`
+23. `dataset/unknown_arena_report.json`
+24. `media/blind_tactile_keyframes.png`
+25. `media/tactile_classifier_panel.png`
+26. `outputs/summary.json`
+27. `outputs/contact_timeline.json`
+28. `dataset/task_suite_report.json`
+29. `dataset/tactile_feedback_report.json`
+30. `dataset/tactile_taxels.csv`
+31. `dataset/minimum_jerk_report.json`
+32. `dataset/stress_eval.json`
+33. `outputs/baseline_vs_feedback.json`
+34. `dataset/hardware_adaptation_report.json`
+35. `dataset/tactile_pose_estimator_report.json`
+36. `dataset/precision_assembly_report.json`
+37. `dataset/jam_recovery_report.json`
+38. `dataset/no_ground_truth_control_audit.json`
+39. `media/assembly_keyframes.png`
+40. `media/tactile_pose_estimation_panel.png`
+41. `dataset/combination_lock_report.json`
+42. `dataset/combination_lock_trace.csv`
+43. `media/combination_lock_keyframes.png`
+44. `rubric_scorecard.json`
+45. `validate_submission.py`
 
 Runability note: `python submissions/dexhand_lab/run_demo.py` preserves the included generated demo video and refreshes JSON/CSV evidence quickly for judge reproducibility. Use `python submissions/dexhand_lab/run_demo.py --force-render-video` when a fresh MuJoCo frame render is desired.
 
@@ -80,6 +82,12 @@ The vial task adds a visible manipulation chain after the cap/load-hold section.
 
 This is a hybrid contact-aware MuJoCo routine: cap/sample motion is only applied after verified multi-finger contact, and the report explicitly logs the no-crush force limit, cap removal state, sample delivery state, active fingers, and contact confidence.
 
+## Harder Task Upgrade: Tactile Microsuture Threading
+
+The microsuture task adds a small needle, a visible thread loop, a tissue-pad station, and entry/exit eyelet markers. The hand performs an index probe, a tripod pinch with thumb/index/middle, two controlled needle passes, thread-loop pull, and a tension-limited no-tear verification. The evidence is in `dataset/microsuture_threading_report.json`, `dataset/microsuture_threading_trace.csv`, `outputs/microsuture_scorecard.json`, and the `SUTURE_*` phases inside `outputs/trajectory.json`.
+
+This is a deterministic MuJoCo dexterity benchmark and not a physical surgical-readiness claim. The report explicitly labels the hybrid motion, contact verification, pass count, entry/exit alignment error, tension proxy, and no-tear threshold.
+
 ## Closed-Loop Reflex Evidence
 
 The closed-loop reflex benchmark audits the visible slip-monitor, recovery, and load-hold phases. It measures simulation-native response latency, pressure boost, final slip, active fingers, tactile confidence, and load-hold success from the generated trajectory. Evidence is written to `dataset/closed_loop_reflex_report.json`, `dataset/closed_loop_reflex_trace.csv`, and `outputs/closed_loop_reflex_scorecard.json`. This is explicitly a MuJoCo contact/tactile proxy benchmark, not a physical hardware latency claim.
@@ -88,15 +96,16 @@ The closed-loop reflex benchmark audits the visible slip-monitor, recovery, and 
 
 The main demo and evidence scripts report:
 
-- 39-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
+- 45-gate deterministic dexterity suite with actual passed count in `dataset/task_suite_report.json`
 - time-anchored judge replay coverage in `dataset/judge_video_replay_index.json` and `outputs/video_replay_scorecard.json`
 - closed-loop reflex latency, pressure boost, and final slip in `dataset/closed_loop_reflex_report.json`
 - no-crush vial uncap/sample delivery success in `dataset/vial_uncap_delivery_report.json`
+- tactile microsuture threading success in `dataset/microsuture_threading_report.json`
 - cap rotation target: 224 degrees
 - cap rotation achieved: saved as `cap_rotation_achieved_deg`
 - main demo duration: saved as `duration_s`, currently about 145 seconds after adding the visible assembly highlight segment
 - contact-causality/no-snap audit: saved in `dataset/contact_causality_report.json`
-- precision assembly, tactile combination lock, and vial uncap/sample delivery are visible in the main demo, not only in offline evidence files
+- precision assembly, tactile microsuture threading, tactile combination lock, and vial uncap/sample delivery are visible in the main demo, not only in offline evidence files
 - blind tactile visible in main demo: saved as `demo_contains_blind_tactile_segment`
 - final slip: saved as `final_slip_mm`
 - load hold: saved as `load_hold_x`
@@ -110,6 +119,7 @@ The main demo and evidence scripts report:
 - jam detection and recovery trace
 - tactile combination lock code error, detent count, latch pull, and micro-door open
 - vial cap rotation, cap removal, no-crush force pass, and sample delivery into tray
+- microsuture pass count, entry/exit alignment error, tension limit, and no-tear pass
 - stress success rate and baseline-vs-feedback comparison
 - object snap events: expected 0
 - average active fingers for dexterous grasps
@@ -122,13 +132,13 @@ The main demo and evidence scripts report:
 ## Rubric Mapping
 
 - Reproducibility: fixed seed CLI, deterministic task suite, validator, stress evaluation.
-- MuJoCo depth: articulated hand MJCF, named geoms/sites, fingertip collision pads, five fingertip touch sensors, contact timeline, object state logs, cap hinge joint, vial/cap/sample/tray primitives, plug/socket collision geoms.
-- Task design: sphere, cube, cylinder, cap rotation, vial uncap/sample delivery, tactile combination lock, slip/load-hold, stylus checkpoint, button press.
+- MuJoCo depth: articulated hand MJCF, named geoms/sites, fingertip collision pads, five fingertip touch sensors, contact timeline, object state logs, cap hinge joint, vial/cap/sample/tray primitives, needle/thread/tissue-pad primitives, plug/socket collision geoms.
+- Task design: sphere, cube, cylinder, cap rotation, vial uncap/sample delivery, tactile microsuture threading, tactile combination lock, slip/load-hold, stylus checkpoint, button press.
 - Control: contact-aware verified grasp routine, minimum-jerk tactile-inspired segments, no-snap policy, no-crush force verification, blind tactile probing, confidence thresholding, tactile pose estimation, compliant insertion, jam detection, tactile detent verification, adaptive regrasp, closed-loop slip reflex benchmark.
-- Dexterity: thumb opposition, independent finger roles, multi-side contact, cylinder rotation, cap twist, vial body stabilization with cap removal, combination dial/latch manipulation, multi-finger active perception.
+- Dexterity: thumb opposition, independent finger roles, multi-side contact, cylinder rotation, cap twist, vial body stabilization with cap removal, microsuture needle guidance/thread-loop pull, combination dial/latch manipulation, multi-finger active perception.
 - Engineering quality: JSON/CSV evidence pack, validator, manifest, final report, structured modules.
 - Presentation: long demo video, time-anchored replay index, keyframes, narration SRT, final evidence report.
-- Innovation: blind tactile active perception arena, no-ground-truth tactile pose estimation, precision assembly with jam recovery, no-crush vial uncap/sample delivery, tactile combination lock, cap/knob 224-degree marker task, tactile proxy audit, adaptive regrasp, hardware replay safety audit.
+- Innovation: blind tactile active perception arena, no-ground-truth tactile pose estimation, precision assembly with jam recovery, no-crush vial uncap/sample delivery, tactile microsuture threading, tactile combination lock, cap/knob 224-degree marker task, tactile proxy audit, adaptive regrasp, hardware replay safety audit.
 
 ## Honest Scope
 
@@ -146,11 +156,12 @@ The tactile pose estimator is deterministic and contact/proxy based. In `--no-gr
 - `object_classifier.py`: simulation-native affordance classifier.
 - `minimum_jerk_controller.py`: tactile-inspired trajectory evidence.
 - `contact_feedback_audit.py`: five-fingertip tactile evidence.
-- `arena_task_suite.py`: 39-gate verification suite.
+- `arena_task_suite.py`: 45-gate verification suite.
 - `contact_causality_audit.py`: no-snap/contact-gated manipulation audit.
 - `judge_replay_index.py`: time-anchored video and rubric evidence replay index.
 - `closed_loop_reflex_benchmark.py`: slip response, pressure correction, and load-hold reflex audit.
 - `vial_uncap_delivery_benchmark.py`: no-crush vial uncap/sample delivery report and trace.
+- `microsuture_benchmark.py`: tactile needle/thread loop report and trace.
 - `run_stress_eval.py`: fixed-seed stress evaluation and baseline comparison.
 - `hardware_adaptation_audit.py`: simulated hardware replay audit.
 - `validate_submission.py`: final evidence and metric validator.

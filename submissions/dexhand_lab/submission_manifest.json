@@ -29,6 +29,7 @@
     "judge_replay_index.py",
     "closed_loop_reflex_benchmark.py",
     "vial_uncap_delivery_benchmark.py",
+    "microsuture_benchmark.py",
     "quality_gate.py",
     "hardware_adaptation_audit.py",
     "validate_submission.py",
@@ -56,6 +57,7 @@
     "outputs/video_replay_scorecard.json",
     "outputs/closed_loop_reflex_scorecard.json",
     "outputs/vial_uncap_delivery_scorecard.json",
+    "outputs/microsuture_scorecard.json",
     "outputs/event_rules_report.json",
     "outputs/submission_readiness_report.json",
     "outputs/rubric_readiness_report.json",
@@ -97,6 +99,8 @@
     "dataset/closed_loop_reflex_trace.csv",
     "dataset/vial_uncap_delivery_report.json",
     "dataset/vial_uncap_delivery_trace.csv",
+    "dataset/microsuture_threading_report.json",
+    "dataset/microsuture_threading_trace.csv",
     "dataset/assembly_stress_eval.json",
     "dataset/assembly_baseline_comparison.json",
     "dataset/blind_tactile_stress_eval.json",
@@ -146,7 +150,10 @@
     "reflex_response_latency_ms <= 20",
     "vial_uncap_deliver_success = true",
     "vial_no_crush_force_pass = true",
-    "pill_delivery_success = true"
+    "pill_delivery_success = true",
+    "microsuture_threading_success = true",
+    "microsuture_pass_count >= 2",
+    "microsuture_no_tear_pass = true"
   ],
   "honest_limitations": [
     "simulation-native object pose perception",

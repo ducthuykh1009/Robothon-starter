@@ -54,6 +54,8 @@
       "vial_body",
       "vial_cap",
       "micro_sample",
+      "microsuture_needle",
+      "suture_thread",
       "stylus_tool"
     ],
     "cap_knob_pose": "body pose and hinge angle for cap_knob",

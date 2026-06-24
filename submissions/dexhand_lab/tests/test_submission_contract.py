@@ -76,6 +76,11 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "vial_no_crush_force_pass",
             "pill_delivery_success",
             "pill_in_tray",
+            "microsuture_task_available",
+            "microsuture_visual_segment_present",
+            "microsuture_threading_success",
+            "microsuture_no_tear_pass",
+            "microsuture_knot_tension_success",
         ]
         for metric in required_true:
             with self.subTest(metric=metric):
@@ -91,6 +96,10 @@ class DexHandSubmissionContractTest(unittest.TestCase):
         self.assertEqual(int(summary["pre_verification_motion_events"]), 0)
         self.assertGreaterEqual(float(summary["vial_cap_rotation_achieved_deg"]), 150.0)
         self.assertLessEqual(float(summary["vial_max_force_n"]), float(summary["vial_no_crush_force_limit_n"]))
+        self.assertGreaterEqual(int(summary["microsuture_pass_count"]), int(summary["microsuture_target_passes"]))
+        self.assertLessEqual(float(summary["microsuture_entry_error_m"]), 0.004)
+        self.assertLessEqual(float(summary["microsuture_exit_error_m"]), 0.004)
+        self.assertLessEqual(float(summary["microsuture_max_tension_n"]), float(summary["microsuture_tension_limit_n"]))
 
     def test_required_media_and_reports_exist(self) -> None:
         required_paths = [
@@ -124,6 +133,9 @@ class DexHandSubmissionContractTest(unittest.TestCase):
             "dataset/vial_uncap_delivery_report.json",
             "dataset/vial_uncap_delivery_trace.csv",
             "outputs/vial_uncap_delivery_scorecard.json",
+            "dataset/microsuture_threading_report.json",
+            "dataset/microsuture_threading_trace.csv",
+            "outputs/microsuture_scorecard.json",
         ]
         for relative_path in required_paths:
             with self.subTest(path=relative_path):

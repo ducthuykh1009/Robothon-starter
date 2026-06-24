@@ -365,6 +365,94 @@
       "recommended_grasp_type": "CONTROLLED_RELEASE"
     },
     {
+      "object_name": "microsuture_needle",
+      "object_type": "microsuture_needle",
+      "object_center": [
+        -0.05343,
+        0.29085,
+        0.438
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.0042,
+        0.052
+      ],
+      "face_normals": [],
+      "radius": 0.0042,
+      "long_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          -0.10543,
+          0.29085,
+          0.438
+        ],
+        [
+          -0.00143,
+          0.29085,
+          0.438
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "thumb": "needle shaft counterhold near center",
+        "index": "needle tip guidance into entry eyelet",
+        "middle": "opposing shaft support",
+        "ring": "thread loop stabilizer"
+      },
+      "recommended_grasp_type": "MICROSUTURE_THREADING"
+    },
+    {
+      "object_name": "suture_thread",
+      "object_type": "suture_thread",
+      "object_center": [
+        -0.06354,
+        0.29925,
+        0.423
+      ],
+      "object_orientation": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_size": [
+        0.0022,
+        0.052
+      ],
+      "face_normals": [],
+      "radius": 0.0022,
+      "long_axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "centerline": [
+        [
+          -0.11554,
+          0.29925,
+          0.423
+        ],
+        [
+          -0.01154,
+          0.29925,
+          0.423
+        ]
+      ],
+      "grasp_affordance_regions": {
+        "loop": "visible loop pulled through two tissue eyelets",
+        "anchor": "low tension verification at tissue anchor"
+      },
+      "recommended_grasp_type": "MICROSUTURE_THREADING"
+    },
+    {
       "object_name": "cap_knob",
       "object_type": "cap_knob",
       "object_center": [
@@ -600,6 +688,24 @@
         -0.15161,
         0.585
       ]
+    },
+    {
+      "name": "microsuture_needle",
+      "type": "microsuture_needle",
+      "start_position": [
+        -0.05343,
+        0.29085,
+        0.438
+      ]
+    },
+    {
+      "name": "suture_thread",
+      "type": "suture_thread",
+      "start_position": [
+        -0.06354,
+        0.29925,
+        0.423
+      ]
     }
   ],
   "grasp_types": [
@@ -609,6 +715,7 @@
     "INDEX_FINGERTIP_PRESS",
     "IN_HAND_ROTATION",
     "LATERAL_CYLINDER_BODY_GRASP",
+    "MICROSUTURE_THREADING",
     "OPPOSING_FACE_CUBE_GRASP",
     "SHOW_HAND",
     "SLIP_RECOVERY_REGRASP",
@@ -627,6 +734,7 @@
     "CAP_KNOB_ROTATION_224",
     "SLIP_RECOVERY_LOAD_HOLD",
     "VIAL_UNCAP_AND_DELIVER",
+    "TACTILE_MICROSUTURE_THREADING",
     "STYLUS_TRIPOD_GRASP",
     "CHECKPOINT_TOUCH",
     "INDEX_BUTTON_PRESS"
@@ -647,13 +755,17 @@
     "vial_uncap_deliver_success": true,
     "vial_cap_removed": true,
     "pill_delivery_success": true,
-    "vial_no_crush_force_pass": true
+    "vial_no_crush_force_pass": true,
+    "microsuture_threading_success": true,
+    "microsuture_no_tear_pass": true,
+    "microsuture_knot_tension_success": true
   },
   "blind_tactile_visual_segment_present": true,
   "demo_contains_blind_tactile_segment": true,
   "assembly_visual_segment_present": true,
   "combination_lock_visual_segment_present": true,
   "vial_uncap_deliver_visual_segment_present": true,
+  "microsuture_visual_segment_present": true,
   "blind_tactile_demo_sequence": [
     "label_hidden_unknown_object",
     "index_probe_front",
@@ -665,13 +777,13 @@
     "adaptive_regrasp_precheck"
   ],
   "overall_task_success": true,
-  "average_active_fingers": 3.09266,
-  "average_grasp_stability_score": 0.78681,
-  "average_multi_side_contact_score": 0.728,
+  "average_active_fingers": 3.24135,
+  "average_grasp_stability_score": 0.81827,
+  "average_multi_side_contact_score": 0.72821,
   "object_center_between_fingers_rate": 1.0,
   "average_grasp_centroid_error_m": 0.02439,
   "one_face_only_contact_count": 0,
-  "independent_finger_motion_score": 0.74793,
+  "independent_finger_motion_score": 0.74967,
   "thumb_opposition_score": 0.92,
   "object_snap_events": 0,
   "average_snap_distance_m": 0.0,
@@ -724,18 +836,30 @@
   "pill_in_tray": true,
   "vial_task_visible_in_main_demo": true,
   "vial_hybrid_manipulation_used": true,
+  "microsuture_task_available": true,
+  "microsuture_threading_success": true,
+  "microsuture_target_passes": 2,
+  "microsuture_pass_count": 2,
+  "microsuture_entry_error_m": 0.0024,
+  "microsuture_exit_error_m": 0.0028,
+  "microsuture_tension_target_n": 0.42,
+  "microsuture_max_tension_n": 0.42,
+  "microsuture_tension_limit_n": 0.65,
+  "microsuture_no_tear_pass": true,
+  "microsuture_knot_tension_success": true,
+  "microsuture_hybrid_motion_used": true,
   "object_drop_count": 0,
   "tactile_channels": 5,
   "touch_sensor_count": 5,
   "mujoco_touch_sensors_present": true,
   "sensorized_fingertip_count": 5,
-  "mean_contact_confidence": 0.56187,
-  "active_contact_confidence": 0.66449,
-  "dexterous_contact_confidence": 0.74067,
-  "mean_friction_margin": 0.91401,
-  "mean_mujoco_touch_sensor_value": 44.27275,
-  "average_active_fingers_dexterous_grasps": 4.04,
-  "average_multi_side_contact_score_dexterous_grasps": 0.95202,
+  "mean_contact_confidence": 0.59176,
+  "active_contact_confidence": 0.68683,
+  "dexterous_contact_confidence": 0.77083,
+  "mean_friction_margin": 0.8974,
+  "mean_mujoco_touch_sensor_value": 44.470011,
+  "average_active_fingers_dexterous_grasps": 4.18272,
+  "average_multi_side_contact_score_dexterous_grasps": 0.92919,
   "tripod_tool_success": true,
   "checkpoint_touch_success": true,
   "index_only_button_press_success": true,
@@ -747,6 +871,6 @@
     "Hybrid carry and rotation are used only after stable grasp verification to keep the demo reproducible.",
     "Finger contact values are controller contact proxies; the project does not claim perfect contact physics."
   ],
-  "trajectory_steps": 1036,
+  "trajectory_steps": 1156,
   "frames_saved": 0
 }

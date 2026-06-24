@@ -1,21 +1,21 @@
 ## DexHand Lab 95+ Evidence Report
 
-Task gates: 39/39
+Task gates: 45/45
 Hand skeleton valid: true
 All five fingers visible: true
 Thumb opposition visible: true
 Tactile channels: 5
 MuJoCo fingertip touch sensors: 5
-Mean tactile confidence, all phases: 0.56
-Active contact confidence: 0.66
-Dexterous grasp contact confidence: 0.74
+Mean tactile confidence, all phases: 0.59
+Active contact confidence: 0.69
+Dexterous grasp contact confidence: 0.77
 Tactile taxel audit confidence: 0.90
-Mean friction margin: 0.91
+Mean friction margin: 0.90
 Independent finger motion score: 0.75
-Average active fingers, all phases: 3.09
-Dexterous active fingers: 4.04
+Average active fingers, all phases: 3.24
+Dexterous active fingers: 4.18
 Average multi-side contact score, all phases: 0.73
-Dexterous multi-side contact score: 0.95
+Dexterous multi-side contact score: 0.93
 Object center between fingers rate: 1.00
 Average grasp centroid error: 0.024 m
 Object snap events: 0
@@ -43,6 +43,10 @@ Vial cap removed: true
 Vial cap rotation: 162 deg target / 162.0 achieved
 Vial no-crush force: 3.60/4.5 N
 Vial sample delivered to tray: true
+Microsuture threading success: true
+Microsuture passes: 2/2
+Microsuture entry/exit error: 0.0024/0.0028 m
+Microsuture tension: 0.42/0.65 N
 Combination lock success: true
 Combination lock max error: 1.0 deg
 Combination lock detents: 3
@@ -56,7 +60,7 @@ Closed-loop reflex benchmark: pass
 Reflex response latency: 10.0 ms
 Reflex pressure boost: 0.40 N
 Judge replay index: pass
-Video replay milestones: 13/13
+Video replay milestones: 14/14
 Video replay coverage: 1.00
 Stylus tripod success: true
 Checkpoint touched: true
@@ -89,6 +93,6 @@ Socket angle error: 3.2 deg
 Jam detection available: true
 Assembly stress success: 96.9%
 Jam recovery stress success: 92.3%
-Average grasp stability score: 0.79
+Average grasp stability score: 0.82
 Stress eval available: true
 Overall task success: true

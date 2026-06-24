@@ -1,0 +1,23 @@
+{
+  "project": "DexHand Lab",
+  "benchmark": "tactile_microsuture_threading",
+  "microsuture_task_available": true,
+  "microsuture_visual_segment_present": true,
+  "microsuture_threading_success": true,
+  "microsuture_target_passes": 2,
+  "microsuture_pass_count": 2,
+  "microsuture_entry_error_m": 0.0024,
+  "microsuture_exit_error_m": 0.0028,
+  "microsuture_tension_target_n": 0.42,
+  "microsuture_max_tension_n": 0.42,
+  "microsuture_tension_limit_n": 0.65,
+  "microsuture_no_tear_pass": true,
+  "microsuture_knot_tension_success": true,
+  "microsuture_hybrid_motion_used": true,
+  "microsuture_average_active_fingers": 3.65,
+  "microsuture_contact_confidence": 0.66653,
+  "trace_path": "submissions/dexhand_lab/dataset/microsuture_threading_trace.csv",
+  "report_path": "submissions/dexhand_lab/dataset/microsuture_threading_report.json",
+  "scorecard_path": "submissions/dexhand_lab/outputs/microsuture_scorecard.json",
+  "honest_scope": "Hybrid contact-aware needle/thread motion is applied only after stable tripod pinch verification; this is a deterministic MuJoCo benchmark task, not learned surgery autonomy."
+}

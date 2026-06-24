@@ -82,6 +82,14 @@ MILESTONES = [
         "evidence": ["vial_uncap_deliver_success", "vial_cap_removed", "pill_delivery_success", "vial_no_crush_force_pass"],
     },
     {
+        "id": "microsuture_threading",
+        "label": "Tactile microsuture threading with two needle passes and tension-limited closure",
+        "phase_prefixes": ["SUTURE_"],
+        "target_objects": ["microsuture_needle", "suture_thread"],
+        "rubric": ["MuJoCo Depth", "Task Design", "Control", "Dexterous Manipulation", "Innovation", "Presentation"],
+        "evidence": ["microsuture_threading_success", "microsuture_pass_count", "microsuture_no_tear_pass"],
+    },
+    {
         "id": "precision_assembly",
         "label": "No-ground-truth tactile pose estimate and compliant plug/socket insertion",
         "phase_prefixes": ["ASSEMBLY_"],

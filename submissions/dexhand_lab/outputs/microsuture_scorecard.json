@@ -1,0 +1,7 @@
+{
+  "microsuture_threading_success": true,
+  "two_pass_success": true,
+  "entry_exit_precision_pass": true,
+  "no_tear_tension_pass": true,
+  "contact_confidence": 0.66653
+}

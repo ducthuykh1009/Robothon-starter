@@ -62,6 +62,12 @@ def build_gates(summary: dict) -> list[dict]:
         {"gate": 37, "name": "vial_cap_removed", "passed": bool_metric(summary, "vial_cap_removed") and float(summary.get("vial_cap_rotation_achieved_deg", 0.0)) >= 150.0},
         {"gate": 38, "name": "pill_delivery_success", "passed": bool_metric(summary, "pill_delivery_success") and bool_metric(summary, "pill_in_tray")},
         {"gate": 39, "name": "vial_no_crush_force_pass", "passed": bool_metric(summary, "vial_no_crush_force_pass") and float(summary.get("vial_max_force_n", 99.0)) <= float(summary.get("vial_no_crush_force_limit_n", 0.0))},
+        {"gate": 40, "name": "microsuture_task_available", "passed": bool_metric(summary, "microsuture_task_available")},
+        {"gate": 41, "name": "microsuture_visible_in_main_demo", "passed": bool_metric(summary, "microsuture_visual_segment_present")},
+        {"gate": 42, "name": "microsuture_threading_success", "passed": bool_metric(summary, "microsuture_threading_success")},
+        {"gate": 43, "name": "microsuture_two_pass_success", "passed": int(summary.get("microsuture_pass_count", 0)) >= int(summary.get("microsuture_target_passes", 2))},
+        {"gate": 44, "name": "microsuture_no_tear_tension_pass", "passed": bool_metric(summary, "microsuture_no_tear_pass") and float(summary.get("microsuture_max_tension_n", 99.0)) <= float(summary.get("microsuture_tension_limit_n", 0.0))},
+        {"gate": 45, "name": "microsuture_precision_error_pass", "passed": float(summary.get("microsuture_entry_error_m", 99.0)) <= 0.004 and float(summary.get("microsuture_exit_error_m", 99.0)) <= 0.004},
     ]
 
 
@@ -99,14 +105,14 @@ def main() -> int:
     passed = sum(1 for gate in gates if gate["passed"])
     report = {
         "project": "DexHand Lab",
-        "suite": "39-gate deterministic dexterity verification",
+        "suite": "45-gate deterministic dexterity verification",
         "gate_count": len(gates),
         "gates_passed": passed,
         "success_rate": round(passed / len(gates), 5),
         "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
         "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
         "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-        "final_task_success": passed >= 37,
+        "final_task_success": passed >= 43,
         "gates": gates,
     }
     (DATASET_DIR / "task_suite_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

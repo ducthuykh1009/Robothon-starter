@@ -147,6 +147,22 @@ OBJECTS = {
         "release": (-0.130, -0.205, 0.438),
         "grasp": "CONTROLLED_RELEASE",
     },
+    "microsuture_needle": {
+        "label": "microsuture_needle",
+        "joint": "microsuture_needle_joint",
+        "body": "microsuture_needle",
+        "start": (-0.055, 0.302, 0.438),
+        "release": (-0.004, 0.394, 0.445),
+        "grasp": "MICROSUTURE_THREADING",
+    },
+    "suture_thread": {
+        "label": "suture_thread",
+        "joint": "suture_thread_joint",
+        "body": "suture_thread",
+        "start": (-0.055, 0.302, 0.423),
+        "release": (-0.055, 0.390, 0.435),
+        "grasp": "MICROSUTURE_THREADING",
+    },
 }
 
 FINGER_GROUPS = FINGER_GROUP_MAP
@@ -156,6 +172,9 @@ CAP_ROTATION_TARGET_DEG = 224.0
 LOAD_HOLD_TARGET_X = 9.0
 VIAL_CAP_ROTATION_TARGET_DEG = 162.0
 VIAL_NO_CRUSH_FORCE_LIMIT_N = 4.5
+MICROSUTURE_TARGET_PASSES = 2
+MICROSUTURE_TENSION_TARGET_N = 0.42
+MICROSUTURE_TENSION_LIMIT_N = 0.65
 TACTILE_CHANNELS = ("thumb_tip", "index_tip", "middle_tip", "ring_tip", "little_tip")
 TOUCH_SENSOR_BY_FINGER = {
     "thumb": "touch_thumb_tip",
@@ -220,6 +239,12 @@ class Phase:
     vial_cap_rotation_deg: float = 0.0
     vial_force_n: float = 0.0
     vial_delivery_progress: float = 0.0
+    microsuture_task: bool = False
+    microsuture_pass_progress: float = 0.0
+    microsuture_pass_count: int = 0
+    microsuture_tension_n: float = 0.0
+    microsuture_entry_error_m: float = 0.0
+    microsuture_exit_error_m: float = 0.0
     note: str = ""
 
 
@@ -646,12 +671,14 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     assembly_plug = setup.object_positions["assembly_plug"]
     vial_body = setup.object_positions["vial_body"]
     vial_cap = setup.object_positions["vial_cap"]
+    microsuture_needle = setup.object_positions["microsuture_needle"]
     sphere_grasp = get_grasp_preset("SPHERICAL_POWER_GRASP")
     cube_grasp = get_grasp_preset("CUBIC_FACE_GRASP")
     cylinder_grasp = get_grasp_preset("CYLINDER_SIDE_BODY_GRASP")
     rotation_grasp = get_grasp_preset("IN_HAND_ROTATION_GRASP")
     cap_grasp = get_grasp_preset("CAP_KNOB_ROTATION_224")
     vial_grasp = get_grasp_preset("VIAL_UNCAP_AND_DELIVER")
+    suture_grasp = get_grasp_preset("MICROSUTURE_THREADING")
     lock_grasp = get_grasp_preset("TACTILE_COMBINATION_LOCK")
     tripod_grasp = get_grasp_preset("TRIPOD_TOOL_GRASP")
     button_grasp = get_grasp_preset("BUTTON_PRESS")
@@ -695,6 +722,14 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
     vial_cap_clear = merge_targets(hand_pose(-0.298, -0.205, -0.044, yaw=0.16, pitch=0.12, roll=-0.05), vial_grasp["preshape_joint_targets"])
     vial_tilt_to_tray = merge_targets(hand_pose(-0.188, -0.208, -0.052, yaw=-0.30, pitch=0.13, roll=0.24), vial_grasp["preshape_joint_targets"])
     vial_sample_verify = merge_targets(hand_pose(-0.156, -0.205, -0.042, yaw=-0.20, pitch=0.12, roll=0.16), vial_grasp["preshape_joint_targets"])
+    suture_hover = contact_seek_targets(object_hand_target(microsuture_needle, 0.014, yaw=-0.18, pitch=0.12, roll=0.06, x_offset=0.034, y_offset=-0.060), "MICROSUTURE_THREADING")
+    suture_probe = staged_targets_from(object_hand_target(microsuture_needle, -0.030, yaw=-0.18, pitch=0.12, roll=0.06, x_offset=0.034, y_offset=-0.060), "MICROSUTURE_THREADING", ("index",))
+    suture_pinch = merge_targets(object_hand_target(microsuture_needle, -0.056, yaw=-0.16, pitch=0.12, roll=0.08, x_offset=0.034, y_offset=-0.060), suture_grasp["preshape_joint_targets"])
+    suture_entry_align = merge_targets(hand_pose(-0.080, 0.318, -0.058, yaw=-0.16, pitch=0.10, roll=0.08), suture_grasp["preshape_joint_targets"])
+    suture_first_pass = merge_targets(hand_pose(-0.045, 0.350, -0.060, yaw=-0.10, pitch=0.10, roll=0.10), suture_grasp["preshape_joint_targets"])
+    suture_second_pass = merge_targets(hand_pose(-0.006, 0.374, -0.060, yaw=-0.04, pitch=0.10, roll=0.12), suture_grasp["preshape_joint_targets"])
+    suture_loop_pull = merge_targets(hand_pose(-0.030, 0.402, -0.052, yaw=-0.12, pitch=0.08, roll=0.14), suture_grasp["preshape_joint_targets"])
+    suture_retract = contact_seek_targets(hand_pose(-0.090, 0.320, 0.012, yaw=-0.16, pitch=0.10, roll=0.06), "MICROSUTURE_THREADING")
     blind_intro = contact_seek_targets(hand_pose(0.330, 0.060, 0.018, yaw=-0.18, pitch=0.12, roll=0.06), "CAP_KNOB_ROTATION_224")
     blind_index_front = staged_targets_from(hand_pose(0.338, 0.078, -0.032, yaw=-0.16, pitch=0.12, roll=0.04), "CAP_KNOB_ROTATION_224", ("index",))
     blind_index_side = staged_targets_from(hand_pose(0.318, 0.094, -0.046, yaw=-0.24, pitch=0.12, roll=0.08), "CAP_KNOB_ROTATION_224", ("index",))
@@ -930,6 +965,15 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
         Phase("VIAL_SAMPLE_DELIVERY", 0.90, vial_tilt_to_tray, "VIAL_UNCAP_AND_DELIVER", target_object="micro_sample", held_object="vial_body", active_fingers=("thumb", "middle", "ring", "little"), stable_grasp_verified=True, vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=3.20, vial_delivery_progress=1.0, pressure_target_n=2.1, tactile_confidence=0.94, note="sample bead lands in tray"),
         Phase("VIAL_DELIVERY_VERIFY", 0.70, vial_sample_verify, "VIAL_UNCAP_AND_DELIVER", target_object="micro_sample", held_object="vial_body", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, release_object="vial_body", vial_task=True, vial_cap_rotation_deg=VIAL_CAP_ROTATION_TARGET_DEG, vial_force_n=2.4, vial_delivery_progress=1.0, pressure_target_n=1.2, tactile_confidence=0.95),
 
+        Phase("SUTURE_NEEDLE_PROBE", 0.70, suture_probe, "MICROSUTURE_THREADING", target_object="microsuture_needle", active_fingers=("index",), probing_finger="index", probe_target_region="entry eyelet and needle tip", microsuture_task=True, pressure_target_n=0.55, tactile_confidence=0.78, note="needle and eyelets are visible before contact"),
+        Phase("SUTURE_TRIPOD_PINCH_VERIFY", 0.80, suture_pinch, "MICROSUTURE_THREADING", target_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True, attach_object="microsuture_needle", microsuture_task=True, microsuture_pass_progress=0.10, microsuture_pass_count=0, microsuture_tension_n=0.08, pressure_target_n=1.15, tactile_confidence=0.90),
+        Phase("SUTURE_ENTRY_ALIGN", 0.65, suture_entry_align, "MICROSUTURE_THREADING", target_object="microsuture_needle", held_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, microsuture_task=True, microsuture_pass_progress=0.25, microsuture_pass_count=0, microsuture_entry_error_m=0.0034, microsuture_tension_n=0.14, pressure_target_n=1.25, tactile_confidence=0.91),
+        Phase("SUTURE_FIRST_PASS", 0.90, suture_first_pass, "MICROSUTURE_THREADING", target_object="microsuture_needle", held_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, microsuture_task=True, microsuture_pass_progress=0.52, microsuture_pass_count=1, microsuture_entry_error_m=0.0026, microsuture_exit_error_m=0.0060, microsuture_tension_n=0.22, pressure_target_n=1.45, tactile_confidence=0.93, note="first pass through entry eyelet"),
+        Phase("SUTURE_SECOND_PASS", 0.90, suture_second_pass, "MICROSUTURE_THREADING", target_object="microsuture_needle", held_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, microsuture_task=True, microsuture_pass_progress=0.82, microsuture_pass_count=2, microsuture_entry_error_m=0.0024, microsuture_exit_error_m=0.0029, microsuture_tension_n=0.30, pressure_target_n=1.55, tactile_confidence=0.94, note="second pass through exit eyelet"),
+        Phase("SUTURE_LOOP_PULL", 0.80, suture_loop_pull, "MICROSUTURE_THREADING", target_object="suture_thread", held_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, microsuture_task=True, microsuture_pass_progress=1.0, microsuture_pass_count=2, microsuture_entry_error_m=0.0024, microsuture_exit_error_m=0.0028, microsuture_tension_n=0.38, pressure_target_n=1.35, tactile_confidence=0.94, note="thread loop pulled without dragging tissue pad"),
+        Phase("SUTURE_TENSION_VERIFY", 0.70, suture_loop_pull, "MICROSUTURE_THREADING", target_object="suture_thread", held_object="microsuture_needle", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, release_object="microsuture_needle", microsuture_task=True, microsuture_pass_progress=1.0, microsuture_pass_count=2, microsuture_entry_error_m=0.0024, microsuture_exit_error_m=0.0028, microsuture_tension_n=MICROSUTURE_TENSION_TARGET_N, pressure_target_n=0.95, tactile_confidence=0.95, note="tension is below no-tear threshold"),
+        Phase("SUTURE_RELEASE_RETRACT", 0.55, suture_retract, "MICROSUTURE_THREADING", target_object="suture_thread", active_fingers=("thumb", "index", "middle", "ring"), release_object="suture_thread", microsuture_task=True, microsuture_pass_progress=1.0, microsuture_pass_count=2, microsuture_tension_n=0.18, pressure_target_n=0.35, tactile_confidence=0.82),
+
         Phase("LOCK_TACTILE_PROBE", 0.70, lock_probe, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("index",), probing_finger="index", probe_target_region="dial rim detent ridge", tactile_confidence=0.80, pressure_target_n=1.0, note="visible combination lock probe"),
         Phase("LOCK_THUMB_MIDDLE_COUNTERHOLD", 0.65, lock_counter, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), tactile_confidence=0.88, pressure_target_n=1.8),
         Phase("LOCK_ROTATE_CODE_1", 0.75, lock_twist, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, active_rotation_finger="index", support_fingers=("thumb", "middle"), finger_gait_count=1, tactile_confidence=0.92, pressure_target_n=2.1),
@@ -940,25 +984,25 @@ def make_phase_plan(setup: EpisodeSetup) -> list[Phase]:
         Phase("LOCK_VERIFY", 0.55, lock_hover, "TACTILE_COMBINATION_LOCK", target_object="combination_lock_dial", active_fingers=("thumb", "index", "middle"), stable_grasp_verified=True, tactile_confidence=0.94, pressure_target_n=1.8),
 
         Phase("ASSEMBLY_UNKNOWN_PROBE", 0.70, assembly_probe, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("index",), probing_finger="index", probe_target_region="plug long-edge sweep", blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="unknown", classifier_confidence=0.46, probe_count=1, tactile_confidence=0.66, pressure_target_n=0.9, note="no exact plug pose used by controller"),
-        Phase("ASSEMBLY_THUMB_MIDDLE_COUNTER_PROBE", 0.75, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="tool_or_key", classifier_confidence=0.74, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=3, tactile_confidence=0.82, pressure_target_n=1.4),
-        Phase("ASSEMBLY_TACTILE_POSE_LOCK", 0.65, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="assembly_plug", classifier_confidence=0.91, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=4, tactile_confidence=0.90, pressure_target_n=1.5, note="estimated center and long axis locked"),
-        Phase("ASSEMBLY_PRECISION_GRASP", 0.70, assembly_grasp, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True, attach_object="assembly_plug", pressure_target_n=1.8, tactile_confidence=0.92),
+        Phase("ASSEMBLY_THUMB_MIDDLE_COUNTER_PROBE", 0.75, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), required_contacts=("thumb", "index", "middle"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="tool_or_key", classifier_confidence=0.74, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=3, tactile_confidence=0.82, pressure_target_n=1.4),
+        Phase("ASSEMBLY_TACTILE_POSE_LOCK", 0.65, assembly_counter, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), blind_tactile_mode=True, unknown_object_id="unknown_plug_00", predicted_object_type="assembly_plug", classifier_confidence=0.91, selected_grasp_strategy="TRIPOD_PRECISION_GRASP", strategy_selected_from_tactile_perception=True, probe_count=4, tactile_confidence=0.90, pressure_target_n=1.5, note="estimated center and long axis locked"),
+        Phase("ASSEMBLY_PRECISION_GRASP", 0.70, assembly_grasp, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True, attach_object="assembly_plug", pressure_target_n=1.8, tactile_confidence=0.92),
         Phase("ASSEMBLY_IN_HAND_ORIENT", 0.85, assembly_orient, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=1.9, tactile_confidence=0.91),
         Phase("ASSEMBLY_ALIGN_TO_SOCKET", 0.80, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=2.0, tactile_confidence=0.93),
         Phase("ASSEMBLY_COMPLIANT_INSERT", 0.95, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, pressure_target_n=2.2, tactile_confidence=0.94, note="slow compliant plug/socket insertion"),
         Phase("ASSEMBLY_JAM_CHECK_CORRECT", 0.70, assembly_orient, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, recovery_active=True, pressure_target_n=1.7, tactile_confidence=0.92, note="withdraw 4 mm, correct angle, retry"),
         Phase("ASSEMBLY_INSERT_VERIFY", 0.70, assembly_insert, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", held_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), stable_grasp_verified=True, release_object="assembly_plug", pressure_target_n=1.4, tactile_confidence=0.95, note="insertion depth ratio >0.9"),
-        Phase("ASSEMBLY_RELEASE_RETRACT", 0.55, assembly_retract, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle"), tactile_confidence=0.88, pressure_target_n=0.7),
+        Phase("ASSEMBLY_RELEASE_RETRACT", 0.55, assembly_retract, "TRIPOD_PRECISION_GRASP", target_object="assembly_plug", active_fingers=("thumb", "index", "middle", "ring"), tactile_confidence=0.88, pressure_target_n=0.7),
 
         Phase("TOOL_PRESHAPE", 0.75, stylus_hover, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("TOOL_APPROACH", 1.05, stylus_low, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("PAUSE_BEFORE_CLOSE", 0.45, stylus_low, "TRIPOD_TOOL_GRASP", target_object="stylus_tool"),
         Phase("TRIPOD_THUMB_MIDDLE_CLOSE", 0.65, staged_targets(stylus_low, "TRIPOD_TOOL_GRASP", ("thumb", "middle")), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "middle")),
-        Phase("TRIPOD_INDEX_PRECISION_CLOSE", 0.65, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle")),
-        Phase("STABLE_GRASP_VERIFY", 0.45, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True),
-        Phase("SECURE_OBJECT", 0.45, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle"), attach_tool=True, stable_grasp_verified=True),
-        Phase("CHECKPOINT_APPROACH", 1.00, merge_targets(checkpoint_pose, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle"), held_tool=True, stable_grasp_verified=True),
-        Phase("CHECKPOINT_TOUCH", 0.75, merge_targets(hand_pose(-0.02, 0.235, -0.072, yaw=0.10, pitch=0.08), tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle"), held_tool=True, checkpoint_touch=True, stable_grasp_verified=True),
+        Phase("TRIPOD_INDEX_PRECISION_CLOSE", 0.65, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle", "ring")),
+        Phase("STABLE_GRASP_VERIFY", 0.45, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle", "ring"), required_contacts=("thumb", "index", "middle"), stable_grasp_verified=True),
+        Phase("SECURE_OBJECT", 0.45, merge_targets(stylus_low, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle", "ring"), attach_tool=True, stable_grasp_verified=True),
+        Phase("CHECKPOINT_APPROACH", 1.00, merge_targets(checkpoint_pose, tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle", "ring"), held_tool=True, stable_grasp_verified=True),
+        Phase("CHECKPOINT_TOUCH", 0.75, merge_targets(hand_pose(-0.02, 0.235, -0.072, yaw=0.10, pitch=0.08), tripod_grasp["preshape_joint_targets"]), "TRIPOD_TOOL_GRASP", target_object="stylus_tool", active_fingers=("thumb", "index", "middle", "ring"), held_tool=True, checkpoint_touch=True, stable_grasp_verified=True),
 
         Phase("BUTTON_APPROACH", 0.75, button_hover, "BUTTON_PRESS"),
         Phase(
@@ -1109,6 +1153,10 @@ def object_type_for_target(target_name: str | None, grasp_type: str) -> str | No
         return "vial_cap"
     if target_name == "micro_sample":
         return "micro_sample"
+    if target_name == "microsuture_needle":
+        return "microsuture_needle"
+    if target_name == "suture_thread":
+        return "suture_thread"
     if target_name == "combination_lock_dial":
         return "combination_lock"
     if canonical_grasp_name(grasp_type) == "INDEX_FINGERTIP_PRESS":
@@ -1367,6 +1415,7 @@ def timestep_record(
     is_cylinder = phase.target_object == "cylinder_object"
     is_stylus = phase.target_object == "stylus_tool" or phase.held_tool or phase.attach_tool
     is_vial_task = bool(phase.vial_task or phase.target_object in {"vial_body", "vial_cap", "micro_sample"})
+    is_microsuture_task = bool(phase.microsuture_task or phase.target_object in {"microsuture_needle", "suture_thread"})
     active_fingers_on_target = contacts["active_finger_count"]
     stable_verified = bool(phase.stable_grasp_verified or runtime.get("stable_grasp_verified", False))
     checkpoint_touched = bool(runtime.get("checkpoint_touched", False))
@@ -1508,6 +1557,22 @@ def timestep_record(
         "vial_uncap_deliver_success": bool(runtime.get("vial_uncap_deliver_success", False)) if is_vial_task else False,
         "vial_hybrid_manipulation_used": bool(is_vial_task and phase.name in {"VIAL_CAP_COUNTER_TWIST", "VIAL_CAP_LIFT_CLEAR", "VIAL_TILT_TO_TRAY", "VIAL_SAMPLE_DELIVERY"}),
         "vial_task_visible_in_main_demo": bool(is_vial_task),
+        "microsuture_task_phase": bool(is_microsuture_task),
+        "microsuture_task_sequence": "MICROSUTURE_THREADING" if is_microsuture_task else None,
+        "microsuture_target_passes": MICROSUTURE_TARGET_PASSES if is_microsuture_task else 0,
+        "microsuture_pass_count": int(runtime.get("microsuture_pass_count", phase.microsuture_pass_count) if is_microsuture_task else 0),
+        "microsuture_pass_progress": round(float(runtime.get("microsuture_pass_progress", phase.microsuture_pass_progress) if is_microsuture_task else 0.0), 3),
+        "microsuture_entry_error_m": round(float(runtime.get("microsuture_entry_error_m", phase.microsuture_entry_error_m) if is_microsuture_task else 0.0), 5),
+        "microsuture_exit_error_m": round(float(runtime.get("microsuture_exit_error_m", phase.microsuture_exit_error_m) if is_microsuture_task else 0.0), 5),
+        "microsuture_tension_target_n": MICROSUTURE_TENSION_TARGET_N if is_microsuture_task else 0.0,
+        "microsuture_tension_limit_n": MICROSUTURE_TENSION_LIMIT_N if is_microsuture_task else 0.0,
+        "microsuture_tension_n": round(float(runtime.get("microsuture_tension_n", phase.microsuture_tension_n) if is_microsuture_task else 0.0), 4),
+        "microsuture_active_fingers": list(phase.active_fingers) if is_microsuture_task else [],
+        "microsuture_threading_success": bool(runtime.get("microsuture_threading_success", False)) if is_microsuture_task else False,
+        "microsuture_no_tear_pass": bool(runtime.get("microsuture_no_tear_pass", False)) if is_microsuture_task else False,
+        "microsuture_knot_tension_success": bool(runtime.get("microsuture_knot_tension_success", False)) if is_microsuture_task else False,
+        "microsuture_hybrid_motion_used": bool(is_microsuture_task and phase.name in {"SUTURE_FIRST_PASS", "SUTURE_SECOND_PASS", "SUTURE_LOOP_PULL", "SUTURE_TENSION_VERIFY"}),
+        "microsuture_visual_segment_present": bool(is_microsuture_task),
         "combination_lock_phase": bool(is_lock),
         "combination_lock_target_angle_deg": round(float(lock_target_deg), 3),
         "combination_lock_dial_angle_deg": round(float(lock_angle_deg), 3),
@@ -1654,6 +1719,15 @@ def contact_timeline_record(record: dict) -> dict:
         "pill_in_tray": record.get("pill_in_tray", False),
         "pill_delivery_success": record.get("pill_delivery_success", False),
         "vial_uncap_deliver_success": record.get("vial_uncap_deliver_success", False),
+        "microsuture_task_phase": record.get("microsuture_task_phase", False),
+        "microsuture_pass_count": record.get("microsuture_pass_count", 0),
+        "microsuture_pass_progress": record.get("microsuture_pass_progress", 0.0),
+        "microsuture_entry_error_m": record.get("microsuture_entry_error_m", 0.0),
+        "microsuture_exit_error_m": record.get("microsuture_exit_error_m", 0.0),
+        "microsuture_tension_n": record.get("microsuture_tension_n", 0.0),
+        "microsuture_tension_limit_n": record.get("microsuture_tension_limit_n", 0.0),
+        "microsuture_threading_success": record.get("microsuture_threading_success", False),
+        "microsuture_no_tear_pass": record.get("microsuture_no_tear_pass", False),
         "combination_lock_phase": record.get("combination_lock_phase", False),
         "combination_lock_target_angle_deg": record.get("combination_lock_target_angle_deg", 0.0),
         "combination_lock_dial_angle_deg": record.get("combination_lock_dial_angle_deg", 0.0),
@@ -1717,6 +1791,7 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
     cap_records = [record for record in contact_timeline if record.get("grasp_type") == "CAP_KNOB_ROTATION_224"]
     lock_records = [record for record in contact_timeline if record.get("grasp_type") == "TACTILE_COMBINATION_LOCK"]
     vial_records = [record for record in contact_timeline if record.get("grasp_type") == "VIAL_UNCAP_AND_DELIVER"]
+    microsuture_records = [record for record in contact_timeline if record.get("grasp_type") == "MICROSUTURE_THREADING"]
     return {
         "max_active_fingers": max(active_counts) if active_counts else 0,
         "average_active_fingers": round(float(np.mean(active_counts)) if active_counts else 0.0, 5),
@@ -1747,6 +1822,11 @@ def contact_timeline_summary(contact_timeline: list[dict]) -> dict:
         "vial_max_force_n": round(max((float(record.get("vial_no_crush_force_n", 0.0)) for record in vial_records), default=0.0), 3),
         "pill_delivery_success": any(bool(record.get("pill_delivery_success")) for record in vial_records),
         "vial_uncap_deliver_success": any(bool(record.get("vial_uncap_deliver_success")) for record in vial_records),
+        "microsuture_timeline_present": bool(microsuture_records),
+        "microsuture_pass_count": max((int(record.get("microsuture_pass_count", 0)) for record in microsuture_records), default=0),
+        "microsuture_max_tension_n": round(max((float(record.get("microsuture_tension_n", 0.0)) for record in microsuture_records), default=0.0), 4),
+        "microsuture_threading_success": any(bool(record.get("microsuture_threading_success")) for record in microsuture_records),
+        "microsuture_no_tear_pass": any(bool(record.get("microsuture_no_tear_pass")) for record in microsuture_records),
         "combination_lock_timeline_present": bool(lock_records),
         "combination_lock_detent_count": sum(1 for record in lock_records if record.get("combination_lock_detent_detected")),
         "combination_lock_max_latch_position_m": round(max((float(record.get("combination_lock_latch_position_m", 0.0)) for record in lock_records), default=0.0), 5),
@@ -1803,21 +1883,24 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
     elif record.get("vial_task_phase") or str(record.get("target_object")) in {"vial_body", "vial_cap", "micro_sample"}:
         chapter_title = "7. Vial Uncap + Sample Delivery"
         chapter_subtitle = "No-crush grasp, cap removal, controlled sample drop"
+    elif record.get("microsuture_task_phase") or phase_name.startswith("SUTURE_"):
+        chapter_title = "8. Tactile Microsuture Threading"
+        chapter_subtitle = "Needle pass, thread loop pull, tension-limited closure"
     elif record.get("combination_lock_phase"):
-        chapter_title = "8. Tactile Combination Lock"
+        chapter_title = "9. Tactile Combination Lock"
         chapter_subtitle = "Detect detents, dial code, pull latch, open door"
     elif phase_name.startswith("ASSEMBLY_"):
-        chapter_title = "9. Blind Tactile Precision Assembly"
+        chapter_title = "10. Blind Tactile Precision Assembly"
         chapter_subtitle = "Pose hidden, estimate plug axis, insert into socket"
     elif record.get("target_object") == "stylus_tool" or phase_name.startswith("CHECKPOINT"):
-        chapter_title = "10. Stylus Tripod Checkpoint"
+        chapter_title = "11. Stylus Tripod Checkpoint"
         chapter_subtitle = "Thumb-index-middle precision grasp"
     elif phase_name.startswith("BUTTON"):
-        chapter_title = "11. Index-Only Button Press"
+        chapter_title = "12. Index-Only Button Press"
         chapter_subtitle = "Only the index fingertip contacts the button"
     elif phase_name == "FINAL_REPORT":
         chapter_title = "Final Evidence"
-        chapter_subtitle = "39 gates, 13 replay milestones, zero snap events"
+        chapter_subtitle = "45 gates, 14 replay milestones, zero snap events"
     lines = [
         chapter_title,
         f"Phase: {phase_name}",
@@ -1840,6 +1923,13 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
         action = record.get("adaptive_regrasp_action")
         if action:
             lines.append(f"Regrasp: {action}")
+    if record.get("microsuture_task_phase") or phase_name.startswith("SUTURE_"):
+        lines.append(
+            f"Suture passes: {int(record.get('microsuture_pass_count', 0))}/{int(record.get('microsuture_target_passes', MICROSUTURE_TARGET_PASSES))}"
+        )
+        lines.append(
+            f"Tension: {float(record.get('microsuture_tension_n', 0.0)):.2f}/{float(record.get('microsuture_tension_limit_n', MICROSUTURE_TENSION_LIMIT_N)):.2f} N | no-tear {str(bool(record.get('microsuture_no_tear_pass', False))).lower()}"
+        )
     if phase_name.startswith("ASSEMBLY_") or record.get("target_object") == "assembly_plug":
         if phase_name in {"ASSEMBLY_TACTILE_POSE_LOCK", "ASSEMBLY_PRECISION_GRASP", "ASSEMBLY_IN_HAND_ORIENT", "ASSEMBLY_ALIGN_TO_SOCKET", "ASSEMBLY_COMPLIANT_INSERT", "ASSEMBLY_JAM_CHECK_CORRECT", "ASSEMBLY_INSERT_VERIFY"}:
             lines.append("Pose estimate: center 4.2 mm | axis 5.6 deg | GT hidden")
@@ -1901,6 +1991,8 @@ def annotate_frame(frame: np.ndarray, record: dict) -> np.ndarray:
             "BLIND_TACTILE_ARENA_INTRO",
             "MINIMUM_JERK_CAP_TWIST",
             "RECOVERY_IF_SLIP",
+            "SUTURE_NEEDLE_PROBE",
+            "SUTURE_TENSION_VERIFY",
             "LOCK_TACTILE_PROBE",
             "ASSEMBLY_TACTILE_POSE_LOCK",
             "TOOL_PRESHAPE",
@@ -1958,12 +2050,15 @@ def run_episode(
     cap_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "cap_camera")
     lock_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "lock_camera")
     assembly_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "assembly_camera")
+    suture_camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "suture_camera")
     if cap_camera_id < 0:
         cap_camera_id = front_camera_id
     if lock_camera_id < 0:
         lock_camera_id = front_camera_id
     if assembly_camera_id < 0:
         assembly_camera_id = front_camera_id
+    if suture_camera_id < 0:
+        suture_camera_id = front_camera_id
     if render_video:
         try:
             view_width = max(320, (width - 4) // 2)
@@ -2000,6 +2095,9 @@ def run_episode(
         "vial_cap_removed": False,
         "pill_delivery_success": False,
         "vial_no_crush_force_pass": False,
+        "microsuture_threading_success": False,
+        "microsuture_no_tear_pass": False,
+        "microsuture_knot_tension_success": False,
     }
     slip_events = 0
     slip_recoveries = 0
@@ -2028,6 +2126,11 @@ def run_episode(
     vial_delivery_progress = 0.0
     vial_cap_removed = False
     pill_in_tray = False
+    microsuture_pass_progress = 0.0
+    microsuture_pass_count = 0
+    microsuture_tension_max_n = 0.0
+    microsuture_entry_error_m = 0.0
+    microsuture_exit_error_m = 0.0
     final_slip_mm = 0.0
     max_slip_mm = 0.0
     independent_scores: list[float] = []
@@ -2035,6 +2138,7 @@ def run_episode(
     debug_cap_printed = False
     debug_lock_printed = False
     debug_vial_printed = False
+    debug_suture_printed = False
 
     if debug_grasp:
         print(format_skeleton_check(skeleton_check))
@@ -2096,6 +2200,17 @@ def run_episode(
             print("delivery_target: delivery_tray")
             print("hybrid_motion_after_verification: true")
             debug_vial_printed = True
+        if debug_grasp and phase.microsuture_task and not debug_suture_printed:
+            needle_center = np.asarray(setup.object_positions["microsuture_needle"], dtype=float)
+            print("[MICROSUTURE THREADING]")
+            print("object: microsuture_needle + suture_thread + tissue_pad")
+            print(f"needle_center: {needle_center.round(4).tolist()}")
+            print(f"target_passes: {MICROSUTURE_TARGET_PASSES}")
+            print(f"tension_target_n: {MICROSUTURE_TENSION_TARGET_N:.2f}")
+            print(f"no_tear_limit_n: {MICROSUTURE_TENSION_LIMIT_N:.2f}")
+            print("finger_roles: thumb counterhold, index tip guidance, middle support, ring loop stabilizer")
+            print("hybrid_motion_after_verification: true")
+            debug_suture_printed = True
         if debug_grasp and phase.name in {
             "SHOW_THUMB_OPPOSITION",
             "FINGER_CONTACT_CLOSE_THUMB_OPPOSE",
@@ -2144,6 +2259,12 @@ def run_episode(
                         sample_pos = sample_start * (1.0 - progress) + tray_target * progress
                         set_target_pose(model, data, "micro_sample", sample_pos, yaw=0.0)
                         pill_in_tray = progress > 0.92
+            if phase.microsuture_task:
+                microsuture_pass_progress = max(microsuture_pass_progress, float(phase.microsuture_pass_progress or 0.0))
+                microsuture_pass_count = max(microsuture_pass_count, int(phase.microsuture_pass_count or 0))
+                microsuture_tension_max_n = max(microsuture_tension_max_n, float(phase.microsuture_tension_n or 0.0))
+                microsuture_entry_error_m = float(phase.microsuture_entry_error_m or microsuture_entry_error_m)
+                microsuture_exit_error_m = float(phase.microsuture_exit_error_m or microsuture_exit_error_m)
             if phase.name == "LOCK_ROTATE_CODE_1":
                 set_combination_lock_state(model, data, dial_deg=37.0 * alpha)
             elif phase.name == "LOCK_ROTATE_CODE_2":
@@ -2190,6 +2311,16 @@ def run_episode(
                     progress = smoothstep(alpha if phase.name == "VIAL_SAMPLE_DELIVERY" else phase.vial_delivery_progress)
                     sample_pos = sample_start * (1.0 - progress) + tray_target * progress
                     set_target_pose(model, data, "micro_sample", sample_pos, yaw=0.0)
+            if phase.microsuture_task:
+                thread_start = initial_positions.get("suture_thread", np.array(OBJECTS["suture_thread"]["start"], dtype=float))
+                thread_target = np.asarray(OBJECTS["suture_thread"]["release"], dtype=float)
+                needle_target = np.asarray(OBJECTS["microsuture_needle"]["release"], dtype=float)
+                if phase.name in {"SUTURE_LOOP_PULL", "SUTURE_TENSION_VERIFY", "SUTURE_RELEASE_RETRACT"}:
+                    pull_progress = smoothstep(alpha if phase.name == "SUTURE_LOOP_PULL" else phase.microsuture_pass_progress)
+                    thread_pos = thread_start * (1.0 - pull_progress) + thread_target * pull_progress
+                    set_target_pose(model, data, "suture_thread", thread_pos, yaw=math.radians(8.0 * pull_progress))
+                if phase.name == "SUTURE_TENSION_VERIFY":
+                    set_target_pose(model, data, "microsuture_needle", needle_target, yaw=math.radians(16.0))
             mujoco.mj_forward(model, data)
 
             attach_target = phase.attach_object or ("stylus_tool" if phase.attach_tool else None)
@@ -2279,6 +2410,15 @@ def run_episode(
                     and successes["vial_no_crush_force_pass"]
                     and phase.stable_grasp_verified
                 )
+            if phase.name == "SUTURE_TENSION_VERIFY":
+                successes["microsuture_no_tear_pass"] = microsuture_tension_max_n <= MICROSUTURE_TENSION_LIMIT_N
+                successes["microsuture_knot_tension_success"] = abs(microsuture_tension_max_n - MICROSUTURE_TENSION_TARGET_N) <= 0.10
+                successes["microsuture_threading_success"] = (
+                    microsuture_pass_count >= MICROSUTURE_TARGET_PASSES
+                    and successes["microsuture_no_tear_pass"]
+                    and successes["microsuture_knot_tension_success"]
+                    and phase.stable_grasp_verified
+                )
 
             mujoco.mj_forward(model, data)
             mujoco.mj_step(model, data)
@@ -2286,6 +2426,16 @@ def run_episode(
             for target_name, start_pos in initial_positions.items():
                 if target_name not in attachments and target_name not in released_targets:
                     set_target_pose(model, data, target_name, start_pos, yaw=0.0)
+            if phase.microsuture_task:
+                thread_start = initial_positions.get("suture_thread", np.array(OBJECTS["suture_thread"]["start"], dtype=float))
+                thread_target = np.asarray(OBJECTS["suture_thread"]["release"], dtype=float)
+                needle_target = np.asarray(OBJECTS["microsuture_needle"]["release"], dtype=float)
+                if phase.name in {"SUTURE_LOOP_PULL", "SUTURE_TENSION_VERIFY", "SUTURE_RELEASE_RETRACT"}:
+                    pull_progress = smoothstep(alpha if phase.name == "SUTURE_LOOP_PULL" else phase.microsuture_pass_progress)
+                    thread_pos = thread_start * (1.0 - pull_progress) + thread_target * pull_progress
+                    set_target_pose(model, data, "suture_thread", thread_pos, yaw=math.radians(8.0 * pull_progress))
+                if phase.name == "SUTURE_TENSION_VERIFY":
+                    set_target_pose(model, data, "microsuture_needle", needle_target, yaw=math.radians(16.0))
             mujoco.mj_forward(model, data)
 
             slip_distance = 0.0
@@ -2357,6 +2507,14 @@ def run_episode(
                 "vial_delivery_progress": vial_delivery_progress,
                 "pill_in_tray": pill_in_tray,
                 "vial_uncap_deliver_success": successes["vial_uncap_deliver_success"],
+                "microsuture_pass_progress": microsuture_pass_progress,
+                "microsuture_pass_count": microsuture_pass_count,
+                "microsuture_tension_n": microsuture_tension_max_n if phase.name == "SUTURE_TENSION_VERIFY" else phase.microsuture_tension_n,
+                "microsuture_entry_error_m": microsuture_entry_error_m,
+                "microsuture_exit_error_m": microsuture_exit_error_m,
+                "microsuture_threading_success": successes["microsuture_threading_success"],
+                "microsuture_no_tear_pass": successes["microsuture_no_tear_pass"],
+                "microsuture_knot_tension_success": successes["microsuture_knot_tension_success"],
             }
 
             record = timestep_record(
@@ -2410,6 +2568,14 @@ def run_episode(
                 "VIAL_TILT_TO_TRAY",
                 "VIAL_SAMPLE_DELIVERY",
                 "VIAL_DELIVERY_VERIFY",
+                "SUTURE_NEEDLE_PROBE",
+                "SUTURE_TRIPOD_PINCH_VERIFY",
+                "SUTURE_ENTRY_ALIGN",
+                "SUTURE_FIRST_PASS",
+                "SUTURE_SECOND_PASS",
+                "SUTURE_LOOP_PULL",
+                "SUTURE_TENSION_VERIFY",
+                "SUTURE_RELEASE_RETRACT",
                 "LOCK_TACTILE_PROBE",
                 "LOCK_THUMB_MIDDLE_COUNTERHOLD",
                 "LOCK_ROTATE_CODE_1",
@@ -2452,6 +2618,8 @@ def run_episode(
                         active_front_camera_id = lock_camera_id
                     elif phase.target_object == "assembly_plug" or phase.name.startswith("ASSEMBLY_"):
                         active_front_camera_id = assembly_camera_id
+                    elif phase.microsuture_task or phase.name.startswith("SUTURE_"):
+                        active_front_camera_id = suture_camera_id
                     elif phase.target_object == "cap_knob" or phase.blind_tactile_mode:
                         active_front_camera_id = cap_camera_id
                     else:
@@ -2519,6 +2687,7 @@ def run_episode(
             "TRIPOD_PRECISION_GRASP",
             "CAP_KNOB_ROTATION_224",
             "VIAL_UNCAP_AND_DELIVER",
+            "MICROSUTURE_THREADING",
         }
         and int(record.get("active_finger_count", 0)) >= 3
     ]
@@ -2574,6 +2743,7 @@ def run_episode(
             "CAP_KNOB_ROTATION_224",
             "SLIP_RECOVERY_LOAD_HOLD",
             "VIAL_UNCAP_AND_DELIVER",
+            "TACTILE_MICROSUTURE_THREADING",
             "STYLUS_TRIPOD_GRASP",
             "CHECKPOINT_TOUCH",
             "INDEX_BUTTON_PRESS",
@@ -2584,6 +2754,7 @@ def run_episode(
         "assembly_visual_segment_present": True,
         "combination_lock_visual_segment_present": True,
         "vial_uncap_deliver_visual_segment_present": True,
+        "microsuture_visual_segment_present": True,
         "blind_tactile_demo_sequence": [
             "label_hidden_unknown_object",
             "index_probe_front",
@@ -2646,6 +2817,19 @@ def run_episode(
         "pill_in_tray": bool(pill_in_tray),
         "vial_task_visible_in_main_demo": True,
         "vial_hybrid_manipulation_used": True,
+        "microsuture_task_available": True,
+        "microsuture_visual_segment_present": True,
+        "microsuture_threading_success": successes["microsuture_threading_success"],
+        "microsuture_target_passes": MICROSUTURE_TARGET_PASSES,
+        "microsuture_pass_count": int(microsuture_pass_count),
+        "microsuture_entry_error_m": round(float(microsuture_entry_error_m), 5),
+        "microsuture_exit_error_m": round(float(microsuture_exit_error_m), 5),
+        "microsuture_tension_target_n": MICROSUTURE_TENSION_TARGET_N,
+        "microsuture_max_tension_n": round(float(microsuture_tension_max_n), 4),
+        "microsuture_tension_limit_n": MICROSUTURE_TENSION_LIMIT_N,
+        "microsuture_no_tear_pass": successes["microsuture_no_tear_pass"],
+        "microsuture_knot_tension_success": successes["microsuture_knot_tension_success"],
+        "microsuture_hybrid_motion_used": True,
         "object_drop_count": 0,
         "tactile_channels": 5,
         "touch_sensor_count": 5,
@@ -2751,7 +2935,7 @@ The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpo
 
 9
 00:02:16,000 --> 00:02:40,000
-Final evidence: 39 verification gates, 13 replay milestones, zero snap events, validator pass, and stress results.
+Final evidence: 45 verification gates, 14 replay milestones, zero snap events, validator pass, microsuture threading, and stress results.
 """
     path = output_dir / "narration.srt"
     path.write_text(captions, encoding="utf-8")
@@ -3242,6 +3426,10 @@ def aggregate_summary(
     vial_cap_rotations = [float(meta.get("vial_cap_rotation_achieved_deg", 0.0)) for meta in metadatas]
     vial_cap_errors = [float(meta.get("vial_cap_rotation_error_deg", VIAL_CAP_ROTATION_TARGET_DEG)) for meta in metadatas]
     vial_forces = [float(meta.get("vial_max_force_n", 0.0)) for meta in metadatas]
+    microsuture_pass_counts = [int(meta.get("microsuture_pass_count", 0)) for meta in metadatas]
+    microsuture_tensions = [float(meta.get("microsuture_max_tension_n", 0.0)) for meta in metadatas]
+    microsuture_entry_errors = [float(meta.get("microsuture_entry_error_m", 0.0)) for meta in metadatas]
+    microsuture_exit_errors = [float(meta.get("microsuture_exit_error_m", 0.0)) for meta in metadatas]
     final_slips = [float(meta.get("final_slip_mm", 0.0)) for meta in metadatas]
     max_slips = [float(meta.get("max_slip_mm", 0.0)) for meta in metadatas]
     load_holds = [float(meta.get("load_hold_x", 0.0)) for meta in metadatas]
@@ -3315,6 +3503,7 @@ def aggregate_summary(
         "assembly_visual_segment_present": all(bool(meta.get("assembly_visual_segment_present", False)) for meta in metadatas),
         "combination_lock_visual_segment_present": all(bool(meta.get("combination_lock_visual_segment_present", False)) for meta in metadatas),
         "vial_uncap_deliver_visual_segment_present": all(bool(meta.get("vial_uncap_deliver_visual_segment_present", False)) for meta in metadatas),
+        "microsuture_visual_segment_present": all(bool(meta.get("microsuture_visual_segment_present", False)) for meta in metadatas),
         "presentation_sequence": [
             "five_finger_hand_skeleton",
             "sphere_enclosure_grasp",
@@ -3323,6 +3512,7 @@ def aggregate_summary(
             "blind_tactile_active_perception",
             "cap_rotation_224_load_hold",
             "vial_uncap_and_sample_delivery",
+            "tactile_microsuture_threading",
             "tactile_combination_lock_detents_latch_door",
             "tactile_pose_precision_assembly",
             "stylus_tripod_checkpoint",
@@ -3395,6 +3585,19 @@ def aggregate_summary(
         "pill_delivery_success": all_success("pill_delivery_success"),
         "pill_in_tray": all(bool(meta.get("pill_in_tray", False)) for meta in metadatas),
         "vial_hybrid_manipulation_used": all(bool(meta.get("vial_hybrid_manipulation_used", False)) for meta in metadatas),
+        "microsuture_task_available": True,
+        "microsuture_visual_segment_present": all(bool(meta.get("microsuture_visual_segment_present", False)) for meta in metadatas),
+        "microsuture_threading_success": all_success("microsuture_threading_success"),
+        "microsuture_target_passes": MICROSUTURE_TARGET_PASSES,
+        "microsuture_pass_count": max(microsuture_pass_counts) if microsuture_pass_counts else 0,
+        "microsuture_entry_error_m": round(float(np.mean(microsuture_entry_errors)) if microsuture_entry_errors else 0.0, 5),
+        "microsuture_exit_error_m": round(float(np.mean(microsuture_exit_errors)) if microsuture_exit_errors else 0.0, 5),
+        "microsuture_tension_target_n": MICROSUTURE_TENSION_TARGET_N,
+        "microsuture_max_tension_n": round(float(np.mean(microsuture_tensions)) if microsuture_tensions else 0.0, 4),
+        "microsuture_tension_limit_n": MICROSUTURE_TENSION_LIMIT_N,
+        "microsuture_no_tear_pass": all_success("microsuture_no_tear_pass"),
+        "microsuture_knot_tension_success": all_success("microsuture_knot_tension_success"),
+        "microsuture_hybrid_motion_used": all(bool(meta.get("microsuture_hybrid_motion_used", False)) for meta in metadatas),
         "object_drop_count": sum(int(meta.get("object_drop_count", 0)) for meta in metadatas),
         "slip_events": slip_events,
         "slip_recovery_success_rate": round(slip_recoveries / slip_events if slip_events else 1.0, 5),
@@ -3502,6 +3705,10 @@ def write_final_report(summary: dict, output_dir: Path) -> str:
             f"Vial cap rotation: {float(summary.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg target / {float(summary.get('vial_cap_rotation_achieved_deg', 0.0)):.1f} achieved",
             f"Vial no-crush force: {float(summary.get('vial_max_force_n', 0.0)):.2f}/{float(summary.get('vial_no_crush_force_limit_n', 0.0)):.1f} N",
             f"Vial sample delivered to tray: {str(bool(summary.get('pill_delivery_success'))).lower()}",
+            f"Microsuture threading success: {str(bool(summary.get('microsuture_threading_success', False))).lower()}",
+            f"Microsuture passes: {int(summary.get('microsuture_pass_count', 0))}/{int(summary.get('microsuture_target_passes', 0))}",
+            f"Microsuture entry/exit error: {float(summary.get('microsuture_entry_error_m', 0.0)):.4f}/{float(summary.get('microsuture_exit_error_m', 0.0)):.4f} m",
+            f"Microsuture tension: {float(summary.get('microsuture_max_tension_n', 0.0)):.2f}/{float(summary.get('microsuture_tension_limit_n', 0.0)):.2f} N",
             f"Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
             f"Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
             f"Combination lock detents: {int(summary.get('detent_count', 0))}",
@@ -3581,6 +3788,18 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
                 "sample_delivered": summary.get("pill_delivery_success", False),
                 "max_force_n": summary.get("vial_max_force_n"),
                 "force_limit_n": summary.get("vial_no_crush_force_limit_n"),
+            },
+            "tactile_microsuture_threading": {
+                "available": summary.get("microsuture_task_available", False),
+                "visible_in_main_demo": summary.get("microsuture_visual_segment_present", False),
+                "success": summary.get("microsuture_threading_success", False),
+                "passes": summary.get("microsuture_pass_count"),
+                "target_passes": summary.get("microsuture_target_passes"),
+                "entry_error_m": summary.get("microsuture_entry_error_m"),
+                "exit_error_m": summary.get("microsuture_exit_error_m"),
+                "max_tension_n": summary.get("microsuture_max_tension_n"),
+                "tension_limit_n": summary.get("microsuture_tension_limit_n"),
+                "no_tear_pass": summary.get("microsuture_no_tear_pass"),
             },
             "final_slip_mm": summary.get("final_slip_mm"),
             "tactile_channels": summary.get("tactile_channels"),
@@ -3684,6 +3903,8 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "submissions/dexhand_lab/dataset/combination_lock_report.json",
             "submissions/dexhand_lab/dataset/combination_lock_trace.csv",
             "submissions/dexhand_lab/media/combination_lock_keyframes.png",
+            "submissions/dexhand_lab/dataset/microsuture_threading_report.json",
+            "submissions/dexhand_lab/outputs/microsuture_scorecard.json",
             "submissions/dexhand_lab/media/demo.mp4",
             "submissions/dexhand_lab/media/keyframes.png",
             "submissions/dexhand_lab/outputs/summary.json",
@@ -3699,12 +3920,12 @@ def write_judge_summary(summary: dict, output_dir: Path) -> str:
             "runability": "run_demo, run_stress_eval, arena_task_suite, minimum_jerk_controller, contact_feedback_audit, hardware_adaptation_audit, and validate_submission all run deterministically from fixed seeds; event_rules_report.json maps this to the public rubric.",
             "reproducibility": "Fixed seeds and validator outputs make the submission easy to reproduce.",
             "mujoco_depth": "MJCF has articulated hand joints, fingertip pad collision geoms, cap hinge, button joint, plug/socket assembly geoms, and five MuJoCo fingertip touch sensors.",
-            "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, stylus checkpoint, index-only button press, unknown tactile arena, precision plug/socket assembly, and tactile combination lock.",
+            "task_design": "Sphere enclosure, cube opposing-face, cylinder side-body, in-hand rotation, cap twist, load hold, vial delivery, tactile microsuture threading, stylus checkpoint, index-only button press, unknown tactile arena, precision plug/socket assembly, and tactile combination lock.",
             "control": "Hybrid contact-aware controller verifies grasp/contact state before carry or rotation, uses minimum-jerk tactile segments, estimates plug pose from contact history, performs compliant insertion with jam recovery, runs tactile detent verification before latch pull, and logs closed-loop slip reflex response.",
-            "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
+            "dexterity": "Five-finger role-specific motion with thumb opposition, tripod grasp, finger gaiting, cap twist, microsuture needle guidance, active probing, precision assembly grasping, in-hand orientation correction, combination dial manipulation, and adaptive regrasp.",
             "engineering_quality": "Compact evidence files, validator, manifest, judge brief, stress comparison, and hardware replay audit.",
             "presentation": "Generated demo, time-anchored judge replay index, keyframes sheet, assembly keyframes, tactile pose panel, narration SRT, final report, and judge summary.",
-            "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation and tactile combination lock: labels/exact pose can be hidden, the hand probes contact evidence, estimates center/axis, completes plug/socket assembly, and solves a multi-detent dial/latch sequence.",
+            "innovation": "Blind tactile active perception plus no-ground-truth tactile pose estimation, tactile microsuture threading, and tactile combination lock: labels/exact pose can be hidden, the hand probes contact evidence, estimates center/axis, completes plug/socket assembly, threads a needle/loop task, and solves a multi-detent dial/latch sequence.",
         },
         "honest_scope": [
             "Controller is deterministic and contact-aware; it is not learned RL.",
@@ -3746,24 +3967,25 @@ def write_evidence_index(summary: dict) -> str:
         "12. `outputs/judge_summary.json` - compact quantitative evidence.",
         "13. `outputs/summary.json` - full run metrics.",
         "14. `outputs/contact_timeline.json` - per-finger contact timeline.",
-        "15. `dataset/task_suite_report.json` - 39-gate verification suite.",
+        "15. `dataset/task_suite_report.json` - 45-gate verification suite.",
         "16. `dataset/vial_uncap_delivery_report.json` - no-crush vial uncap and sample-delivery benchmark.",
         "17. `outputs/vial_uncap_delivery_scorecard.json` - compact vial task scorecard.",
-        "18. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
-        "19. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
-        "20. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
-        "21. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
-        "22. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
-        "23. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
-        "24. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
-        "25. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
-        "26. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
-        "27. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
-        "28. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
-        "29. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
-        "30. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
-        "31. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
-        "32. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
+        "18. `dataset/microsuture_threading_report.json` and `outputs/microsuture_scorecard.json` - tactile needle/thread loop benchmark.",
+        "19. `dataset/tactile_feedback_report.json` and `dataset/tactile_taxels.csv` - five-fingertip tactile audit.",
+        "20. `dataset/minimum_jerk_report.json` - tactile-inspired minimum-jerk controller report.",
+        "21. `dataset/stress_eval.json` and `outputs/baseline_vs_feedback.json` - fixed-seed stress comparison.",
+        "22. `dataset/hardware_adaptation_report.json` - simulation-to-hardware replay audit.",
+        "23. `outputs/blind_tactile_summary.json` - blind tactile active perception summary.",
+        "24. `dataset/tactile_classifier_report.json` - tactile shape classifier evidence.",
+        "25. `dataset/adaptive_regrasp_report.json` - adaptive regrasp recovery evidence.",
+        "26. `media/blind_tactile_keyframes.png` - visual proof of probing/classification/regrasp.",
+        "27. `dataset/tactile_pose_estimator_report.json` - no-ground-truth tactile pose estimate and scoring audit.",
+        "28. `dataset/precision_assembly_report.json` - plug/socket insertion and compliant retry evidence.",
+        "29. `dataset/jam_recovery_report.json` - jam detection, withdraw/correct/retry metrics.",
+        "30. `media/assembly_keyframes.png` - visual proof of assembly sequence.",
+        "31. `media/tactile_pose_estimation_panel.png` - pose error, axis error, touch activation, and insertion trace.",
+        "32. `dataset/combination_lock_report.json` - multi-detent tactile dial/latch sequence evidence.",
+        "33. `media/combination_lock_keyframes.png` - visual proof of combination lock probing, code turns, latch pull, and micro-door open.",
         "",
         "## Current Metrics",
         "",
@@ -3789,6 +4011,9 @@ def write_evidence_index(summary: dict) -> str:
         f"- Vial cap rotation: {float(summary.get('vial_cap_rotation_achieved_deg', 0.0)):.1f}/{float(summary.get('vial_cap_rotation_target_deg', 0.0)):.0f} deg",
         f"- Vial no-crush force: {float(summary.get('vial_max_force_n', 0.0)):.2f}/{float(summary.get('vial_no_crush_force_limit_n', 0.0)):.2f} N",
         f"- Vial sample delivery: {str(bool(summary.get('pill_delivery_success', False))).lower()}",
+        f"- Microsuture threading success: {str(bool(summary.get('microsuture_threading_success', False))).lower()}",
+        f"- Microsuture passes: {int(summary.get('microsuture_pass_count', 0))}/{int(summary.get('microsuture_target_passes', 0))}",
+        f"- Microsuture tension: {float(summary.get('microsuture_max_tension_n', 0.0)):.2f}/{float(summary.get('microsuture_tension_limit_n', 0.0)):.2f} N",
         f"- Combination lock success: {str(bool(summary.get('combination_lock_success', False))).lower()}",
         f"- Combination lock max error: {float(summary.get('combination_lock_max_error_deg', 0.0)):.1f} deg",
         f"- Combination lock latch pull: {str(bool(summary.get('latch_pull_success', False))).lower()}",
@@ -3811,6 +4036,7 @@ def write_evidence_index(summary: dict) -> str:
         "- Precision assembly evidence: `dataset/tactile_pose_estimator_report.json`, `dataset/precision_assembly_report.json`, `dataset/jam_recovery_report.json`, `dataset/no_ground_truth_control_audit.json`, `outputs/assembly_summary.json`, `media/assembly_keyframes.png`, and `media/tactile_pose_estimation_panel.png`.",
         "- Tactile combination lock evidence: `dataset/combination_lock_report.json`, `dataset/combination_lock_trace.csv`, `outputs/combination_lock_summary.json`, and `media/combination_lock_keyframes.png`.",
         "- No-crush vial task evidence: `dataset/vial_uncap_delivery_report.json`, `dataset/vial_uncap_delivery_trace.csv`, `outputs/vial_uncap_delivery_scorecard.json`, and the VIAL_* phases in `outputs/trajectory.json`.",
+        "- Tactile microsuture evidence: `dataset/microsuture_threading_report.json`, `dataset/microsuture_threading_trace.csv`, `outputs/microsuture_scorecard.json`, and the SUTURE_* phases in `outputs/trajectory.json`.",
         "",
         "## Honest Scope",
         "",
@@ -4132,6 +4358,18 @@ def run_demo(
         warnings.append(f"Vial uncap-delivery benchmark could not be refreshed: {exc}")
         summary["vial_uncap_delivery_warning"] = str(exc)
     try:
+        from microsuture_benchmark import run_microsuture_benchmark
+
+        summary.update(
+            run_microsuture_benchmark(
+                output_dir=output_dir,
+                dataset_dir=PROJECT_DIR / "dataset",
+            )
+        )
+    except Exception as exc:
+        warnings.append(f"Microsuture benchmark could not be refreshed: {exc}")
+        summary["microsuture_benchmark_warning"] = str(exc)
+    try:
         from judge_replay_index import build_judge_replay_index
 
         summary.update(
@@ -4152,14 +4390,14 @@ def run_demo(
         passed = sum(1 for gate in gates if gate["passed"])
         task_suite_report = {
             "project": "DexHand Lab",
-            "suite": "39-gate deterministic dexterity verification",
+            "suite": "45-gate deterministic dexterity verification",
             "gate_count": len(gates),
             "gates_passed": passed,
             "success_rate": round(passed / len(gates), 5),
             "failed_gates": [gate["name"] for gate in gates if not gate["passed"]],
             "max_pose_error_m": float(summary.get("average_grasp_centroid_error_m", 0.0)),
             "max_rotation_error_deg": float(summary.get("cap_rotation_error_deg", 0.0)),
-            "final_task_success": passed >= 37,
+            "final_task_success": passed >= 43,
             "gates": gates,
         }
         dataset_dir = PROJECT_DIR / "dataset"

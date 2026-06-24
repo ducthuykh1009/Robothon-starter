@@ -38,6 +38,9 @@ OBJECT_TYPE_BY_NAME = {
     "vial_body": "vial",
     "vial_cap": "vial_cap",
     "micro_sample": "micro_sample",
+    "microsuture_needle": "microsuture_needle",
+    "suture_thread": "suture_thread",
+    "tissue_pad_station": "tissue_pad",
 }
 
 RECOMMENDED_GRASP = {
@@ -55,6 +58,9 @@ RECOMMENDED_GRASP = {
     "vial": "VIAL_UNCAP_AND_DELIVER",
     "vial_cap": "VIAL_UNCAP_AND_DELIVER",
     "micro_sample": "CONTROLLED_RELEASE",
+    "microsuture_needle": "MICROSUTURE_THREADING",
+    "suture_thread": "MICROSUTURE_THREADING",
+    "tissue_pad": "MICROSUTURE_THREADING",
 }
 
 
@@ -215,6 +221,49 @@ def classify_object(model, data, mujoco, object_name: str) -> ObjectAffordance:
             "thumb": "cap side counterhold",
             "index": "cap stripe tangential twist region",
             "middle": "opposite cap side support",
+        }
+    elif object_type == "microsuture_needle":
+        radius = 0.0042
+        half_length = 0.052
+        size = [radius, half_length]
+        long_axis_vec = np.array([1.0, 0.0, 0.0], dtype=float)
+        long_axis = long_axis_vec.round(5).tolist()
+        centerline = [
+            (center - long_axis_vec * half_length).round(5).tolist(),
+            (center + long_axis_vec * half_length).round(5).tolist(),
+        ]
+        face_normals = []
+        regions = {
+            "thumb": "needle shaft counterhold near center",
+            "index": "needle tip guidance into entry eyelet",
+            "middle": "opposing shaft support",
+            "ring": "thread loop stabilizer",
+        }
+    elif object_type == "suture_thread":
+        radius = 0.0022
+        half_length = 0.052
+        size = [radius, half_length]
+        long_axis_vec = np.array([1.0, 0.0, 0.0], dtype=float)
+        long_axis = long_axis_vec.round(5).tolist()
+        centerline = [
+            (center - long_axis_vec * half_length).round(5).tolist(),
+            (center + long_axis_vec * half_length).round(5).tolist(),
+        ]
+        face_normals = []
+        regions = {
+            "loop": "visible loop pulled through two tissue eyelets",
+            "anchor": "low tension verification at tissue anchor",
+        }
+    elif object_type == "tissue_pad":
+        radius = None
+        size = [0.080, 0.052, 0.012]
+        long_axis = [1.0, 0.0, 0.0]
+        centerline = None
+        face_normals = [[0, 0, 1], [0, -1, 0]]
+        regions = {
+            "entry_eyelet": "first precision needle pass target",
+            "exit_eyelet": "second pass target",
+            "anchor_post": "tension-limited loop pull target",
         }
     elif object_type == "micro_sample":
         radius = 0.012

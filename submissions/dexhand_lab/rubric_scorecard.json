@@ -23,6 +23,7 @@
         "five MuJoCo fingertip touch sensors",
         "cap_knob hinge joint with visible marker",
         "vial body, marked vial cap, micro sample, and delivery tray MJCF primitives",
+        "microsuture needle, visible thread loop, tissue pad, and eyelet marker primitives",
         "combination lock dial hinge, latch slide, and micro-door hinge geoms",
         "plug/socket assembly collision geoms and insertion guide",
         "MuJoCo state/contact plus pressure-proxy logging"
@@ -33,6 +34,7 @@
         "outputs/sensor_manifest.json",
         "dataset/tactile_taxels.csv",
         "dataset/vial_uncap_delivery_report.json",
+        "dataset/microsuture_threading_report.json",
         "dataset/precision_assembly_report.json",
         "dataset/tactile_pose_estimator_report.json"
       ]
@@ -44,6 +46,7 @@
         "cylinder side-body grasp and in-hand rotation",
         "224-degree cap/knob rotation",
         "no-crush vial uncap and sample delivery",
+        "tactile microsuture threading with two needle passes and tension-limited closure",
         "tactile combination lock with three detents, latch pull, and micro-door open",
         "no-ground-truth tactile pose estimation and precision assembly",
         "slip recovery and 9x load hold",
@@ -54,6 +57,7 @@
         "human_grasp_library.py",
         "dataset/task_suite_report.json",
         "dataset/vial_uncap_delivery_report.json",
+        "dataset/microsuture_threading_report.json",
         "dataset/precision_assembly_report.json",
         "dataset/jam_recovery_report.json"
       ]
@@ -69,6 +73,7 @@
         "compliant insertion with jam detection and withdraw/correct retry",
         "closed-loop slip reflex benchmark with latency and pressure-boost evidence",
         "vial uncap/sample delivery after verified contact and force-margin check",
+        "microsuture thread motion only after verified fingertip contact",
         "tactile detent verification before latch pull"
       ],
       "files": [
@@ -83,6 +88,7 @@
         "dataset/jam_recovery_report.json",
         "dataset/closed_loop_reflex_report.json",
         "dataset/vial_uncap_delivery_trace.csv",
+        "dataset/microsuture_threading_trace.csv",
         "outputs/baseline_vs_feedback.json"
       ]
     },
@@ -94,6 +100,7 @@
         "finger gaiting during cylinder/cap manipulation",
         "multi-step tactile dial/latch manipulation",
         "vial stabilization while cap is twisted and removed",
+        "microsuture needle guidance and thread-loop pull with tripod pinch",
         "five-fingertip tactile evidence",
         "active tactile exploration of unknown objects",
         "precision pinch/tripod assembly grasp with in-hand orientation correction"
@@ -105,6 +112,7 @@
         "dataset/tactile_confusion_matrix.json",
         "dataset/tactile_pose_trace.csv",
         "dataset/vial_uncap_delivery_report.json",
+        "dataset/microsuture_threading_report.json",
         "dataset/precision_assembly_report.json"
       ]
     },
@@ -116,6 +124,7 @@
         "judge replay index maps generated video timestamps to rubric evidence",
         "closed-loop reflex trace links slip detection, pressure correction, and load hold",
         "vial uncap-delivery trace links force margin, cap removal, and sample delivery",
+        "microsuture trace links contact verification, pass count, tension, and no-tear threshold",
         "JSON/CSV evidence pack",
         "validator checks core files and metrics"
       ],
@@ -132,6 +141,7 @@
         "main demo includes blind tactile probing/classification before cap rotation",
         "main demo now includes tactile combination lock and precision assembly highlights",
         "main demo includes no-crush vial uncap and sample delivery chapter",
+        "main demo includes tactile microsuture threading chapter with close camera and HUD",
         "assembly keyframes and tactile pose estimation panel",
         "media/keyframes.png",
         "outputs/judge_summary.json",
@@ -139,6 +149,7 @@
         "outputs/video_replay_scorecard.json",
         "outputs/closed_loop_reflex_scorecard.json",
         "outputs/vial_uncap_delivery_scorecard.json",
+        "outputs/microsuture_scorecard.json",
         "EVIDENCE_INDEX.md",
         "media/blind_tactile_keyframes.png",
         "media/tactile_classifier_panel.png",
@@ -162,6 +173,7 @@
         "no-ground-truth tactile pose estimation",
         "precision plug/socket assembly with jam recovery",
         "no-crush vial uncap and sample delivery",
+        "tactile microsuture threading with tension-limited no-tear verification",
         "tactile combination lock sequence",
         "adaptive regrasp after low-confidence probing or unstable contact",
         "tactile feedback audit",
@@ -173,6 +185,7 @@
         "dataset/tactile_pose_estimator_report.json",
         "dataset/precision_assembly_report.json",
         "dataset/vial_uncap_delivery_report.json",
+        "dataset/microsuture_threading_report.json",
         "dataset/jam_recovery_report.json",
         "dataset/combination_lock_report.json",
         "hardware_transfer.json",
