@@ -1,35 +1,35 @@
 1
-00:00:00,000 --> 00:00:08,000
+00:00:00,000 --> 00:00:07,000
 Five-finger hand: thumb opposition, fingertip pads, and independent finger timing.
 
 2
-00:00:08,000 --> 00:00:28,000
+00:00:07,000 --> 00:00:20,000
 Object-specific grasping: sphere cage, cube opposing faces, cylinder side-body wrap, and in-hand rotation.
 
 3
-00:00:28,000 --> 00:00:46,000
+00:00:20,000 --> 00:00:31,000
 Blind tactile mode hides the label. Index, thumb, and middle probes classify the object and select the grasp.
 
 4
-00:00:46,000 --> 00:01:06,000
+00:00:31,000 --> 00:00:45,000
 Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
-00:01:06,000 --> 00:01:20,000
+00:00:45,000 --> 00:00:54,000
 Vial task: the hand holds the vial without crushing it, twists the marked cap, lifts it clear, then delivers the sample bead into a tray.
 
 6
-00:01:20,000 --> 00:01:37,000
-The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
+00:00:54,000 --> 00:01:02,000
+Tactile microsuture: tripod pinch, two needle passes, thread-loop pull, and tension-limited no-tear verification.
 
 7
-00:01:37,000 --> 00:01:56,000
-Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
+00:01:02,000 --> 00:01:09,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 8
-00:01:56,000 --> 00:02:16,000
-The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+00:01:09,000 --> 00:01:18,000
+Precision assembly hides exact pose, estimates plug alignment from touch, inserts compliantly, and logs jam recovery.
 
 9
-00:02:16,000 --> 00:02:40,000
-Final evidence: 45 verification gates, 14 replay milestones, zero snap events, validator pass, microsuture threading, and stress results.
+00:01:18,000 --> 00:01:25,000
+Stylus tripod and index-only button press close the task while the evidence banner reports validator, stress, and hardware replay audit status.

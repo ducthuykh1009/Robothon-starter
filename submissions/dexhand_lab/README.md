@@ -8,7 +8,7 @@ DexHand Lab focuses on dexterous hand manipulation rather than a full robot arm.
 
 ## Event Rule Alignment
 
-This submission is designed around the Robothon requirements: MuJoCo is the primary physics engine, the MJCF scene includes the robot hand, joints, collision geoms, touch sensors, actuators, task objects, and cameras, and the demo video is produced by running the submitted code. The generated `outputs/demo.mp4` is about 145 seconds in the current validation run, inside the 1-3 minute demo window.
+This submission is designed around the Robothon requirements: MuJoCo is the primary physics engine, the MJCF scene includes the robot hand, joints, collision geoms, touch sensors, actuators, task objects, and cameras, and the demo video is produced by running the submitted code. The generated `outputs/demo.mp4` is about 85 seconds in the current validation run, inside the 1-3 minute demo window.
 
 The generated `outputs/event_rules_report.json` maps the submission to the event deliverables and scoring rubric: Runability, Depth of MuJoCo Use, Task Design, Control, Dexterous Manipulation, Engineering Quality, Presentation, and Innovation. `outputs/submission_readiness_report.json` adds a submission-facing audit for UUID consistency, PR target, required commands, required outputs, and the same rubric evidence. `outputs/rubric_readiness_report.json` and `dataset/code_quality_report.json` add a local, non-official quality gate that checks compile health, source hygiene, validator status, and rubric coverage before submission. `dataset/judge_video_replay_index.json` adds a time-anchored map from demo moments to the evidence files and rubric categories so the generated video is easier to inspect.
 
@@ -134,9 +134,9 @@ The hardware audit maps simulated joints to LEAP/Shadow-style channels and gener
 
 ## Demo Video
 
-The default demo is intended to be judge-readable and inside the event's 1-3 minute demo window. The validation render is about 145-160 seconds depending on fresh rendering. It shows the hand skeleton, sphere enclosure, cube opposing-face grasp, cylinder side-body grasp, cylinder in-hand rotation, blind tactile probing/classification, cap 224-degree twist, slip/load-hold evidence, vial uncap/sample delivery, tactile microsuture threading, tactile combination lock manipulation, visible precision assembly insertion, stylus tripod grasp, index-only button press, and final evidence pose.
+The default demo is intended to be judge-readable and inside the event's 1-3 minute demo window. The validation render is about 85 seconds. It shows the hand skeleton, sphere enclosure, cube opposing-face grasp, cylinder side-body grasp, cylinder in-hand rotation, blind tactile probing/classification, cap 224-degree twist, slip/load-hold evidence, vial uncap/sample delivery, tactile microsuture threading, tactile combination lock manipulation, visible precision assembly insertion, stylus tripod grasp, index-only button press, and final evidence pose.
 
-The latest presentation pass widens the cameras and adds a higher-signal HUD/keyframe/narration sequence so the main video shows the strongest evidence directly: blind tactile probing, contact-verified cap twist, no-crush vial uncap/delivery, microsuture needle/thread passes, tactile lock detents, plug/socket insertion, jam correction, and final success metrics.
+The latest presentation pass widens the cameras and aligns the HUD, keyframes, and narration to the actual 85-second video so the main video shows the strongest evidence directly: blind tactile probing, contact-verified cap twist, no-crush vial uncap/delivery, microsuture needle/thread passes, tactile lock detents, plug/socket insertion, jam correction, hardware replay audit status, and final success metrics.
 
 For runability on headless or slow machines, the default command preserves the already generated `outputs/demo.mp4`/`media/demo.mp4` and refreshes the JSON/CSV evidence quickly. To render a replacement video from MuJoCo frames, run `python submissions/dexhand_lab/run_demo.py --force-render-video`.
 

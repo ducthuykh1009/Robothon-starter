@@ -103,7 +103,7 @@ The main demo and evidence scripts report:
 - tactile microsuture threading success in `dataset/microsuture_threading_report.json`
 - cap rotation target: 224 degrees
 - cap rotation achieved: saved as `cap_rotation_achieved_deg`
-- main demo duration: saved as `duration_s`, currently about 145 seconds after adding the visible assembly highlight segment
+- main demo duration: saved as `duration_s`, currently about 85 seconds and inside the event's 1-3 minute video window
 - contact-causality/no-snap audit: saved in `dataset/contact_causality_report.json`
 - precision assembly, tactile microsuture threading, tactile combination lock, and vial uncap/sample delivery are visible in the main demo, not only in offline evidence files
 - blind tactile visible in main demo: saved as `demo_contains_blind_tactile_segment`

@@ -142,7 +142,7 @@
     "uuid_consistency_pass": true,
     "submission_readiness_pass": true,
     "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
-    "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/160"
+    "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/477"
   },
   "quality_gate_evidence": {
     "status": "pass",

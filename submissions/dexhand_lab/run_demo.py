@@ -2902,68 +2902,87 @@ def write_video(video_path: Path, frames: list[np.ndarray], fps: int) -> tuple[s
 
 def write_narration_srt(output_dir: Path) -> str:
     captions = """1
-00:00:00,000 --> 00:00:08,000
+00:00:00,000 --> 00:00:07,000
 Five-finger hand: thumb opposition, fingertip pads, and independent finger timing.
 
 2
-00:00:08,000 --> 00:00:28,000
+00:00:07,000 --> 00:00:20,000
 Object-specific grasping: sphere cage, cube opposing faces, cylinder side-body wrap, and in-hand rotation.
 
 3
-00:00:28,000 --> 00:00:46,000
+00:00:20,000 --> 00:00:31,000
 Blind tactile mode hides the label. Index, thumb, and middle probes classify the object and select the grasp.
 
 4
-00:00:46,000 --> 00:01:06,000
+00:00:31,000 --> 00:00:45,000
 Cap task: five-finger contact verification, 224 degree twist, closed-loop slip reflex, and 9x load hold.
 
 5
-00:01:06,000 --> 00:01:20,000
+00:00:45,000 --> 00:00:54,000
 Vial task: the hand holds the vial without crushing it, twists the marked cap, lifts it clear, then delivers the sample bead into a tray.
 
 6
-00:01:20,000 --> 00:01:37,000
-The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
+00:00:54,000 --> 00:01:02,000
+Tactile microsuture: tripod pinch, two needle passes, thread-loop pull, and tension-limited no-tear verification.
 
 7
-00:01:37,000 --> 00:01:56,000
-Precision assembly: exact pose is hidden, tactile contacts estimate plug pose, then compliant insertion handles jam recovery.
+00:01:02,000 --> 00:01:09,000
+The tactile combination lock probes detents, rotates through a three-angle code, pulls the latch, and opens the micro-door.
 
 8
-00:01:56,000 --> 00:02:16,000
-The stylus is picked with a thumb-index-middle tripod grasp, touches the checkpoint, then the index fingertip presses the button alone.
+00:01:09,000 --> 00:01:18,000
+Precision assembly hides exact pose, estimates plug alignment from touch, inserts compliantly, and logs jam recovery.
 
 9
-00:02:16,000 --> 00:02:40,000
-Final evidence: 45 verification gates, 14 replay milestones, zero snap events, validator pass, microsuture threading, and stress results.
+00:01:18,000 --> 00:01:25,000
+Stylus tripod and index-only button press close the task while the evidence banner reports validator, stress, and hardware replay audit status.
 """
     path = output_dir / "narration.srt"
     path.write_text(captions, encoding="utf-8")
     return portable_path(path)
 
 
-def write_keyframes(frames: list[np.ndarray]) -> str | None:
+def write_keyframes(frames: list[np.ndarray], trajectory: list[dict] | None = None, fps: int = 4) -> str | None:
     if not frames:
         return None
     media_dir = PROJECT_DIR / "media"
     media_dir.mkdir(parents=True, exist_ok=True)
-    fractions = [0.0, 0.07, 0.18, 0.30, 0.43, 0.55, 0.66, 0.76, 0.86, 0.94, 1.0]
-    labels = [
-        "1 five-finger skeleton",
-        "2 sphere enclosure",
-        "3 cube/cylinder grasps",
-        "4 blind tactile probes",
-        "5 cap twist + load hold",
-        "6 combination lock",
-        "7 precision assembly",
-        "8 stylus tripod",
-        "9 index-only button",
-        "10 evidence banner",
-        "11 final pose",
+    keyframe_specs = [
+        ("1 five-finger skeleton", ("SHOW_FINGER_SPREAD", "SHOW_THUMB_OPPOSITION")),
+        ("2 sphere enclosure", ("STABLE_GRASP_VERIFY", "SECURE_OBJECT")),
+        ("3 cube/cylinder grasps", ("CYLINDER_SIDE_CLOSE", "ROTATION_PREPARE")),
+        ("4 blind tactile probes", ("INDEX_PROBE_FRONT", "THUMB_COUNTER_PROBE")),
+        ("5 cap twist + load hold", ("MINIMUM_JERK_CAP_TWIST", "LOAD_HOLD_9X")),
+        ("6 vial uncap delivery", ("VIAL_CAP_COUNTER_TWIST", "VIAL_SAMPLE_DELIVERY")),
+        ("7 microsuture threading", ("SUTURE_FIRST_PASS", "SUTURE_LOOP_PULL")),
+        ("8 combination lock", ("LOCK_ROTATE_CODE_2", "LOCK_LATCH_PULL")),
+        ("9 precision assembly", ("ASSEMBLY_COMPLIANT_INSERT", "ASSEMBLY_JAM_CHECK_CORRECT")),
+        ("10 stylus + button", ("CHECKPOINT_TOUCH", "BUTTON_PRESS")),
+        ("11 hardware/evidence audit", ("FINAL_REPORT", "FINAL_HOLD")),
+        ("12 final pose", ("FINISH", "FINAL_HOLD")),
     ]
-    indices = sorted({min(len(frames) - 1, max(0, int(round(frac * (len(frames) - 1))))) for frac in fractions})
-    selected = []
-    for label, index in zip(labels, indices):
+    fallback_fractions = [0.0, 0.08, 0.18, 0.30, 0.42, 0.55, 0.64, 0.72, 0.82, 0.91, 0.97, 1.0]
+
+    phase_times: dict[str, float] = {}
+    if trajectory:
+        for record in trajectory:
+            phase = str(record.get("phase_name", ""))
+            if phase and phase not in phase_times:
+                phase_times[phase] = float(record.get("time", 0.0) or 0.0)
+
+    selected_indices: list[tuple[str, int]] = []
+    for idx, (label, phase_names) in enumerate(keyframe_specs):
+        frame_index: int | None = None
+        for phase_name in phase_names:
+            if phase_name in phase_times:
+                frame_index = int(round(phase_times[phase_name] * fps))
+                break
+        if frame_index is None:
+            frame_index = int(round(fallback_fractions[idx] * (len(frames) - 1)))
+        selected_indices.append((label, min(len(frames) - 1, max(0, frame_index))))
+
+    selected: list[np.ndarray] = []
+    for label, index in selected_indices:
         frame = frames[index]
         if Image is not None and ImageDraw is not None and ImageFont is not None:
             image = Image.fromarray(frame).convert("RGBA")
@@ -3345,7 +3364,7 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
     report = {
         "project": "DexHand Lab",
         "registration_uuid": expected_uuid,
-        "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/160",
+        "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/477",
         "final_submission_folder": "submissions/dexhand_lab",
         "uuid_consistency_pass": uuid_consistency_pass,
         "uuid_sources": uuid_sources,
@@ -3628,7 +3647,9 @@ def aggregate_summary(
         "stylus_tripod_visible": all_success("tripod_tool_success"),
         "stress_eval_available": (output_dir / "stress_eval.json").exists() and (output_dir / "baseline_vs_feedback.json").exists(),
         "stress_eval_path": portable_path(output_dir / "stress_eval.json") if (output_dir / "stress_eval.json").exists() else None,
+        "dataset_stress_eval_path": portable_path(PROJECT_DIR / "dataset" / "stress_eval.json") if (PROJECT_DIR / "dataset" / "stress_eval.json").exists() else None,
         "baseline_vs_feedback_path": portable_path(output_dir / "baseline_vs_feedback.json") if (output_dir / "baseline_vs_feedback.json").exists() else None,
+        "stress_eval_summary": stress_summary,
         "stress_rollouts": int(stress_summary.get("stress_rollouts", stress_summary.get("seeds", 0))),
         "stress_success_rate": float(stress_summary.get("stress_success_rate", stress_summary.get("feedback_success_rate", 0.0))),
         "baseline_success_rate": float(stress_summary.get("baseline_success_rate", 0.0)),
@@ -4119,7 +4140,7 @@ def run_demo(
             media_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy2(output_dir / "demo.mp4", media_dir / "demo.mp4")
         narration_path = write_narration_srt(output_dir)
-        keyframes_path = write_keyframes(demo_frames)
+        keyframes_path = write_keyframes(demo_frames, first_trajectory, fps)
         if keyframes_path is None and (PROJECT_DIR / "media" / "keyframes.png").exists():
             keyframes_path = portable_path(PROJECT_DIR / "media" / "keyframes.png")
     else:
@@ -4313,8 +4334,8 @@ def run_demo(
     summary["rules_alignment_pass"] = bool(summary["demo_video_duration_rule_pass"])
     summary["event_rules_report_path"] = write_event_rules_report(summary, output_dir)
     summary["submission_readiness_report_path"] = portable_path(output_dir / "submission_readiness_report.json")
-    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     write_submission_readiness_report(summary, output_dir)
+    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     try:
         from contact_causality_audit import audit_contact_causality
 
@@ -4428,8 +4449,11 @@ def run_demo(
     summary["final_report_path"] = write_final_report(summary, output_dir)
     summary["judge_summary_path"] = write_judge_summary(summary, output_dir)
     summary["evidence_index_path"] = write_evidence_index(summary)
-    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     write_submission_readiness_report(summary, output_dir)
+    summary["final_report_path"] = write_final_report(summary, output_dir)
+    summary["judge_summary_path"] = write_judge_summary(summary, output_dir)
+    summary["evidence_index_path"] = write_evidence_index(summary)
+    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
 
 
