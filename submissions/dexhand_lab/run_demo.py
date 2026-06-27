@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import shutil
 import sys
 from dataclasses import dataclass
@@ -3361,10 +3362,14 @@ def write_submission_readiness_report(summary: dict, output_dir: Path) -> str:
     missing_required_outputs = [
         portable_path(path) for path in required_output_paths if not path.exists()
     ]
+    pr_target = os.environ.get(
+        "DEXHAND_EVENT_PR_URL",
+        "Faraday-Future-AI/Robothon-starter:main <- ducthuykh1009/Robothon-starter current DexHand branch",
+    )
     report = {
         "project": "DexHand Lab",
         "registration_uuid": expected_uuid,
-        "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/477",
+        "pr_target": pr_target,
         "final_submission_folder": "submissions/dexhand_lab",
         "uuid_consistency_pass": uuid_consistency_pass,
         "uuid_sources": uuid_sources,

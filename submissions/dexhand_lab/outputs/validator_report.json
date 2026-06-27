@@ -142,7 +142,7 @@
     "uuid_consistency_pass": true,
     "submission_readiness_pass": true,
     "registration_uuid": "2555924c-74a4-4788-be61-1f1e65bf3f44",
-    "pr_target": "https://github.com/Faraday-Future-AI/Robothon-starter/pull/477"
+    "pr_target": "Faraday-Future-AI/Robothon-starter:main <- ducthuykh1009/Robothon-starter current DexHand branch"
   },
   "quality_gate_evidence": {
     "status": "pass",
@@ -154,5 +154,14 @@
     "source_health_pass": true,
     "local_readiness_score_estimate_not_official": 100,
     "all_rubric_rows_pass": true
+  },
+  "event_hygiene": {
+    "status": "pass",
+    "narration_last_timestamp_s": 85.0,
+    "demo_duration_s": 85.25,
+    "summary_readiness_matches_report": true,
+    "stale_pr_target_present": false,
+    "deprecated_backup_files_present": false,
+    "stress_eval_summary_embedded": true
   }
 }

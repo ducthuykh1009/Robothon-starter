@@ -58,6 +58,8 @@ The submission focuses on dexterity evidence instead of a simple pick-and-place 
 
 Runability note: `python submissions/dexhand_lab/run_demo.py` preserves the included generated demo video and refreshes JSON/CSV evidence quickly for judge reproducibility. Use `python submissions/dexhand_lab/run_demo.py --force-render-video` when a fresh MuJoCo frame render is desired.
 
+Validator note: `validate_submission.py` includes event-hygiene gates for UUID consistency, summary/readiness agreement, no stale PR target, no deprecated score backup files, SRT timing inside the generated demo duration, embedded stress-evaluation evidence, and the required output set.
+
 ## New 95+ Differentiator: Blind Tactile Active Perception
 
 When `--blind-tactile` is enabled, object labels are hidden from the controller decision path. The hand probes unknown objects with the index fingertip, thumb, and middle finger, estimates curvature, edge response, flat-face response, long-axis signal, twist affordance, and press displacement, then selects the grasp strategy from tactile evidence. If confidence is low or contact is unstable, adaptive regrasp adds support, recenters, switches strategy, or performs an extra probe.
@@ -128,6 +130,7 @@ The main demo and evidence scripts report:
 - event rule alignment pass/fail in `outputs/event_rules_report.json`
 - submission readiness pass/fail, UUID consistency, required outputs, and PR target in `outputs/submission_readiness_report.json`
 - local non-official rubric readiness and code-health pass/fail in `outputs/rubric_readiness_report.json` and `dataset/code_quality_report.json`
+- event hygiene in `outputs/validator_report.json`, including SRT/video timing, stale-PR guard, stress summary embedding, and summary/readiness consistency
 
 ## Rubric Mapping
 

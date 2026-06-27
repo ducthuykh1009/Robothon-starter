@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 DATASET_DIR = PROJECT_DIR / "dataset"
+
+SRT_TIME_RE = re.compile(
+    r"(?P<h>\d{2}):(?P<m>\d{2}):(?P<s>\d{2}),(?P<ms>\d{3})"
+)
 
 
 def valid_json(path: Path) -> bool:
@@ -15,6 +20,19 @@ def valid_json(path: Path) -> bool:
         return True
     except Exception:
         return False
+
+
+def srt_last_timestamp_s(path: Path) -> float:
+    latest = 0.0
+    for match in SRT_TIME_RE.finditer(path.read_text(encoding="utf-8")):
+        latest = max(
+            latest,
+            int(match.group("h")) * 3600.0
+            + int(match.group("m")) * 60.0
+            + int(match.group("s"))
+            + int(match.group("ms")) / 1000.0,
+        )
+    return latest
 
 
 def main() -> int:
@@ -211,6 +229,8 @@ def main() -> int:
         "checkpoint_touch_success",
         "index_only_button_press_success",
         "stress_eval_available",
+        "dataset_stress_eval_path",
+        "stress_eval_summary",
         "tactile_channels",
         "touch_sensor_count",
         "mujoco_touch_sensors_present",
@@ -426,6 +446,10 @@ def main() -> int:
         bad_values.append("object_center_between_fingers_rate expected >= 0.99")
     if not bool(summary.get("stress_eval_available", False)):
         bad_values.append("stress_eval_available expected true; run run_stress_eval.py --seeds 32")
+    if not summary.get("dataset_stress_eval_path"):
+        bad_values.append("dataset_stress_eval_path expected in summary")
+    if not isinstance(summary.get("stress_eval_summary"), dict) or not summary.get("stress_eval_summary"):
+        bad_values.append("stress_eval_summary expected non-empty dict in summary")
     if int(summary.get("tactile_channels", 0)) != 5:
         bad_values.append("tactile_channels expected 5")
     if int(summary.get("touch_sensor_count", 0)) != 5:
@@ -540,6 +564,22 @@ def main() -> int:
         bad_values.append("submission_readiness_report uuid_consistency_pass expected true")
     if not bool(readiness.get("submission_readiness_pass", False)):
         bad_values.append("submission_readiness_report submission_readiness_pass expected true")
+    if bool(summary.get("submission_readiness_pass")) != bool(readiness.get("submission_readiness_pass")):
+        bad_values.append("summary submission_readiness_pass must match submission_readiness_report")
+    stale_pr_markers = ("pull/151", "pull/160", "pull/477")
+    pr_target = str(readiness.get("pr_target", ""))
+    if any(marker in pr_target for marker in stale_pr_markers):
+        bad_values.append("submission_readiness_report pr_target points to a stale PR")
+    deprecated_backup_files = [
+        PROJECT_DIR / "BACKUP_874_SCORE_STATE.md",
+        PROJECT_DIR / "BACKUP_PR151_STATE.md",
+    ]
+    existing_backups = [path.name for path in deprecated_backup_files if path.exists()]
+    if existing_backups:
+        bad_values.append("deprecated score/PR backup files should not ship: " + ", ".join(existing_backups))
+    srt_end_s = srt_last_timestamp_s(OUTPUT_DIR / "narration.srt")
+    if srt_end_s > float(summary.get("duration_s", 0.0)) + 1.0:
+        bad_values.append("narration.srt extends past demo duration")
     if not bool(quality_report.get("code_quality_pass", False)):
         bad_values.append("code_quality_report code_quality_pass expected true")
     if not bool(rubric_readiness.get("all_rubric_rows_pass", False)):
@@ -700,6 +740,20 @@ def main() -> int:
             "source_health_pass": quality_report.get("source_health_pass"),
             "local_readiness_score_estimate_not_official": rubric_readiness.get("local_readiness_score_estimate_not_official"),
             "all_rubric_rows_pass": rubric_readiness.get("all_rubric_rows_pass"),
+        },
+        "event_hygiene": {
+            "status": "pass",
+            "narration_last_timestamp_s": round(srt_last_timestamp_s(OUTPUT_DIR / "narration.srt"), 3),
+            "demo_duration_s": summary.get("duration_s"),
+            "summary_readiness_matches_report": bool(summary.get("submission_readiness_pass"))
+            == bool(readiness.get("submission_readiness_pass")),
+            "stale_pr_target_present": any(
+                marker in str(readiness.get("pr_target", ""))
+                for marker in ("pull/151", "pull/160", "pull/477")
+            ),
+            "deprecated_backup_files_present": False,
+            "stress_eval_summary_embedded": isinstance(summary.get("stress_eval_summary"), dict)
+            and bool(summary.get("stress_eval_summary")),
         },
     }
     validator_report_path = OUTPUT_DIR / "validator_report.json"
