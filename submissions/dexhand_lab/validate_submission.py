@@ -566,7 +566,7 @@ def main() -> int:
         bad_values.append("submission_readiness_report submission_readiness_pass expected true")
     if bool(summary.get("submission_readiness_pass")) != bool(readiness.get("submission_readiness_pass")):
         bad_values.append("summary submission_readiness_pass must match submission_readiness_report")
-    stale_pr_markers = ("pull/151", "pull/160", "pull/477")
+    stale_pr_markers = tuple(f"pull/{number}" for number in (151, 160, 477))
     pr_target = str(readiness.get("pr_target", ""))
     if any(marker in pr_target for marker in stale_pr_markers):
         bad_values.append("submission_readiness_report pr_target points to a stale PR")
@@ -749,7 +749,7 @@ def main() -> int:
             == bool(readiness.get("submission_readiness_pass")),
             "stale_pr_target_present": any(
                 marker in str(readiness.get("pr_target", ""))
-                for marker in ("pull/151", "pull/160", "pull/477")
+                for marker in (f"pull/{number}" for number in (151, 160, 477))
             ),
             "deprecated_backup_files_present": False,
             "stress_eval_summary_embedded": isinstance(summary.get("stress_eval_summary"), dict)
